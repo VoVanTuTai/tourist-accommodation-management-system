@@ -1,18 +1,24 @@
-import db from "../../config/db.js";
+const db = require("../../config/db");
 
-// Lấy danh sách tất cả các phòng
-export const getAllRooms = async () => {
-  const [rows] = await db.query(`
-    SELECT 
-      p.MaPhong,
-      p.TenPhong,
-      lp.TenLoai,
-      p.Gia,
-      p.SucChua,
-      p.TinhTrang,
-      p.HinhAnh
-    FROM Phong p
-    JOIN LoaiPhong lp ON p.MaLoai = lp.MaLoai;
-  `);
-  return rows;
+
+exports.getPhongByNCC = (maNhaCungCap, callback) => {
+  const sql = "SELECT * FROM Phong WHERE MaNhaCungCap = ?";
+  db.query(sql, [maNhaCungCap], callback);
+};
+
+exports.addPhong = (data, callback) => {
+  const sql = `
+    INSERT INTO Phong (TenPhong, MaLoai, Gia, SucChua, TinhTrang, HinhAnh, MaNhaCungCap)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
+  const values = [
+    data.TenPhong,
+    data.MaLoai,
+    data.Gia,
+    data.SucChua,
+    data.TinhTrang,
+    data.HinhAnh,
+    data.MaNhaCungCap
+  ];
+  db.query(sql, values, callback);
 };

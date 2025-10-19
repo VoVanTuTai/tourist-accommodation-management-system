@@ -1,20 +1,24 @@
-import express from "express";
-import dotenv from "dotenv";
-import roomRoutes from "./src/routes/roomRoutes.js";
-import path from "path";
-import { fileURLToPath } from "url";
+const express = require("express");
+const path = require("path");
+const expressLayouts = require("express-ejs-layouts");
+const phongRoutes = require("./src/routes/phongRoutes");
 
-dotenv.config();
 const app = express();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
+// Thiết lập EJS + Layout
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "src", "views"));
-app.use(express.static(path.join(__dirname, "public")));
+app.use(expressLayouts);
+app.set("layout", "layout"); // layout mặc định: src/views/layout.ejs
 
-app.use("/", roomRoutes);
+// Middleware
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "src", "public")));
 
+// Routes
+app.use("/phong", phongRoutes);
+
+// Khởi động server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server chạy tại http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server chạy tại: http://localhost:${PORT}`));

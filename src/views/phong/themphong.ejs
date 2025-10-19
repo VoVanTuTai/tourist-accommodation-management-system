@@ -1,0 +1,28 @@
+
+
+<h2>Thêm phòng mới</h2>
+
+<form action="/phong/add" method="POST">
+  <label>Tên phòng:</label><br>
+  <input type="text" name="TenPhong" required><br><br>
+
+  <label>Mã loại:</label><br>
+  <input type="number" name="MaLoai" required><br><br>
+
+  <label>Giá (VND):</label><br>
+  <input type="number" name="Gia" required><br><br>
+
+  <label>Sức chứa:</label><br>
+  <input type="number" name="SucChua" required><br><br>
+
+  <label>Tình trạng:</label><br>
+  <select name="TinhTrang">
+    <option value="1">Còn trống</option>
+    <option value="0">Đã đặt</option>
+  </select><br><br>
+
+  <label>Hình ảnh (tên file):</label><br>
+  <input type="text" name="HinhAnh" placeholder="vd: phong1.jpg"><br><br>
+
+  <button type="submit">Thêm phòng</button>
+</form>
