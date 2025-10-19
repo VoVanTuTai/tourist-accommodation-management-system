@@ -1,0 +1,39 @@
+
+
+<h2>Danh sách phòng của nhà cung cấp</h2>
+
+<table border="1" cellspacing="0" cellpadding="8">
+  <thead>
+    <tr>
+      <th>Mã phòng</th>
+      <th>Tên phòng</th>
+      <th>Loại</th>
+      <th>Giá</th>
+      <th>Sức chứa</th>
+      <th>Tình trạng</th>
+      <th>Hình ảnh</th>
+      <th>Thao tác</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if (rooms.length === 0) { %>
+      <tr><td colspan="8">Chưa có phòng nào</td></tr>
+    <% } else { %>
+      <% rooms.forEach(room => { %>
+        <tr>
+          <td><%= room.MaPhong %></td>
+          <td><%= room.TenPhong %></td>
+          <td><%= room.MaLoai %></td>
+          <td><%= room.Gia.toLocaleString() %>₫</td>
+          <td><%= room.SucChua %></td>
+          <td><%= room.TinhTrang === 1 ? "Còn trống" : "Đã đặt" %></td>
+          <td><img src="/images/<%= room.HinhAnh %>" width="80" alt="Ảnh phòng"></td>
+          <td>
+            <a href="/phong/edit/<%= room.MaPhong %>">✏️ Sửa</a> |
+            <a href="/phong/delete/<%= room.MaPhong %>" onclick="return confirm('Bạn có chắc muốn xóa?')">🗑️ Xóa</a>
+          </td>
+        </tr>
+      <% }) %>
+    <% } %>
+  </tbody>
+</table>
