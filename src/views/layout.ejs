@@ -1,29 +1,18 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Hệ thống quản lý chỗ ở du lịch</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tourist Accommodation Management</title>
+  <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
-  <header>
-    <h1>🏨 Hệ thống Quản lý Chỗ ở Du lịch</h1>
-    <nav>
-      <a href="/phong">Danh sách phòng</a> |
-      <a href="/phong/add">Thêm phòng</a> |
-      <a href="#">Đăng xuất</a>
-    </nav>
-    <hr>
-  </header>
+  <%- include("partials/header") %>
 
   <main>
-    <!-- express-ejs-layouts sẽ render phần nội dung chính tại đây -->
     <%- body %>
   </main>
 
-  <footer>
-    <hr>
-    <p>© 2025 Tourist Accommodation Management System - ThieuNu</p>
-  </footer>
+  <%- include("partials/footer") %>
 </body>
 </html>

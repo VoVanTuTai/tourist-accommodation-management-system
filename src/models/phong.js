@@ -68,3 +68,29 @@ exports.updateTrangThaiPhong = (maPhong, tinhTrang, callback) => {
   const sql = "UPDATE Phong SET TinhTrang=? WHERE MaPhong=?";
   db.query(sql, [tinhTrang, maPhong], callback);
 };
+
+
+// Lấy danh sách phòng có nhiều lượt đặt nhất
+exports.getTopBookedRooms = async () => {
+  const query = `
+    SELECT 
+      p.MaPhong,
+      p.TenPhong,
+      p.MaLoai,
+      p.Gia,
+      COUNT(dp.MaCTDon) AS so_luot_dat
+    FROM phong p
+    LEFT JOIN chitietdondatphong dp ON p.MaPhong = dp.MaPhong
+    GROUP BY p.MaPhong, p.TenPhong, p.MaLoai, p.Gia
+    ORDER BY so_luot_dat DESC
+    LIMIT 5;
+  `;
+
+  const [rows] = await db.execute(query);
+
+  // Ép kiểu số cho cột 'Gia' (tránh lỗi khi render EJS)
+  return rows.map(room => ({
+    ...room,
+    Gia: room.Gia ? Number(room.Gia) : 0,
+  }));
+};

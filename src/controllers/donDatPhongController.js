@@ -1,20 +1,27 @@
 const DonDatPhong = require('../models/DonDatPhong');
 
-exports.danhSachDonDatPhong = async (req, res) => {
-  try {
-    const userId = 1; // Lấy ID khách hàng từ session đăng nhập
-    const trangThai = req.query.trangthai; // Lấy giá trị lọc
+exports.danhSachDonDatPhong = (req, res) => {
+  const userId = 1; // tạm thời test
+  const trangThai = req.query.trangthai; // 0, 1, 2, 3 hoặc undefined
 
-    let query = { idKhachHang: userId };
-    if (trangThai) {
-      query.trangThai = trangThai;
+  DonDatPhong.getAllByUser(userId, trangThai, (err, donDatPhongList) => {
+    if (err) {
+      console.error("❌ Lỗi SQL:", err);
+      return res.status(500).send("Lỗi khi tải danh sách đơn đặt phòng.");
     }
 
-    const donDatPhongList = await DonDatPhong.findAll({ where: query });
+    // ✅ Chuyển các chuỗi ngày thành đối tượng Date (để EJS dùng .toLocaleDateString)
+    const formattedList = donDatPhongList.map(don => ({
+      ...don,
+      NgayDat: don.NgayDat ? new Date(don.NgayDat) : null,
+      NgayNhan: don.NgayNhan ? new Date(don.NgayNhan) : null,
+      NgayTra: don.NgayTra ? new Date(don.NgayTra) : null,
+    }));
 
-    res.render('khachhang/danhsachdondatphong', { donDatPhongList });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Lỗi khi tải danh sách đơn đặt phòng.');
-  }
+    // ✅ Render và truyền đủ dữ liệu cho EJS
+    res.render("khachhang/danhsachdondatphong", {
+      donDatPhongList: formattedList,  // dùng danh sách đã format
+      trangThai: trangThai || "",      // để navbar highlight đúng tab
+    });
+  });
 };

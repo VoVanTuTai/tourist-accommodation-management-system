@@ -1,0 +1,29 @@
+<section class="hero">
+  <div class="container">
+    <h1>Chào mừng đến với hệ thống quản lý chỗ ở du lịch</h1>
+    <p>Đặt phòng dễ dàng, quản lý nhanh chóng và hiện đại.</p>
+    <a href="/phong" class="btn-primary">Xem tất cả phòng</a>
+  </div>
+</section>
+
+<section class="top-rooms">
+  <div class="container">
+    <h2>🏆 Phòng được đặt nhiều nhất</h2>
+
+    <% if (topRooms && topRooms.length > 0) { %>
+      <div class="room-list">
+        <% topRooms.forEach(room => { %>
+          <div class="room-card">
+            <h3><%= room.ten_phong %></h3>
+            <p><%= room.mo_ta || "Không có mô tả" %></p>
+            <p>Giá: <%= room.Gia ? room.Gia.toLocaleString() : "Chưa cập nhật" %> VND/đêm</p>
+            <p><strong><%= room.so_luot_dat %></strong> lượt đặt</p>
+            <a href="/phong/<%= room.ma_phong %>" class="btn-secondary">Xem chi tiết</a>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p>Chưa có dữ liệu đặt phòng.</p>
+    <% } %>
+  </div>
+</section>
