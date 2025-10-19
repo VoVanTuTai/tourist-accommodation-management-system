@@ -2,7 +2,8 @@ const express = require("express");
 const path = require("path");
 const expressLayouts = require("express-ejs-layouts");
 const phongRoutes = require("./src/routes/phongRoutes");
-
+// ✅ Import routes
+const khachhangRoutes = require('./src/routes/khachhangRoutes');
 const app = express();
 
 // Thiết lập EJS + Layout
@@ -16,6 +17,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "src", "public")));
 
+
+// ✅ Sử dụng routes
+app.use('/khachhang', khachhangRoutes);
 // Routes
 app.use("/phong", phongRoutes);
 

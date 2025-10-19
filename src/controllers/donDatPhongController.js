@@ -2,7 +2,7 @@ const DonDatPhong = require('../models/DonDatPhong');
 
 exports.danhSachDonDatPhong = async (req, res) => {
   try {
-    const userId = req.session.user.id; // Lấy ID khách hàng từ session đăng nhập
+    const userId = 1; // Lấy ID khách hàng từ session đăng nhập
     const trangThai = req.query.trangthai; // Lấy giá trị lọc
 
     let query = { idKhachHang: userId };
