@@ -1,14 +1,14 @@
-
-
 <h2>Thêm phòng mới</h2>
 
-<form action="/phong/add" method="POST">
+<form action="/phong/add" method="POST" enctype="multipart/form-data">
   <label>Tên phòng:</label><br>
   <input type="text" name="TenPhong" required><br><br>
-
-  <label>Mã loại:</label><br>
-  <input type="number" name="MaLoai" required><br><br>
-
+  <label>Loại phòng:</label><br>
+  <select name="MaLoai" required>
+  <% loaiPhongs.forEach(lp => { %>
+    <option value="<%= lp.MaLoai %>"><%= lp.TenLoai %></option>
+  <% }) %>
+  </select><br>
   <label>Giá (VND):</label><br>
   <input type="number" name="Gia" required><br><br>
 
@@ -21,8 +21,8 @@
     <option value="0">Đã đặt</option>
   </select><br><br>
 
-  <label>Hình ảnh (tên file):</label><br>
-  <input type="text" name="HinhAnh" placeholder="vd: phong1.jpg"><br><br>
+  <label>Hình ảnh:</label><br>
+  <input type="file" name="HinhAnh" accept="image/*"><br><br>
 
   <button type="submit">Thêm phòng</button>
 </form>

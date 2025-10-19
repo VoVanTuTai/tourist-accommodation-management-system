@@ -1,0 +1,51 @@
+<h2>Sửa thông tin phòng</h2>
+
+<form action="/phong/edit" method="POST" enctype="multipart/form-data">
+  <input type="hidden" name="MaPhong" value="<%= phong.MaPhong %>">
+
+  <!-- Tên phòng -->
+  <label>Tên phòng:</label><br>
+  <input type="text" name="TenPhong" value="<%= phong.TenPhong %>" required><br><br>
+
+  <!-- Loại phòng -->
+  <label>Loại phòng:</label><br>
+  <<label>Loại phòng:</label><br>
+  <select name="MaLoai" required>
+    <% loaiPhongs.forEach(lp => { %>
+      <option value="<%= lp.MaLoai %>" 
+        <%= lp.MaLoai === phong.MaLoai ? "selected" : "" %>>
+        <%= lp.TenLoai %>
+      </option>
+    <% }) %>
+  </select><br><br>
+
+  <!-- Giá -->
+  <label>Giá (VND):</label><br>
+  <input type="number" name="Gia" value="<%= phong.Gia %>" required><br><br>
+
+  <!-- Sức chứa -->
+  <label>Sức chứa:</label><br>
+  <input type="number" name="SucChua" value="<%= phong.SucChua %>" required><br><br>
+
+  <!-- Tình trạng -->
+  <label>Tình trạng:</label><br>
+  <select name="TinhTrang">
+    <option value="1" <%= phong.TinhTrang === 1 ? "selected" : "" %>>Còn trống</option>
+    <option value="0" <%= phong.TinhTrang === 0 ? "selected" : "" %>>Đã đặt</option>
+    <option value="2" <%= phong.TinhTrang === 2 ? "selected" : "" %>>Bảo trì</option>
+  </select><br><br>
+
+  <!-- Hình ảnh -->
+  <label>Ảnh hiện tại:</label><br>
+  <% if (phong.HinhAnh) { %>
+    <img src="/images/<%= phong.HinhAnh %>" alt="Ảnh phòng" width="150"><br>
+  <% } else { %>
+    <span>Chưa có ảnh</span><br>
+  <% } %>
+  <br>
+
+  <label>Chọn ảnh mới (nếu muốn thay):</label><br>
+  <input type="file" name="HinhAnh" accept="image/*"><br><br>
+
+  <button type="submit">Lưu thay đổi</button>
+</form>
