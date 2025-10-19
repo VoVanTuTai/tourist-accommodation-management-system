@@ -1,0 +1,19 @@
+<h2>Thay đổi trạng thái phòng</h2>
+
+<form action="/phong/status" method="POST">
+  <input type="hidden" name="MaPhong" value="<%= phong.MaPhong %>">
+
+  <p><strong>Tên phòng:</strong> <%= phong.TenPhong %></p>
+  <p><strong>Trạng thái hiện tại:</strong> 
+     <%= phong.TinhTrang === 1 ? "Còn trống" : phong.TinhTrang === 0 ? "Đã đặt" : "Bảo trì" %>
+  </p>
+
+  <label>Chọn trạng thái mới:</label><br>
+  <select name="TinhTrang">
+    <option value="1">Còn trống</option>
+    <option value="0">Đã đặt</option>
+    <option value="2">Đang bảo trì</option>
+  </select><br><br>
+
+  <button type="submit">Cập nhật</button>
+</form>

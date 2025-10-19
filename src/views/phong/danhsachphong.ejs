@@ -1,5 +1,3 @@
-
-
 <h2>Danh sách phòng của nhà cung cấp</h2>
 
 <table border="1" cellspacing="0" cellpadding="8">
@@ -7,7 +5,7 @@
     <tr>
       <th>Mã phòng</th>
       <th>Tên phòng</th>
-      <th>Loại</th>
+      <th>Loại phòng</th>
       <th>Giá</th>
       <th>Sức chứa</th>
       <th>Tình trạng</th>
@@ -23,14 +21,28 @@
         <tr>
           <td><%= room.MaPhong %></td>
           <td><%= room.TenPhong %></td>
-          <td><%= room.MaLoai %></td>
+          <td><%= room.TenLoai %></td> <!-- ✅ Hiển thị tên loại -->
           <td><%= room.Gia.toLocaleString() %>₫</td>
           <td><%= room.SucChua %></td>
-          <td><%= room.TinhTrang === 1 ? "Còn trống" : "Đã đặt" %></td>
-          <td><img src="/images/<%= room.HinhAnh %>" width="80" alt="Ảnh phòng"></td>
+          <td>
+            <% if (room.TinhTrang == 1) { %>
+              <span style="color:green;">Còn trống</span>
+            <% } else if (room.TinhTrang == 0) { %>
+              <span style="color:red;">Đã đặt</span>
+            <% } else { %>
+              <span style="color:orange;">Bảo trì</span>
+            <% } %>
+          </td>
+          <td>
+            <% if (room.HinhAnh) { %>
+              <img src="/images/<%= room.HinhAnh %>" width="80" alt="Ảnh phòng">
+            <% } else { %>
+              <span>Chưa có ảnh</span>
+            <% } %>
+          </td>
           <td>
             <a href="/phong/edit/<%= room.MaPhong %>">✏️ Sửa</a> |
-            <a href="/phong/delete/<%= room.MaPhong %>" onclick="return confirm('Bạn có chắc muốn xóa?')">🗑️ Xóa</a>
+            <a href="/phong/status/<%= room.MaPhong %>">🔄 Trạng thái</a>
           </td>
         </tr>
       <% }) %>

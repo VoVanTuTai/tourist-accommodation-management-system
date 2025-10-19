@@ -1,0 +1,66 @@
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Danh sách đơn đặt phòng</h2>
+  
+    <!-- Bộ lọc -->
+    <div class="filter-bar mb-3 d-flex justify-content-center">
+      <form method="GET" action="/khachhang/don-dat-phong" class="d-flex gap-2">
+        <select name="trangthai" class="form-select" style="width: 250px;">
+          <option value="">-- Tất cả trạng thái --</option>
+          <option value="dat">Đơn đã đặt</option>
+          <option value="dang_su_dung">Đơn đang sử dụng</option>
+          <option value="hoan_tat">Đơn đã hoàn tất</option>
+          <option value="huy">Đơn đã hủy</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Lọc</button>
+      </form>
+    </div>
+  
+    <!-- Bảng danh sách -->
+    <table class="table table-striped text-center">
+      <thead>
+        <tr>
+          <th>Mã đơn</th>
+          <th>Tên chỗ ở</th>
+          <th>Ngày đặt</th>
+          <th>Ngày nhận</th>
+          <th>Ngày trả</th>
+          <th>Tổng tiền</th>
+          <th>Trạng thái</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (donDatPhongList.length > 0) { %>
+          <% donDatPhongList.forEach((don) => { %>
+            <tr>
+              <td><%= don.id %></td>
+              <td><%= don.tenChoO %></td>
+              <td><%= don.ngayDat.toLocaleDateString() %></td>
+              <td><%= don.ngayNhan.toLocaleDateString() %></td>
+              <td><%= don.ngayTra.toLocaleDateString() %></td>
+              <td><%= don.tongTien.toLocaleString() %> ₫</td>
+              <td>
+                <% if (don.trangThai === 'dat') { %>
+                  <span class="badge bg-primary">Đã đặt</span>
+                <% } else if (don.trangThai === 'dang_su_dung') { %>
+                  <span class="badge bg-warning text-dark">Đang sử dụng</span>
+                <% } else if (don.trangThai === 'hoan_tat') { %>
+                  <span class="badge bg-success">Hoàn tất</span>
+                <% } else if (don.trangThai === 'huy') { %>
+                  <span class="badge bg-danger">Đã hủy</span>
+                <% } %>
+              </td>
+              <td>
+                <a href="/khachhang/don-dat-phong/<%= don.id %>" class="btn btn-info btn-sm">Chi tiết</a>
+              </td>
+            </tr>
+          <% }) %>
+        <% } else { %>
+          <tr>
+            <td colspan="8" class="text-muted">Không có đơn đặt phòng nào.</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+  
