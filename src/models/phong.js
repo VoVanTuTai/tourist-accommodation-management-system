@@ -1,7 +1,8 @@
 const db = require("../../config/db");
 
-// Lấy danh sách phòng theo NCC
-exports.getPhongByNCC = (maNhaCungCap, callback) => {
+// src/models/phong.js
+
+exports.getPhongByNCC = async (maNhaCungCap) => {
   const sql = `
     SELECT 
       p.MaPhong,
@@ -11,62 +12,48 @@ exports.getPhongByNCC = (maNhaCungCap, callback) => {
       p.TinhTrang,
       p.HinhAnh,
       p.MaLoai,
-      lp.TenLoai,              -- ✅ Lấy tên loại phòng từ bảng LoaiPhong
+      lp.TenLoai,
       p.MaNhaCungCap
-    FROM Phong p
-    JOIN LoaiPhong lp ON p.MaLoai = lp.MaLoai
+    FROM phong p
+    JOIN loaiphong lp ON p.MaLoai = lp.MaLoai
     WHERE p.MaNhaCungCap = ?
   `;
-  db.query(sql, [maNhaCungCap], callback);
+  const [rows] = await db.execute(sql, [maNhaCungCap]);
+  return rows;
 };
 
-// Lấy thông tin 1 phòng
-exports.getPhongById = (maPhong, callback) => {
-  const sql = "SELECT * FROM Phong WHERE MaPhong = ?";
-  db.query(sql, [maPhong], callback);
+exports.getPhongById = async (maPhong) => {
+  const [rows] = await db.execute("SELECT * FROM phong WHERE MaPhong = ?", [maPhong]);
+  return rows;
 };
 
-// Thêm phòng
-exports.addPhong = (data, callback) => {
+exports.addPhong = async (data) => {
   const sql = `
-    INSERT INTO Phong (TenPhong, MaLoai, Gia, SucChua, TinhTrang, HinhAnh, MaNhaCungCap)
+    INSERT INTO phong (TenPhong, MaLoai, Gia, SucChua, TinhTrang, HinhAnh, MaNhaCungCap)
     VALUES (?, ?, ?, ?, ?, ?, ?)
   `;
   const values = [
-    data.TenPhong,
-    data.MaLoai,
-    data.Gia,
-    data.SucChua,
-    data.TinhTrang,
-    data.HinhAnh,
-    data.MaNhaCungCap
+    data.TenPhong, data.MaLoai, data.Gia,
+    data.SucChua, data.TinhTrang, data.HinhAnh, data.MaNhaCungCap
   ];
-  db.query(sql, values, callback);
+  await db.execute(sql, values);
 };
 
-// Cập nhật phòng
-exports.updatePhong = (data, callback) => {
+exports.updatePhong = async (data) => {
   const sql = `
-    UPDATE Phong
+    UPDATE phong
     SET TenPhong=?, MaLoai=?, Gia=?, SucChua=?, TinhTrang=?, HinhAnh=?
     WHERE MaPhong=?
   `;
   const values = [
-    data.TenPhong,
-    data.MaLoai,
-    data.Gia,
-    data.SucChua,
-    data.TinhTrang,
-    data.HinhAnh,
-    data.MaPhong
+    data.TenPhong, data.MaLoai, data.Gia,
+    data.SucChua, data.TinhTrang, data.HinhAnh, data.MaPhong
   ];
-  db.query(sql, values, callback);
+  await db.execute(sql, values);
 };
 
-// Cập nhật trạng thái phòng
-exports.updateTrangThaiPhong = (maPhong, tinhTrang, callback) => {
-  const sql = "UPDATE Phong SET TinhTrang=? WHERE MaPhong=?";
-  db.query(sql, [tinhTrang, maPhong], callback);
+exports.updateTrangThaiPhong = async (maPhong, tinhTrang) => {
+  await db.execute("UPDATE phong SET TinhTrang=? WHERE MaPhong=?", [tinhTrang, maPhong]);
 };
 
 

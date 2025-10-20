@@ -9,7 +9,7 @@
 
   <!-- Loại phòng -->
   <label>Loại phòng:</label><br>
-  <<label>Loại phòng:</label><br>
+  <label>Loại phòng:</label><br>
   <select name="MaLoai" required>
     <% loaiPhongs.forEach(lp => { %>
       <option value="<%= lp.MaLoai %>" 
@@ -17,7 +17,7 @@
         <%= lp.TenLoai %>
       </option>
     <% }) %>
-  </select><br><br>
+  </select><br>
 
   <!-- Giá -->
   <label>Giá (VND):</label><br>

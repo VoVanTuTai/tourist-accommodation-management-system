@@ -1,0 +1,63 @@
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Chi tiết đơn đặt phòng</h2>
+  
+    <div class="card p-4 shadow-sm">
+      <h5>🧾 Thông tin đơn</h5>
+      <p><strong>Mã đơn:</strong> <%= don.MaDon %></p>
+      <p><strong>Khách hàng:</strong> <%= don.TenKH %> (<%= don.Email %> - <%= don.SDT %>)</p>
+      <p><strong>Ngày đặt:</strong> <%= new Date(don.NgayDat).toLocaleDateString() %></p>
+      <p><strong>Ngày nhận:</strong> <%= new Date(don.NgayNhan).toLocaleDateString() %></p>
+      <p><strong>Ngày trả:</strong> <%= new Date(don.NgayTra).toLocaleDateString() %></p>
+      <p><strong>Tổng tiền:</strong> <%= don.TongTien.toLocaleString() %> ₫</p>
+  
+      <p>
+        <strong>Trạng thái:</strong>
+        <% if (don.TrangThai === 0) { %>
+          <span class="badge bg-primary">Đã đặt</span>
+        <% } else if (don.TrangThai === 1) { %>
+          <span class="badge bg-warning text-dark">Đang sử dụng</span>
+        <% } else if (don.TrangThai === 2) { %>
+          <span class="badge bg-success">Hoàn tất</span>
+        <% } else if (don.TrangThai === 3) { %>
+          <span class="badge bg-danger">Đã hủy</span>
+        <% } %>
+      </p>
+    </div>
+  
+    <hr>
+  
+    <h5 class="mt-4">🏨 Danh sách phòng trong đơn</h5>
+    <table class="table table-striped text-center">
+      <thead>
+        <tr>
+          <th>Tên phòng</th>
+          <th>Loại phòng</th>
+          <th>Nhà cung cấp</th>
+          <th>Giá</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% danhSachPhong.forEach(phong => { %>
+          <tr>
+            <td><%= phong.TenPhong %></td>
+            <td><%= phong.TenLoai %></td>
+            <td><%= phong.TenNCC %></td>
+            <td><%= phong.Gia ? phong.Gia.toLocaleString() : "0" %> ₫</td>
+
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  
+    <div class="mt-4 text-center">
+      <% if (don.TrangThai === 0) { %>
+        <a href="/khachhang/don-dat-phong/huy/<%= don.MaDon %>" 
+           class="btn btn-danger"
+           onclick="return confirm('Bạn có chắc chắn muốn hủy đơn này không?');">
+          Hủy đơn
+        </a>
+      <% } %>
+      <a href="/khachhang/don-dat-phong" class="btn btn-secondary">Quay lại danh sách</a>
+    </div>
+  </div>
+  
