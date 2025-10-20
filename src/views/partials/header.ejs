@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!-- views/partials/header.ejs -->
 <header class="header">
   <div class="container">
@@ -5,6 +6,14 @@
       <a href="/" class="logo">🏡 ThieuNu Travel</a>
       <nav class="main-nav">
         <ul>
+=======
+<header>
+<<<<<<< Updated upstream
+    <nav class="navbar">
+      <div class="container">
+        <a href="/" class="logo">🏨 Tourist Management</a>
+        <ul class="nav-links">
+>>>>>>> VoVanTuTai
           <li><a href="/">Trang chủ</a></li>
           <li><a href="/phong">Phòng</a></li>
           <li><a href="/lienhe">Liên hệ</a></li>
@@ -12,6 +21,7 @@
             <li><a href="/admin/dashboard">Quản trị</a></li>
           <% } %>
         </ul>
+<<<<<<< HEAD
       </nav>
     </div>
 
@@ -112,3 +122,42 @@
     margin-right: 6px;
   }
 </style>
+=======
+      </div>
+    </nav>
+  </header>
+  
+=======
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/">🏨 Hệ thống du lịch</a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li>
+          <li class="nav-item"><a class="nav-link" href="/phong">Phòng</a></li>
+          <li class="nav-item"><a class="nav-link" href="/lienhe">Liên hệ</a></li>
+
+          <% if (typeof session !== 'undefined' && session.user) { %>
+            <% if (session.user.PhanQuyen === 'Admin') { %>
+              <li class="nav-item"><a class="nav-link" href="/admin/dashboard">Quản trị</a></li>
+            <% } %>
+            <li class="nav-item"><a class="nav-link" href="/khachhang/logout">Đăng xuất</a></li>
+            <li class="nav-item">
+              <span class="nav-link disabled">👋 Xin chào, <%= session.user.TenKH || 'Người dùng' %></span>
+            </li>
+          <% } else { %>
+            <li class="nav-item"><a class="nav-link" href="/khachhang/dangnhap">Đăng nhập</a></li>
+            <li class="nav-item"><a class="nav-link" href="/khachhang/dangky">Đăng ký</a></li>
+          <% } %>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+>>>>>>> Stashed changes
+>>>>>>> VoVanTuTai

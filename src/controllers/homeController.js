@@ -3,6 +3,7 @@ exports.getHomePage = async (req, res) => {
     try {
       const topRooms = await Phong.getTopBookedRooms();
       res.render('home', { 
+        layout: 'layout',
         title: 'Trang chủ',
         topRooms
       });
@@ -11,3 +12,4 @@ exports.getHomePage = async (req, res) => {
       res.status(500).send("Lỗi tải trang chủ");
     }
   };
+  

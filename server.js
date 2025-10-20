@@ -12,6 +12,7 @@ const khachhangRoutes = require('./src/routes/khachhangRoutes');
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "src", "views"));
 app.use(expressLayouts);
+app.set('layout extractLocals', true);
 //app.set("layout", "layout"); // layout mặc định: src/views/layout.ejs
 
 // Middleware
@@ -19,6 +20,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "src", "public")));
 app.use("/", homeRoutes);
+<<<<<<< HEAD
+=======
+<<<<<<< Updated upstream
+=======
+>>>>>>> VoVanTuTai
 // ======= Kết nối CSDL =======
 const dbConfig = {
   host: 'localhost',
@@ -29,6 +35,10 @@ const dbConfig = {
 // ======= Tạo session store =======
 const sessionStore = new MySQLStore(dbConfig);
 // ======= Cấu hình session =======
+<<<<<<< HEAD
+=======
+// ======= Cấu hình session =======
+>>>>>>> VoVanTuTai
 app.use(
   session({
     key: 'thieunu_session',
@@ -41,12 +51,23 @@ app.use(
     }
   })
 );
+<<<<<<< HEAD
+// ======= Cho phép dùng session trong EJS =======
+app.use((req, res, next) => {
+  res.locals.session = req.session;
+=======
+app.use((req, res, next) => {
+  res.locals.session = req.session || {};
+>>>>>>> VoVanTuTai
+  next();
+});
+
 // ======= Cho phép dùng session trong EJS =======
 app.use((req, res, next) => {
   res.locals.session = req.session;
   next();
 });
-
+>>>>>>> Stashed changes
 
 // ✅ Sử dụng routes
 app.use('/khachhang', khachhangRoutes);
