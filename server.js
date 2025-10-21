@@ -11,6 +11,7 @@ const khachhangRoutes = require("./src/routes/khachhangRoutes");
 const timkiemRoutes = require("./src/routes/timkiemRoutes");
 const diachiRoutes = require('./src/routes/diachiRoutes');
 const loaiphongRoutes = require('./src/routes/loaiphongRoutes');
+const nhaCungCapRoutes = require('./src/routes/nhaCungCapRoutes');
 const app = express();
 
 

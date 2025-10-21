@@ -1,13 +1,17 @@
+<% const f = formData || {}; %>
 <div class="wrap-register" style="max-width: 700px; margin: 0 auto; padding: 50px 0;">
     <div class="partner-register-container py-3 px-4 border rounded-3">
         <h3 class="modal-title text-uppercase text-center">Thông Tin Đăng Ký</h3>
-        <form action="/nhacungcap/dangky" method="POST" id="partner-register-form" class="py-3 px-3">
+        <form
+            action="/nhacungcap/dangky" method="POST"
+            id="partner-register-form" class="py-3 px-3"
+            enctype="multipart/form-data">
             <div class="row mb-3">
                 <div class="col-3">
                     <label for="TenNCC" class="form-label">Tên NCC</label>
                 </div>
                 <div class="col-9">
-                    <input type="text" class="form-control" name="TenNCC" id="TenNCC" value="<% if (formData) formData.TenNCC %>" />
+                    <input type="text" class="form-control" name="TenNCC" id="TenNCC" value="<%= f.TenNCC || '' %>" />
                     <span class="text-danger d-block text-error-TenNCC">
                         <% if (errors) { %>
                             <%= errors.TenNCC %>
@@ -21,7 +25,7 @@
                     <label for="Email" class="form-label">Email</label>
                 </div>
                 <div class="col-9">
-                    <input type="text" class="form-control" name="Email" id="Email" />
+                    <input type="text" class="form-control" name="Email" id="Email" value="<%= f.Email || '' %>" />
                     <span class="text-danger d-block text-error-email">
                         <% if (errors) { %>
                             <%= errors.Email %>
@@ -35,7 +39,7 @@
                     <label for="Phone" class="form-label">SDT</label>
                 </div>
                 <div class="col-9">
-                    <input type="text" class="form-control" name="Phone" id="Phone" />
+                    <input type="text" class="form-control" name="Phone" id="Phone" value="<%= f.Phone || '' %>" />
                     <span class="text-danger d-block text-error-phone">
                         <% if (errors) { %>
                             <%= errors.Phone %>
@@ -49,16 +53,14 @@
                     <label for="ThongTinThanhToan" class="form-label">Thông Tin Thanh Toán</label>
                 </div>
                 <div class="col-9">
-                    <select
-                        class="form-select form-select-md mb-3"
-                        name="LoaiNganHang"
-                        id="LoaiNganHang"
-                    >
-                        <option value="" selected>Select one</option>
-                        <option value="VCB">Vietcombank</option>
-                        <option value="VTB">VietinBank</option>
-                        <option value="TCB">Techcombank</option>
-                        <option value="MBB">MBBank</option>
+                    <% const banks = {"VCB": "Vietcombank", "VTB": "VietinBank", "TCB": "Techcombank", "MBB": "MBBank"}; %>
+                    <select class="form-select mb-3" name="LoaiNganHang" id="LoaiNganHang">
+                        <option value="">Select one</option>
+                        <% Object.entries(banks).forEach(([key, value]) => { %>
+                            <option value="<%= key %>" <%= f?.LoaiNganHang === key ? 'selected' : '' %>>
+                                <%= value %>
+                            </option>
+                        <% }) %>
                     </select>
                     <span class="text-danger d-block text-error-LoaiNganHang">
                         <% if (errors) { %>
@@ -66,7 +68,7 @@
                         <% } %>
                     </span>
                     <input type="text" class="form-control" name="ThongTinThanhToan" id="ThongTinThanhToan" 
-                        placeholder="e.g: 123456789"/>
+                        placeholder="e.g: 123456789" value="<%= f.ThongTinThanhToan || '' %>"/>
                     <span class="text-danger d-block text-error-ThongTinThanhToan">
                         <% if (errors) { %>
                             <%= errors.ThongTinThanhToan %>
@@ -80,16 +82,18 @@
                     <label for="LoaiHinh" class="form-label">Loại Hình</label>
                 </div>
                 <div class="col-9">
+                    <% const types = {"NhaNghi": "Nhà Nghỉ", "Homestay": "Homestay", "Hotel": "Khách Sạn", "Villa": "Villa"}; %>
                     <select
                         class="form-select form-select-md"
                         name="LoaiHinh"
                         id="LoaiHinh"
                     >
                         <option value="" selected>Select one</option>
-                        <option value="NhaNghi">Nhà Nghỉ</option>
-                        <option value="Homestay">Homestay</option>
-                        <option value="Hotel">Khách Sạn</option>
-                        <option value="Villa">Villa</option>
+                        <% Object.entries(types).forEach(([key, value]) => { %>
+                            <option value="<%= key %>" <%= f?.LoaiHinh === key ? 'selected' : '' %>>
+                                <%= value %>
+                            </option>
+                        <% }) %>
                     </select>
                     <span class="text-danger d-block text-error-LoaiHinh">
                         <% if (errors) { %>
@@ -105,7 +109,11 @@
                 </div>
                 <div class="col-9">
                     <input type="file" class="form-control" name="GiayPhepKD" id="GiayPhepKD" />
-                    <span class="text-danger d-block text-error-GiayPhepKD"></span>
+                    <span class="text-danger d-block text-error-GiayPhepKD">
+                        <% if (errors) { %>
+                            <%= errors.GiayPhepKD %>
+                        <% } %>
+                    </span>
                 </div>
             </div>
 

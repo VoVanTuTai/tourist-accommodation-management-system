@@ -1,6 +1,5 @@
 const db = require("../../config/db");
 
-
 // Bổ sung column LoaiNganHang
 exports.addColumnLoaiNganHang = (callback) => {
   const sql = "ALTER TABLE NhaCungCap ADD COLUMN LoaiNganHang VARCHAR(255)";
@@ -12,7 +11,7 @@ exports.addColumnLoaiNganHang = (callback) => {
 exports.addNhaCungCap = async(data, callback) => {
   const sql = `
     INSERT INTO NhaCungCap (TenNCC, LoaiNganHang, ThongTinThanhToan, LoaiHinh, GiayPhepKD)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?)
   `;
   const values = [
     data.TenNCC,
@@ -21,6 +20,6 @@ exports.addNhaCungCap = async(data, callback) => {
     data.LoaiHinh,
     data.GiayPhepKD
   ];
-  const result = await db.execute(sql, values);
+  const [result] = await db.execute(sql, values);
   return result;
 };
