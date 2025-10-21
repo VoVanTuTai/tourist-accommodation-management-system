@@ -3,6 +3,7 @@ const path = require("path");
 const expressLayouts = require("express-ejs-layouts");
 const phongRoutes = require("./src/routes/phongRoutes");
 const homeRoutes = require("./src/routes/homeRoutes");
+const nhaCungCapRoutes = require("./src/routes/nhaCungCapRoutes"); // ✅ Import nhà cung cấp routes
 
 // ✅ Import routes
 const khachhangRoutes = require('./src/routes/khachhangRoutes');
@@ -25,6 +26,7 @@ app.use("/", homeRoutes);
 app.use('/khachhang', khachhangRoutes);
 // Routes
 app.use("/phong", phongRoutes);
+app.use("/nhacungcap", nhaCungCapRoutes);
 
 // Khởi động server
 const PORT = process.env.PORT || 3000;

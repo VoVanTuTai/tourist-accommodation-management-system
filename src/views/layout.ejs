@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tourist Accommodation Management</title>
   <link rel="stylesheet" href="/css/style.css" />
+  <!-- Link CSS riêng (nếu có) -->
+  <% if (typeof css !== 'undefined' && css) { %>
+    <link rel="stylesheet" href="<%= css %>" />
+  <% } %>
+
 </head>
 <body>
   <%- include("partials/header") %>
@@ -14,5 +19,14 @@
   </main>
 
   <%- include("partials/footer") %>
+
+  <!-- Link JS riêng (nếu có) -->
+  <% if (typeof js !== 'undefined' && js && js.length) { %>
+    <script src="<%= js %>"></script>
+    <% js.forEach(function(file) { %>
+      <script src="<%= file %>"></script>
+    <% }) %>
+  <% } %>
+
 </body>
 </html>
