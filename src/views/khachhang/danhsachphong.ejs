@@ -9,42 +9,16 @@
 
   <% if (phongList && phongList.length > 0) { %>
 
-    <% if (query.giaMax) { %>
+    <% if (query.giaMin || query.giaMax) { %>
       <p class="text-muted text-center">
-        Kết quả cho phòng có giá ≤ <%= parseInt(query.giaMax).toLocaleString() %> ₫
+        Kết quả cho phòng có giá từ 
+        <%= parseInt(query.giaMin || 0).toLocaleString() %> ₫ 
+        đến <%= parseInt(query.giaMax || 0).toLocaleString() %> ₫
       </p>
     <% } %>
 
-    <!-- Bộ lọc sắp xếp -->
-    <div class="d-flex justify-content-end mb-3">
-      <form method="get" action="/timkiem">
-        <% Object.keys(query || {}).forEach(key => { 
-             if (key !== 'sortBy' && query[key]) { %>
-          <input type="hidden" name="<%= key %>" value="<%= query[key] %>">
-        <% } }) %>
-
-        <select name="sortBy" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
-          <option value="">-- Sắp xếp theo --</option>
-          <option value="giaTang" <%= query.sortBy === 'giaTang' ? 'selected' : '' %>>Giá tăng dần</option>
-          <option value="giaGiam" <%= query.sortBy === 'giaGiam' ? 'selected' : '' %>>Giá giảm dần</option>
-          <option value="danhGiaCao" <%= query.sortBy === 'danhGiaCao' ? 'selected' : '' %>>Đánh giá cao nhất</option>
-          <option value="danhGiaThap" <%= query.sortBy === 'danhGiaThap' ? 'selected' : '' %>>Đánh giá thấp nhất</option>
-        </select>
-      </form>
-    </div>
-
-    <!-- Xử lý sắp xếp đánh giá tại client -->
-    <% 
-      let list = phongList.slice();
-      if (query.sortBy === 'giaTang') list.sort((a, b) => a.Gia - b.Gia);
-      else if (query.sortBy === 'giaGiam') list.sort((a, b) => b.Gia - a.Gia);
-      else if (query.sortBy === 'danhGiaCao') list.sort((a, b) => b.DanhGia - a.DanhGia);
-      else if (query.sortBy === 'danhGiaThap') list.sort((a, b) => a.DanhGia - b.DanhGia);
-    %>
-
-    <!-- Danh sách phòng -->
     <div class="row">
-      <% list.forEach(phong => { %>
+      <% phongList.forEach(phong => { %>
         <div class="col-md-4 mb-4">
           <div class="card h-100 shadow-sm">
             <img src="<%= phong.HinhAnh ? '/uploads/' + phong.HinhAnh : '/public/images/no-image.jpg' %>"

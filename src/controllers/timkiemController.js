@@ -5,18 +5,19 @@ const db = require('../../config/db');
 // =============================
 exports.timKiemPhong = async (req, res) => {
   try {
-    let { maLoai, maTinh, maXa, giaMax, checkin, checkout, sortBy } = req.query;
+    let { maLoai, maTinh, maXa, giaMin, giaMax, checkin, checkout } = req.query;
 
+    giaMin = giaMin ? parseFloat(giaMin) : 0;
     giaMax = giaMax ? parseFloat(giaMax) : Number.MAX_SAFE_INTEGER;
-    if (giaMax < 0) {
+
+    if (giaMin < 0 || giaMax < 0 || giaMin > giaMax) {
       return res.render('khachhang/danhsachphong', {
         phongList: [],
-        message: 'Giá không hợp lệ!',
+        message: 'Khoảng giá không hợp lệ!',
         query: req.query
       });
     }
 
-    // 🔹 Câu truy vấn cơ bản
     let query = `
       SELECT 
         p.MaPhong, p.TenPhong, p.MaLoai, p.Gia, p.HinhAnh, p.SucChua, 
@@ -31,7 +32,6 @@ exports.timKiemPhong = async (req, res) => {
     `;
     const params = [];
 
-    // 🔹 Lọc theo các tiêu chí
     if (maLoai && maLoai !== '') {
       query += ` AND p.MaLoai = ?`;
       params.push(maLoai);
@@ -44,12 +44,11 @@ exports.timKiemPhong = async (req, res) => {
       query += ` AND xa.MaXa = ?`;
       params.push(maXa);
     }
-    if (giaMax) {
-      query += ` AND p.Gia <= ?`;
-      params.push(giaMax);
+    if (giaMin || giaMax) {
+      query += ` AND p.Gia BETWEEN ? AND ?`;
+      params.push(giaMin, giaMax);
     }
 
-    // Không sắp xếp theo DanhGia ở đây, chỉ giá mặc định
     query += ` ORDER BY p.Gia ASC`;
 
     const [rows] = await db.execute(query, params);
@@ -62,7 +61,6 @@ exports.timKiemPhong = async (req, res) => {
       });
     }
 
-    // Ép kiểu DanhGia thành số
     rows.forEach(p => {
       p.DanhGia = Number(p.DanhGia) || 0;
     });
