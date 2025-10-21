@@ -11,6 +11,7 @@ const khachhangRoutes = require("./src/routes/khachhangRoutes");
 const timkiemRoutes = require("./src/routes/timkiemRoutes");
 const diachiRoutes = require('./src/routes/diachiRoutes');
 const loaiphongRoutes = require('./src/routes/loaiphongRoutes');
+const nhaCungCapRoutes = require('./src/routes/nhaCungCapRoutes');
 const app = express();
 
 
@@ -61,6 +62,8 @@ app.use("/khachhang", khachhangRoutes);
 app.use("/timkiem", timkiemRoutes);
 app.use('/api', diachiRoutes);
 app.use('/api/loaiphong', loaiphongRoutes);
+app.use("/nhacungcap", nhaCungCapRoutes);
+
 // ====== Khởi động server ======
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>

@@ -23,6 +23,15 @@
 
   <!-- Footer chung -->
   <%- include("partials/footer") %>
+
+  <!-- Link JS riêng (nếu có) -->
+  <% if (typeof js !== 'undefined' && js && js.length) { %>
+    <script src="<%= js %>"></script>
+    <% js.forEach(function(file) { %>
+      <script src="<%= file %>"></script>
+    <% }) %>
+  <% } %>
+
 </body>
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
