@@ -11,6 +11,7 @@ exports.getPhongByNCC = async (maNhaCungCap) => {
       p.SucChua,
       p.TinhTrang,
       p.HinhAnh,
+      p.MaDiaChi
       p.MaLoai,
       lp.TenLoai,
       p.MaNhaCungCap
@@ -29,7 +30,7 @@ exports.getPhongById = async (maPhong) => {
 
 exports.addPhong = async (data) => {
   const sql = `
-    INSERT INTO phong (TenPhong, MaLoai, Gia, SucChua, TinhTrang, HinhAnh, MaNhaCungCap)
+    INSERT INTO phong (TenPhong, MaLoai, Gia, SucChua, TinhTrang, HinhAnh,MaDiaChi, MaNhaCungCap)
     VALUES (?, ?, ?, ?, ?, ?, ?)
   `;
   const values = [
@@ -42,12 +43,12 @@ exports.addPhong = async (data) => {
 exports.updatePhong = async (data) => {
   const sql = `
     UPDATE phong
-    SET TenPhong=?, MaLoai=?, Gia=?, SucChua=?, TinhTrang=?, HinhAnh=?
+    SET TenPhong=?, MaLoai=?, Gia=?, SucChua=?, TinhTrang=?, HinhAnh=? MaDiaChi=?
     WHERE MaPhong=?
   `;
   const values = [
     data.TenPhong, data.MaLoai, data.Gia,
-    data.SucChua, data.TinhTrang, data.HinhAnh, data.MaPhong
+    data.SucChua, data.TinhTrang, data.HinhAnh,data.MaDiaChi, data.MaPhong
   ];
   await db.execute(sql, values);
 };

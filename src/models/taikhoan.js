@@ -1,11 +1,7 @@
 const dbPromise = require('../../config/db');
 
 const TaiKhoan = {
-  /**
-   * 🔹 Tìm tài khoản theo email (tên đăng nhập)
-   * @param {string} email
-   * @returns {object|null} - Thông tin tài khoản hoặc null nếu không có
-   */
+  // === Giữ nguyên code cũ ===
   async findByTaiKhoan(email) {
     try {
       const db = await dbPromise;
@@ -13,24 +9,13 @@ const TaiKhoan = {
         'SELECT * FROM TaiKhoan WHERE TaiKhoan = ? LIMIT 1',
         [email]
       );
-
-      // ✅ Luôn trả về 1 object hoặc null
-      if (rows && rows.length > 0) {
-        return rows[0];
-      } else {
-        return null;
-      }
+      return rows && rows.length > 0 ? rows[0] : null;
     } catch (err) {
       console.error('⚠️ Lỗi trong findByTaiKhoan:', err);
-      return null; // tránh văng lỗi ra controller
+      return null;
     }
   },
 
-  /**
-   * 🔹 Tạo tài khoản mới (dùng khi đăng ký)
-   * @param {object} data - chứa các trường { TaiKhoan, MatKhau, PhanQuyen, MaKhachHang, MaAdmin }
-   * @returns {number} - ID tài khoản mới tạo
-   */
   async create({
     TaiKhoan,
     MatKhau,
@@ -54,7 +39,22 @@ const TaiKhoan = {
       return result.insertId;
     } catch (err) {
       console.error('⚠️ Lỗi trong create TaiKhoan:', err);
-      throw err; // để controller bắt lỗi và hiển thị đúng
+      throw err;
+    }
+  },
+
+  // === 🔹 Hàm mới: cập nhật mật khẩu nếu người dùng đổi ===
+  async updatePasswordByMaTK(maTK, newHashPassword) {
+    try {
+      const db = await dbPromise;
+      const [result] = await db.execute(
+        `UPDATE TaiKhoan SET MatKhau = ? WHERE MaTaiKhoan = ?`,
+        [newHashPassword, maTK]
+      );
+      return result.affectedRows;
+    } catch (err) {
+      console.error('⚠️ Lỗi trong updatePasswordByMaTK:', err);
+      throw err;
     }
   }
 };

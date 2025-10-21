@@ -1,0 +1,106 @@
+<form action="/timkiem" method="get" class="container bg-light p-3 rounded shadow-sm mt-3">
+  <div class="row g-3 align-items-end">
+
+    <!-- Loại phòng -->
+    <div class="col-md-3">
+      <label class="form-label fw-semibold">Loại phòng</label>
+      <select name="maLoai" class="form-select" id="loaiPhong">
+        <option value="">-- Chọn loại phòng --</option>
+      </select>
+    </div>
+
+    <!-- Tỉnh -->
+    <div class="col-md-3">
+      <label class="form-label fw-semibold">Tỉnh / Thành phố</label>
+      <select name="maTinh" class="form-select" id="tinh">
+        <option value="">-- Chọn tỉnh --</option>
+      </select>
+    </div>
+
+    <!-- Xã -->
+    <div class="col-md-3">
+      <label class="form-label fw-semibold">Xã / Huyện</label>
+      <select name="maXa" class="form-select" id="xa" disabled>
+        <option value="">-- Chọn xã / huyện --</option>
+      </select>
+    </div>
+
+    <!-- Giá tối đa -->
+    <div class="col-md-3">
+      <label class="form-label fw-semibold">Giá tối đa (₫)</label>
+      <input type="range" id="giaMax" name="giaMax" min="0" max="10000000" step="50000" value="2000000" class="form-range">
+      <p class="text-center mt-1">Từ 0 ₫ đến <span id="giaMaxVal">2,000,000</span> ₫</p>
+    </div>
+
+    <!-- Ngày -->
+    <div class="col-md-2">
+      <label class="form-label fw-semibold">Nhận phòng</label>
+      <input type="date" name="checkin" class="form-control">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label fw-semibold">Trả phòng</label>
+      <input type="date" name="checkout" class="form-control">
+    </div>
+
+    <div class="col-md-2 d-grid">
+      <button type="submit" class="btn btn-primary">🔍 Tìm kiếm</button>
+    </div>
+  </div>
+</form>
+
+<script>
+  // Load động loại phòng & tỉnh
+  async function loadSelectData() {
+    const [loaiPhongRes, tinhRes] = await Promise.all([
+      fetch('/api/loaiphong'),
+      fetch('/api/tinhs')
+    ]);
+    const loaiPhongs = await loaiPhongRes.json();
+    const tinhs = await tinhRes.json();
+
+    const loaiPhongSel = document.getElementById('loaiPhong');
+    loaiPhongs.forEach(lp => {
+      const opt = document.createElement('option');
+      opt.value = lp.MaLoai;
+      opt.textContent = lp.TenLoai;
+      loaiPhongSel.appendChild(opt);
+    });
+
+    const tinhSel = document.getElementById('tinh');
+    tinhs.forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.MaTinh;
+      opt.textContent = t.TenTinh;
+      tinhSel.appendChild(opt);
+    });
+  }
+
+  // Load xã khi chọn tỉnh
+  document.getElementById('tinh').addEventListener('change', async function() {
+    const maTinh = this.value;
+    const xaSel = document.getElementById('xa');
+    xaSel.innerHTML = '<option value="">-- Chọn xã / huyện --</option>';
+    xaSel.disabled = true;
+
+    if (!maTinh) return;
+
+    const res = await fetch(`/api/xas/${maTinh}`);
+    const xas = await res.json();
+    xas.forEach(x => {
+      const opt = document.createElement('option');
+      opt.value = x.MaXa;
+      opt.textContent = x.TenXa;
+      xaSel.appendChild(opt);
+    });
+    xaSel.disabled = false;
+  });
+
+  // Cập nhật giá tối đa
+  const giaMax = document.getElementById('giaMax');
+  const giaMaxVal = document.getElementById('giaMaxVal');
+  giaMax.addEventListener('input', () => {
+    giaMaxVal.textContent = parseInt(giaMax.value).toLocaleString();
+  });
+
+  loadSelectData();
+</script>

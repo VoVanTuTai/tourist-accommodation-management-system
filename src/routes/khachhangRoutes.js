@@ -3,6 +3,8 @@ const router = express.Router();
 
 const dangkyController = require('../controllers/dangkyController');
 const dangnhapController = require('../controllers/dangnhapController');
+const quanlytaikhoanContronller = require('../controllers/quanlythongtinController');
+const isAuthenticated = require('../middlewares/auth').isAuthenticated;
 
 router.get('/dangky', dangkyController.getRegisterPage);
 router.post('/dangky', dangkyController.register);
@@ -17,4 +19,8 @@ const donDatPhongController = require('../controllers/donDatPhongController');
 router.get('/don-dat-phong', donDatPhongController.danhSachDonDatPhong);
 router.get("/don-dat-phong/:id", donDatPhongController.chiTietDonDatPhong);
 router.get("/don-dat-phong/huy/:id", donDatPhongController.huyDonDatPhong);
+// Quản lý tài khoản
+router.get('/thongtintaikhoan', isAuthenticated, quanlytaikhoanContronller.getTaiKhoanView);
+router.post('/thongtintaikhoan', isAuthenticated, quanlytaikhoanContronller.postCapNhatTaiKhoan);
+
 module.exports = router;

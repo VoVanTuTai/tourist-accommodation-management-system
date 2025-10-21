@@ -1,0 +1,101 @@
+<!-- src/views/khachhang/thongtintaikhoan.ejs -->
+<div class="container mt-4">
+  <h2 class="mb-3">Quản lý tài khoản</h2>
+
+  <% if (error) { %>
+    <div class="alert alert-danger"><%= error %></div>
+  <% } %>
+  <% if (message) { %>
+    <div class="alert alert-success"><%= message %></div>
+  <% } %>
+
+  <% if (!profile) { %>
+    <div class="alert alert-warning">Không có dữ liệu tài khoản.</div>
+  <% } else { %>
+  <form id="formTaiKhoan" method="post" action="/khachhang/thongtintaikhoan">
+    <!-- Không cho sửa: Email -->
+    <div class="mb-3">
+      <label class="form-label">Email (không đổi)</label>
+      <input type="email" class="form-control" value="<%= profile.Email %>" disabled>
+    </div>
+
+    <!-- Cho sửa: Họ tên -->
+    <div class="mb-3">
+      <label class="form-label">Họ tên</label>
+      <input name="hoTen" type="text" class="form-control js-edit"
+             value="<%= profile.HoTen || '' %>" disabled required>
+    </div>
+
+    <!-- Cho sửa: Số điện thoại -->
+    <div class="mb-3">
+      <label class="form-label">Số điện thoại</label>
+      <input name="sdt" type="text" class="form-control js-edit"
+             value="<%= profile.SoDienThoai || '' %>" disabled required>
+    </div>
+
+    <!-- Cho sửa: Giới tính (varchar(10)) -->
+    <div class="mb-3">
+      <label class="form-label">Giới tính</label>
+      <select name="gioiTinh" class="form-select js-edit" disabled>
+        <% const gt = (profile.GioiTinh || '').toLowerCase(); %>
+        <option value="">-- Chọn --</option>
+        <option value="Nam" <%= gt === 'nam' ? 'selected' : '' %>>Nam</option>
+        <option value="Nữ" <%= gt === 'nữ' || gt === 'nu' ? 'selected' : '' %>>Nữ</option>
+        <option value="Khác" <%= gt === 'khác' || gt === 'khac' ? 'selected' : '' %>>Khác</option>
+      </select>
+    </div>
+    <!-- Optional: Đổi mật khẩu (nếu nhập) -->
+    <div class="mb-3">
+      <label class="form-label">Mật khẩu mới (tuỳ chọn)</label>
+      <input name="matKhauMoi" type="password" class="form-control js-edit"
+             placeholder="Nhập để đổi mật khẩu" disabled>
+      <div class="form-text">Để trống nếu không muốn đổi.</div>
+    </div>
+
+    <div class="d-flex gap-2">
+      <button id="btnEdit" type="button" class="btn btn-secondary">Chỉnh sửa</button>
+      <button id="btnCancel" type="button" class="btn btn-outline-secondary d-none">Hủy bỏ</button>
+      <button id="btnSubmit" type="submit" class="btn btn-primary d-none">Xác nhận</button>
+    </div>
+  </form>
+  <% } %>
+</div>
+
+<script>
+  (function () {
+    const form = document.getElementById('formTaiKhoan');
+    if (!form) return;
+
+    const editables = Array.from(form.querySelectorAll('.js-edit'));
+    const btnEdit = document.getElementById('btnEdit');
+    const btnCancel = document.getElementById('btnCancel');
+    const btnSubmit = document.getElementById('btnSubmit');
+
+    // Lưu giá trị ban đầu để khôi phục khi "Hủy bỏ"
+    const initial = {};
+    editables.forEach(inp => { initial[inp.name] = inp.value; });
+
+    function setEditing(state) {
+      editables.forEach(inp => { inp.disabled = !state; });
+      btnSubmit.classList.toggle('d-none', !state);
+      btnCancel.classList.toggle('d-none', !state);
+      btnEdit.classList.toggle('d-none', state);
+    }
+
+    btnEdit.addEventListener('click', () => setEditing(true));
+
+    btnCancel.addEventListener('click', () => {
+      // Khôi phục giá trị ban đầu & disable lại
+      editables.forEach(inp => { 
+        if (initial.hasOwnProperty(inp.name)) {
+          if (inp.tagName === 'SELECT') {
+            inp.value = initial[inp.name] || '';
+          } else {
+            inp.value = initial[inp.name] || '';
+          }
+        }
+      });
+      setEditing(false);
+    });
+  })();
+</script>
