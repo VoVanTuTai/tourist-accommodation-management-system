@@ -4,12 +4,15 @@ const expressLayouts = require("express-ejs-layouts");
 const phongRoutes = require("./src/routes/phongRoutes");
 const homeRoutes = require("./src/routes/homeRoutes");
 const session = require('express-session');
+<<<<<<< HEAD
 
 const MySQLStore = require('express-mysql-session')(session);
+=======
+const MySQLStore = require('express-mysql-session')(session);
+const app = express();
+>>>>>>> 1fdb5ff3eda91962aeb7e63361f6a430cd7a772c
 // ✅ Import routes
 const khachhangRoutes = require('./src/routes/khachhangRoutes');
-const app = express();
-
 // Thiết lập EJS + Layout
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "src", "views"));
@@ -22,8 +25,16 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "src", "public")));
 app.use("/", homeRoutes);
+<<<<<<< HEAD
 
 
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< Updated upstream
+=======
+>>>>>>> VoVanTuTai
+>>>>>>> 1fdb5ff3eda91962aeb7e63361f6a430cd7a772c
 // ======= Kết nối CSDL =======
 const dbConfig = {
   host: 'localhost',
@@ -34,7 +45,10 @@ const dbConfig = {
 // ======= Tạo session store =======
 const sessionStore = new MySQLStore(dbConfig);
 // ======= Cấu hình session =======
+<<<<<<< HEAD
+=======
 // ======= Cấu hình session =======
+>>>>>>> VoVanTuTai
 app.use(
   session({
     key: 'thieunu_session',
@@ -47,8 +61,14 @@ app.use(
     }
   })
 );
+<<<<<<< HEAD
+// ======= Cho phép dùng session trong EJS =======
+app.use((req, res, next) => {
+  res.locals.session = req.session;
+=======
 app.use((req, res, next) => {
   res.locals.session = req.session || {};
+>>>>>>> VoVanTuTai
   next();
 });
 
