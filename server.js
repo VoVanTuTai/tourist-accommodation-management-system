@@ -3,7 +3,9 @@ const path = require("path");
 const expressLayouts = require("express-ejs-layouts");
 const phongRoutes = require("./src/routes/phongRoutes");
 const homeRoutes = require("./src/routes/homeRoutes");
+const session = require('express-session');
 
+const MySQLStore = require('express-mysql-session')(session);
 // ✅ Import routes
 const khachhangRoutes = require('./src/routes/khachhangRoutes');
 const app = express();
@@ -20,8 +22,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "src", "public")));
 app.use("/", homeRoutes);
-<<<<<<< Updated upstream
-=======
+
+
 // ======= Kết nối CSDL =======
 const dbConfig = {
   host: 'localhost',
@@ -55,7 +57,6 @@ app.use((req, res, next) => {
   res.locals.session = req.session;
   next();
 });
->>>>>>> Stashed changes
 
 // ✅ Sử dụng routes
 app.use('/khachhang', khachhangRoutes);
