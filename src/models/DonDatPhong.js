@@ -104,4 +104,25 @@ const DonDatPhong = {
   }
 };
 
+exports.hienThiDonDatPhong = async (req, res) => {
+  try {
+    const userId = 1; // lấy ID khách hàng từ session
+    const trangThai = req.query.trangthai || ''; // lọc trạng thái nếu có
+
+    // Gọi model để lấy dữ liệu
+    const donDatPhongList = await DonDatPhong.getAllByUser(userId, trangThai);
+
+    // Render ra view
+    res.render('khachhang/donDatPhong', {
+      layout: 'layout',
+      title: 'Đơn đặt phòng của tôi',
+      donDatPhongList,
+      trangThai
+    });
+  } catch (err) {
+    console.error('❌ Lỗi khi hiển thị danh sách đơn:', err.message);
+    res.status(500).send('Lỗi server!');
+  }
+};
+
 module.exports = DonDatPhong;

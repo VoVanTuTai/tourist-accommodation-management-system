@@ -1,0 +1,206 @@
+<form action="/timkiem" method="get" class="container bg-light p-3 rounded shadow-sm mt-3">
+  <div class="row g-3 align-items-end">
+
+    <!-- Loại phòng -->
+    <div class="col-md-3">
+      <label class="form-label fw-semibold">Loại phòng</label>
+      <select name="maLoai" class="form-select" id="loaiPhong">
+        <option value="">-- Chọn loại phòng --</option>
+      </select>
+    </div>
+
+    <!-- Tỉnh -->
+    <div class="col-md-3">
+      <label class="form-label fw-semibold">Tỉnh / Thành phố</label>
+      <select name="maTinh" class="form-select" id="tinh">
+        <option value="">-- Chọn tỉnh --</option>
+      </select>
+    </div>
+
+    <!-- Xã -->
+    <div class="col-md-3">
+      <label class="form-label fw-semibold">Xã / Huyện</label>
+      <select name="maXa" class="form-select" id="xa" disabled>
+        <option value="">-- Chọn xã / huyện --</option>
+      </select>
+    </div>
+
+    <!-- Thanh trượt giá kép -->
+    <div class="col-md-4">
+      <label class="form-label fw-semibold">Khoảng giá (₫)</label>
+
+      <div id="price-slider" class="my-3"></div>
+
+      <div class="text-center mt-2">
+        <span id="giaMinVal" class="fw-semibold">0</span> ₫ –
+        <span id="giaMaxVal" class="fw-semibold">10,000,000</span> ₫
+      </div>
+
+      <!-- Hidden inputs gửi server -->
+      <input type="hidden" id="giaMin" name="giaMin" value="0">
+      <input type="hidden" id="giaMax" name="giaMax" value="10000000">
+    </div>
+
+    <!-- Ngày nhận/trả -->
+    <div class="col-md-2">
+      <label class="form-label fw-semibold">Nhận phòng</label>
+      <input type="date" name="checkin" class="form-control">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label fw-semibold">Trả phòng</label>
+      <input type="date" name="checkout" class="form-control">
+    </div>
+
+    <div class="col-md-2 d-grid">
+      <button type="submit" class="btn btn-primary">🔍 Tìm kiếm</button>
+    </div>
+  </div>
+</form>
+
+<!-- ========== noUiSlider ========== -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css">
+<script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
+
+<!-- ========== Script ========== -->
+<script>
+  // --- Load loại phòng & tỉnh ---
+  async function loadSelectData() {
+    const [loaiPhongRes, tinhRes] = await Promise.all([
+      fetch('/api/loaiphong'),
+      fetch('/api/tinhs')
+    ]);
+    const loaiPhongs = await loaiPhongRes.json();
+    const tinhs = await tinhRes.json();
+
+    const loaiPhongSel = document.getElementById('loaiPhong');
+    loaiPhongs.forEach(lp => {
+      const opt = document.createElement('option');
+      opt.value = lp.MaLoai;
+      opt.textContent = lp.TenLoai;
+      loaiPhongSel.appendChild(opt);
+    });
+
+    const tinhSel = document.getElementById('tinh');
+    tinhs.forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.MaTinh;
+      opt.textContent = t.TenTinh;
+      tinhSel.appendChild(opt);
+    });
+  }
+
+  // --- Load xã khi chọn tỉnh ---
+  document.getElementById('tinh').addEventListener('change', async function() {
+    const maTinh = this.value;
+    const xaSel = document.getElementById('xa');
+    xaSel.innerHTML = '<option value="">-- Chọn xã / huyện --</option>';
+    xaSel.disabled = true;
+
+    if (!maTinh) return;
+
+    const res = await fetch(`/api/xas/${maTinh}`);
+    const xas = await res.json();
+    xas.forEach(x => {
+      const opt = document.createElement('option');
+      opt.value = x.MaXa;
+      opt.textContent = x.TenXa;
+      xaSel.appendChild(opt);
+    });
+    xaSel.disabled = false;
+  });
+
+  // --- Tạo thanh kéo noUiSlider ---
+  const slider = document.getElementById('price-slider');
+  const minInput = document.getElementById('giaMin');
+  const maxInput = document.getElementById('giaMax');
+  const minLabel = document.getElementById('giaMinVal');
+  const maxLabel = document.getElementById('giaMaxVal');
+
+  noUiSlider.create(slider, {
+    start: [500000, 2000000],
+    connect: true,
+    range: {
+      'min': 0,
+      'max': 10000000
+    },
+    step: 50000,
+    behaviour: 'drag-tap',
+    format: {
+      to: value => Math.round(value),
+      from: value => Number(value)
+    }
+  });
+
+  slider.noUiSlider.on('update', (values) => {
+    const [minVal, maxVal] = values.map(Number);
+    minInput.value = minVal;
+    maxInput.value = maxVal;
+    minLabel.textContent = minVal.toLocaleString();
+    maxLabel.textContent = maxVal.toLocaleString();
+  });
+
+  // --- Khởi tạo ---
+  loadSelectData();
+</script>
+
+<!-- ========== CSS tinh chỉnh noUiSlider ========== -->
+<style>
+  /* Định dạng tổng thể */
+  #price-slider {
+    height: 6px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+  }
+
+  /* Thanh nền */
+  .noUi-target {
+    background: #e0e0e0;
+    border: none;
+    border-radius: 3px;
+    height: 6px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+  }
+
+  /* Thanh được chọn (giữa hai đầu) */
+  .noUi-connect {
+    background: linear-gradient(90deg, #007bff, #0d6efd);
+    height: 6px;
+    border-radius: 3px;
+  }
+
+  /* Tay kéo */
+  .noUi-handle {
+    width: 20px !important;
+    height: 20px !important;
+    border-radius: 50%;
+    background: #0d6efd !important;
+    border: 3px solid #fff !important;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    top: -8px !important; /* giúp nó nằm giữa thanh */
+    cursor: grab;
+    transition: transform 0.1s ease;
+  }
+
+  /* Hiệu ứng khi kéo */
+  .noUi-handle:active {
+    transform: scale(1.1);
+  }
+
+  /* Loại bỏ phần phụ mặc định của noUi */
+  .noUi-handle::before,
+  .noUi-handle::after {
+    display: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    #price-slider {
+      margin-top: 5px;
+    }
+    .noUi-handle {
+      width: 18px !important;
+      height: 18px !important;
+      top: -7px !important;
+    }
+  }
+</style>

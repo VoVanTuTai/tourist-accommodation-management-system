@@ -1,23 +1,27 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tourist Accommodation Management</title>
-  <link rel="stylesheet" href="/css/style.css" />
-  <!-- Link CSS riêng (nếu có) -->
-  <% if (typeof css !== 'undefined' && css) { %>
-    <link rel="stylesheet" href="<%= css %>" />
-  <% } %>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> title || "Trang chủ"</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <!-- Bootstrap CSS -->
+  <link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+  />
 </head>
+
 <body>
+  <!-- Header chung -->
   <%- include("partials/header") %>
 
+  <!-- Nội dung riêng của từng trang -->
   <main>
     <%- body %>
   </main>
 
+  <!-- Footer chung -->
   <%- include("partials/footer") %>
 
   <!-- Link JS riêng (nếu có) -->
@@ -29,4 +33,7 @@
   <% } %>
 
 </body>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </html>

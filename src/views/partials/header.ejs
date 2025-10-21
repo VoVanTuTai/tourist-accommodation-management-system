@@ -1,16 +1,34 @@
 <header>
-    <nav class="navbar">
-      <div class="container">
-        <a href="/" class="logo">🏨 Tourist Management</a>
-        <ul class="nav-links">
-          <li><a href="/">Trang chủ</a></li>
-          <li><a href="/rooms">Phòng</a></li>
-          <li><a href="/services">Dịch vụ</a></li>
-          <li><a href="/about">Giới thiệu</a></li>
-          <li><a href="/contact">Liên hệ</a></li>
-          <li><a href="/login">Đăng nhập</a></li>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/">🏨 Hệ thống du lịch</a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li>
+          <li class="nav-item"><a class="nav-link" href="/phong">Phòng</a></li>
+          <li class="nav-item"><a class="nav-link" href="/lienhe">Liên hệ</a></li>
+
+          <% if (typeof session !== 'undefined' && session.user) { %>
+            <% if (session.user.PhanQuyen === 'Admin') { %>
+              <li class="nav-item"><a class="nav-link" href="/admin/dashboard">Quản trị</a></li>
+            <% } %>
+            <li class="nav-item"><a class="nav-link" href="/khachhang/dangxuat">Đăng xuất</a></li>
+            <li class="nav-item">
+    <a class="nav-link" href="/khachhang/thongtintaikhoan"> 
+        👤<%= session.user.TaiKhoan || 'Người dùng' %>
+    </a>
+</li>
+          <% } else { %>
+            <li class="nav-item"><a class="nav-link" href="/khachhang/dangnhap">Đăng nhập</a></li>
+            <li class="nav-item"><a class="nav-link" href="/khachhang/dangky">Đăng ký</a></li>
+          <% } %>
         </ul>
       </div>
-    </nav>
-  </header>
-  
+    </div>
+  </nav>
+</header>

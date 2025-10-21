@@ -1,29 +1,51 @@
-<section class="hero">
+<!-- Hero Section -->
+<section class="hero py-5 bg-light text-center">
   <div class="container">
-    <h1>Chào mừng đến với hệ thống quản lý chỗ ở du lịch</h1>
-    <p>Đặt phòng dễ dàng, quản lý nhanh chóng và hiện đại.</p>
-    <a href="/phong" class="btn-primary">Xem tất cả phòng</a>
+    <h1 class="display-5 fw-bold text-primary mb-3">
+      Chào mừng đến với hệ thống quản lý chỗ ở du lịch
+    </h1>
+    <p class="lead mb-4 text-secondary">
+      Đặt phòng dễ dàng, quản lý nhanh chóng và hiện đại.
+    </p>
+    <a href="/phong" class="btn btn-primary btn-lg">
+      <i class="fa-solid fa-bed me-2"></i> Xem tất cả phòng
+    </a>
   </div>
 </section>
-
-<section class="top-rooms">
+  <%- include("partials/timkiem") %>
+<!-- Top Rooms Section -->
+<section class="top-rooms py-5">
   <div class="container">
-    <h2>🏆 Phòng được đặt nhiều nhất</h2>
+    <h2 class="text-center mb-5">🏆 Phòng được đặt nhiều nhất</h2>
 
     <% if (topRooms && topRooms.length > 0) { %>
-      <div class="room-list">
+      <div class="row g-4">
         <% topRooms.forEach(room => { %>
-          <div class="room-card">
-            <h3><%= room.ten_phong %></h3>
-            <p><%= room.mo_ta || "Không có mô tả" %></p>
-            <p>Giá: <%= room.Gia ? room.Gia.toLocaleString() : "Chưa cập nhật" %> VND/đêm</p>
-            <p><strong><%= room.so_luot_dat %></strong> lượt đặt</p>
-            <a href="/phong/<%= room.ma_phong %>" class="btn-secondary">Xem chi tiết</a>
+          <div class="col-md-4 col-sm-6">
+            <div class="card h-100 shadow-sm border-0">
+              <div class="card-body">
+                <h5 class="card-title text-primary"><%= room.ten_phong %></h5>
+                <p class="card-text text-muted">
+                  <%= room.mo_ta || "Không có mô tả" %>
+                </p>
+                <p class="mb-1">
+                  <strong>Giá:</strong> 
+                  <%= room.Gia ? room.Gia.toLocaleString() : "Chưa cập nhật" %> 
+                  <span class="text-secondary">VND/đêm</span>
+                </p>
+                <p><strong><%= room.so_luot_dat %></strong> lượt đặt</p>
+              </div>
+              <div class="card-footer bg-white border-0 text-center">
+                <a href="/phong/<%= room.ma_phong %>" class="btn btn-outline-primary w-100">
+                  Xem chi tiết
+                </a>
+              </div>
+            </div>
           </div>
         <% }) %>
       </div>
     <% } else { %>
-      <p>Chưa có dữ liệu đặt phòng.</p>
+      <p class="text-center text-muted">Chưa có dữ liệu đặt phòng.</p>
     <% } %>
   </div>
 </section>
