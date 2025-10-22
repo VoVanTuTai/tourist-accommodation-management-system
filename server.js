@@ -8,9 +8,20 @@ const MySQLStore = require("express-mysql-session")(session);
 const homeRoutes = require("./src/routes/homeRoutes");
 const phongRoutes = require("./src/routes/phongRoutes");
 const khachhangRoutes = require("./src/routes/khachhangRoutes");
+<<<<<<< HEAD
 
 const app = express();
 
+=======
+const timkiemRoutes = require("./src/routes/timkiemRoutes");
+const diachiRoutes = require('./src/routes/diachiRoutes');
+const loaiphongRoutes = require('./src/routes/loaiphongRoutes');
+const nhaCungCapRoutes = require('./src/routes/nhaCungCapRoutes');
+const app = express();
+
+
+
+>>>>>>> d1bbd95ecfb188c0c725a6b69e33ce19434c4be8
 // ====== Thiết lập EJS + Layout ======
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "src", "views"));
@@ -54,9 +65,20 @@ app.use((req, res, next) => {
 app.use("/", homeRoutes);
 app.use("/phong", phongRoutes);
 app.use("/khachhang", khachhangRoutes);
+<<<<<<< HEAD
+=======
+app.use("/timkiem", timkiemRoutes);
+app.use('/api', diachiRoutes);
+app.use('/api/loaiphong', loaiphongRoutes);
+app.use("/nhacungcap", nhaCungCapRoutes);
+>>>>>>> d1bbd95ecfb188c0c725a6b69e33ce19434c4be8
 
 // ====== Khởi động server ======
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>
   console.log(`🚀 Server chạy tại: http://localhost:${PORT}`)
+<<<<<<< HEAD
 );
+=======
+);
+>>>>>>> d1bbd95ecfb188c0c725a6b69e33ce19434c4be8

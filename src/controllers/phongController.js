@@ -44,6 +44,7 @@ exports.handleAddPhong = async (req, res) => {
       SucChua: req.body.SucChua,
       TinhTrang: req.body.TinhTrang,
       HinhAnh: imageName,
+      MaDiaChi: req.body.MaDiaChi,
       MaNhaCungCap: 1, // NCC giả định
     };
 

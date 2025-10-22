@@ -1,133 +1,4 @@
-<<<<<<< HEAD
-<!-- views/partials/header.ejs -->
-<header class="header">
-  <div class="container">
-    <div class="header-left">
-      <a href="/" class="logo">🏡 ThieuNu Travel</a>
-      <nav class="main-nav">
-        <ul>
-=======
 <header>
-<<<<<<< Updated upstream
-    <nav class="navbar">
-      <div class="container">
-        <a href="/" class="logo">🏨 Tourist Management</a>
-        <ul class="nav-links">
->>>>>>> VoVanTuTai
-          <li><a href="/">Trang chủ</a></li>
-          <li><a href="/phong">Phòng</a></li>
-          <li><a href="/lienhe">Liên hệ</a></li>
-          <% if (session.user && session.user.PhanQuyen === 'Admin') { %>
-            <li><a href="/admin/dashboard">Quản trị</a></li>
-          <% } %>
-        </ul>
-<<<<<<< HEAD
-      </nav>
-    </div>
-
-    <div class="user-menu">
-      <% if (!session.user) { %>
-        <a href="/khachhang/dangky" class="btn">Đăng ký</a>
-        <a href="/khachhang/dangnhap" class="btn">Đăng nhập</a>
-      <% } else { %>
-        <span class="username">👤 <%= session.user.TaiKhoan %> </span>
-        <a href="/khachhang/quanlytaikhoan" class="btn">Tài khoản</a>
-        <a href="/dangxuat" class="btn btn-logout">Đăng xuất</a>
-      <% } %>
-    </div>
-  </div>
-</header>
-
-<style>
-  .header {
-    background: #0077b6;
-    color: #fff;
-    padding: 10px 0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-  }
-
-  .container {
-    width: 90%;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between; /* 👈 đẩy 2 bên ra xa nhau */
-  }
-
-  /* --- Logo & Menu bên trái --- */
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 25px;
-  }
-
-  .logo {
-    color: #fff;
-    font-size: 22px;
-    font-weight: 700;
-    text-decoration: none;
-  }
-
-  .main-nav ul {
-    list-style: none;
-    display: flex;
-    gap: 20px;
-    margin: 0;
-    padding: 0;
-  }
-
-  .main-nav a {
-    color: #fff;
-    text-decoration: none;
-    font-weight: 500;
-  }
-
-  .main-nav a:hover {
-    text-decoration: underline;
-  }
-
-  /* --- User Menu bên phải --- */
-  .user-menu {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .user-menu .btn {
-    background: #fff;
-    color: #0077b6;
-    border-radius: 6px;
-    padding: 5px 12px;
-    font-weight: 500;
-    text-decoration: none;
-    transition: 0.2s;
-  }
-
-  .user-menu .btn:hover {
-    background: #caf0f8;
-  }
-
-  .user-menu .btn-logout {
-    background: #ffdddd;
-    color: #c0392b;
-  }
-
-  .user-menu .btn-logout:hover {
-    background: #f5b7b1;
-  }
-
-  .username {
-    font-weight: 600;
-    color: #fff;
-    margin-right: 6px;
-  }
-</style>
-=======
-      </div>
-    </nav>
-  </header>
-  
-=======
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container">
       <a class="navbar-brand" href="/">🏨 Hệ thống du lịch</a>
@@ -146,10 +17,12 @@
             <% if (session.user.PhanQuyen === 'Admin') { %>
               <li class="nav-item"><a class="nav-link" href="/admin/dashboard">Quản trị</a></li>
             <% } %>
-            <li class="nav-item"><a class="nav-link" href="/khachhang/logout">Đăng xuất</a></li>
+            <li class="nav-item"><a class="nav-link" href="/khachhang/dangxuat">Đăng xuất</a></li>
             <li class="nav-item">
-              <span class="nav-link disabled">👋 Xin chào, <%= session.user.TenKH || 'Người dùng' %></span>
-            </li>
+    <a class="nav-link" href="/khachhang/thongtintaikhoan"> 
+        👤<%= session.user.TaiKhoan || 'Người dùng' %>
+    </a>
+</li>
           <% } else { %>
             <li class="nav-item"><a class="nav-link" href="/khachhang/dangnhap">Đăng nhập</a></li>
             <li class="nav-item"><a class="nav-link" href="/khachhang/dangky">Đăng ký</a></li>
@@ -159,5 +32,3 @@
     </div>
   </nav>
 </header>
->>>>>>> Stashed changes
->>>>>>> VoVanTuTai

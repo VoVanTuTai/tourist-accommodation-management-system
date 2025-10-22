@@ -94,6 +94,6 @@ exports.login = async (req, res) => {
 exports.logout = (req, res) => {
   req.session.destroy(() => {
     res.clearCookie('connect.sid');
-    res.redirect('/dangnhap');
+    res.redirect('/');
   });
 };
