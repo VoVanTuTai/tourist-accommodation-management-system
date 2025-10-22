@@ -1,70 +1,110 @@
 <div class="container mt-4">
-  <h2 class="text-center mb-4">Danh sách đơn đặt phòng</h2>
+  <h2 class="text-center mb-4 fw-bold text-primary">
+    🏨 Danh sách đơn đặt phòng
+  </h2>
 
-  <!-- 🔹 Navbar trạng thái -->
+  <!-- 🔹 Thanh tab trạng thái -->
   <ul class="nav nav-tabs justify-content-center mb-4">
     <li class="nav-item">
-      <a class="nav-link <%= !trangThai ? 'active' : '' %>" href="/khachhang/don-dat-phong">Tất cả</a>
+      <a class="nav-link <%= !trangThai ? 'active' : '' %>" href="/khachhang/don-dat-phong">
+        Tất cả
+      </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link <%= trangThai == 0 ? 'active' : '' %>" href="/khachhang/don-dat-phong?trangthai=0">Đã đặt</a>
+      <a class="nav-link <%= trangThai == 0 ? 'active' : '' %>" href="/khachhang/don-dat-phong?trangthai=0">
+        Đã đặt
+      </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link <%= trangThai == 1 ? 'active' : '' %>" href="/khachhang/don-dat-phong?trangthai=1">Đang sử dụng</a>
+      <a class="nav-link <%= trangThai == 1 ? 'active' : '' %>" href="/khachhang/don-dat-phong?trangthai=1">
+        Đang sử dụng
+      </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link <%= trangThai == 2 ? 'active' : '' %>" href="/khachhang/don-dat-phong?trangthai=2">Hoàn tất</a>
+      <a class="nav-link <%= trangThai == 2 ? 'active' : '' %>" href="/khachhang/don-dat-phong?trangthai=2">
+        Hoàn tất
+      </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link <%= trangThai == 3 ? 'active' : '' %>" href="/khachhang/don-dat-phong?trangthai=3">Đã hủy</a>
+      <a class="nav-link <%= trangThai == 3 ? 'active' : '' %>" href="/khachhang/don-dat-phong?trangthai=3">
+        Đã hủy
+      </a>
     </li>
   </ul>
 
-  <!-- 🔹 Bảng danh sách -->
-  <table class="table table-striped text-center align-middle">
-    <thead class="table-dark">
-      <tr>
-        <th>Mã đơn</th>
-        <th>Tên nhà cung cấp (chỗ ở)</th>
-        <th>Ngày đặt</th>
-        <th>Ngày nhận</th>
-        <th>Ngày trả</th>
-        <th>Tổng tiền</th>
-        <th>Trạng thái</th>
-        <th>Hành động</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% if (donDatPhongList.length > 0) { %>
-        <% donDatPhongList.forEach((don) => { %>
-          <tr>
-            <td><%= don.MaDon %></td>
-            <td><%= don.TenNCC || "Chưa rõ" %></td>
-            <td><%= don.NgayDat ? new Date(don.NgayDat).toLocaleDateString("vi-VN") : "-" %></td>
-            <td><%= don.NgayNhan ? new Date(don.NgayNhan).toLocaleDateString("vi-VN") : "-" %></td>
-            <td><%= don.NgayTra ? new Date(don.NgayTra).toLocaleDateString("vi-VN") : "-" %></td>
-            <td><%= don.TongTien ? don.TongTien.toLocaleString("vi-VN") : 0 %> ₫</td>
-            <td>
-              <% if (don.TrangThai == 0) { %>
-                <span class="badge bg-primary">Đã đặt</span>
-              <% } else if (don.TrangThai == 1) { %>
-                <span class="badge bg-warning text-dark">Đang sử dụng</span>
-              <% } else if (don.TrangThai == 2) { %>
-                <span class="badge bg-success">Hoàn tất</span>
-              <% } else if (don.TrangThai == 3) { %>
-                <span class="badge bg-danger">Đã hủy</span>
-              <% } %>
-            </td>
-            <td>
-              <a href="/khachhang/don-dat-phong/<%= don.MaDon %>" class="btn btn-info btn-sm">Chi tiết</a>
-            </td>
-          </tr>
-        <% }) %>
-      <% } else { %>
+  <!-- 🔹 Bảng danh sách đơn -->
+  <div class="table-responsive shadow-sm rounded-3">
+    <table class="table table-striped text-center align-middle mb-0">
+      <thead class="table-dark">
         <tr>
-          <td colspan="8" class="text-muted py-4">Không có đơn đặt phòng nào.</td>
+          <th>Mã đơn</th>
+          <th>Tên nhà cung cấp (chỗ ở)</th>
+          <th>Ngày đặt</th>
+          <th>Ngày nhận</th>
+          <th>Ngày trả</th>
+          <th>Tổng tiền</th>
+          <th>Trạng thái</th>
+          <th>Hành động</th>
         </tr>
-      <% } %>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <% if (donDatPhongList.length > 0) { %>
+          <% donDatPhongList.forEach((don) => { %>
+            <tr>
+              <td class="fw-semibold text-primary">#<%= don.MaDon %></td>
+
+              <td><%= don.TenChoO || "Chưa rõ" %></td>
+
+              <td><%= don.NgayDat ? new Date(don.NgayDat).toLocaleDateString("vi-VN") : "-" %></td>
+              <td><%= don.NgayNhan ? new Date(don.NgayNhan).toLocaleDateString("vi-VN") : "-" %></td>
+              <td><%= don.NgayTra ? new Date(don.NgayTra).toLocaleDateString("vi-VN") : "-" %></td>
+
+              <td class="fw-bold text-success">
+                <%= don.TongTien ? don.TongTien.toLocaleString("vi-VN") : 0 %> ₫
+              </td>
+
+              <td>
+                <% if (don.TrangThai == 0) { %>
+                  <span class="badge bg-primary">Đã đặt</span>
+                <% } else if (don.TrangThai == 1) { %>
+                  <span class="badge bg-warning text-dark">Đang sử dụng</span>
+                <% } else if (don.TrangThai == 2) { %>
+                  <span class="badge bg-success">Hoàn tất</span>
+                <% } else if (don.TrangThai == 3) { %>
+                  <span class="badge bg-danger">Đã hủy</span>
+                <% } %>
+              </td>
+
+              <td>
+                <a href="/khachhang/don-dat-phong/<%= don.MaDon %>" class="btn btn-info btn-sm">
+                  <i class="bi bi-eye"></i> Chi tiết
+                </a>
+              </td>
+            </tr>
+          <% }) %>
+        <% } else { %>
+          <tr>
+            <td colspan="8" class="text-muted py-4">Không có đơn đặt phòng nào.</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
 </div>
+
+<!-- 🔹 CSS nhẹ -->
+<style>
+  .table th, .table td {
+    vertical-align: middle;
+  }
+  .nav-tabs .nav-link {
+    font-weight: 500;
+    color: #333;
+  }
+  .nav-tabs .nav-link.active {
+    font-weight: 600;
+    background-color: #0d6efd;
+    color: #fff;
+    border-color: #0d6efd;
+  }
+</style>

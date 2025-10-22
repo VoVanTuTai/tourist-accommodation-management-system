@@ -1,0 +1,47 @@
+<h2>🏨 Danh sách phòng của <%= ncc.TenNCC %></h2>
+
+<table border="1" cellspacing="0" cellpadding="8" style="width: 100%; border-collapse: collapse;">
+  <thead style="background-color: #f2f2f2;">
+    <tr>
+      <th>Mã phòng</th>
+      <th>Tên phòng</th>
+      <th>Loại phòng</th>
+      <th>Giá (VNĐ)</th>
+      <th>Sức chứa</th>
+      <th>Tình trạng</th>
+      <th>Hình ảnh</th>
+      <th>Hành động</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if (rooms.length === 0) { %>
+      <tr>
+        <td colspan="8" style="text-align:center;">Không có phòng nào</td>
+      </tr>
+    <% } else { %>
+      <% rooms.forEach(p => { %>
+        <tr>
+          <td><%= p.MaPhong %></td>
+          <td><%= p.TenPhong %></td>
+          <td><%= p.TenLoai %></td>
+          <td><%= p.Gia.toLocaleString() %></td>
+          <td><%= p.SucChua %></td>
+          <td>
+            <% if (p.TinhTrang === 1) { %> 🟢 Còn trống
+            <% } else if (p.TinhTrang === 0) { %> 🔴 Đã đặt
+            <% } else { %> 🟠 Bảo trì <% } %>
+          </td>
+          <td>
+            <% if (p.HinhAnh) { %>
+              <img src="/images/<%= p.HinhAnh %>" width="80">
+            <% } else { %> — <% } %>
+          </td>
+          <td>
+            <a href="/phong/edit/<%= p.MaPhong %>">✏️ Sửa</a> |
+            <a href="/phong/trangthai/<%= p.MaPhong %>">🔄 Trạng thái</a>
+          </td>
+        </tr>
+      <% }) %>
+    <% } %>
+  </tbody>
+</table>

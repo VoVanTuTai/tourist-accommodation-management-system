@@ -8,7 +8,7 @@ const MySQLStore = require("express-mysql-session")(session);
 const homeRoutes = require("./src/routes/homeRoutes");
 const phongRoutes = require("./src/routes/phongRoutes");
 const khachhangRoutes = require("./src/routes/khachhangRoutes");
-
+const nccRoutes = require("./src/routes/nccRoutes");
 const app = express();
 
 // ====== Thiết lập EJS + Layout ======
@@ -54,7 +54,17 @@ app.use((req, res, next) => {
 app.use("/", homeRoutes);
 app.use("/phong", phongRoutes);
 app.use("/khachhang", khachhangRoutes);
-
+app.use("/ncc", nccRoutes);
+app.use((req, res, next) => {
+  if (!req.session.ncc) {
+    req.session.ncc = {
+      MaNCC: 1,
+      TenNCC: "Khách sạn Hoàng Gia",
+      Email: "hoanggia@example.com"
+    };
+  }
+  next();
+});
 // ====== Khởi động server ======
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>

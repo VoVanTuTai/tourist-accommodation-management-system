@@ -1,63 +1,103 @@
-<div class="container mt-4">
-    <h2 class="text-center mb-4">Chi tiết đơn đặt phòng</h2>
-  
-    <div class="card p-4 shadow-sm">
-      <h5>🧾 Thông tin đơn</h5>
-      <p><strong>Mã đơn:</strong> <%= don.MaDon %></p>
-      <p><strong>Khách hàng:</strong> <%= don.TenKH %> (<%= don.Email %> - <%= don.SDT %>)</p>
-      <p><strong>Ngày đặt:</strong> <%= new Date(don.NgayDat).toLocaleDateString() %></p>
-      <p><strong>Ngày nhận:</strong> <%= new Date(don.NgayNhan).toLocaleDateString() %></p>
-      <p><strong>Ngày trả:</strong> <%= new Date(don.NgayTra).toLocaleDateString() %></p>
-      <p><strong>Tổng tiền:</strong> <%= don.TongTien.toLocaleString() %> ₫</p>
-  
-      <p>
-        <strong>Trạng thái:</strong>
-        <% if (don.TrangThai === 0) { %>
-          <span class="badge bg-primary">Đã đặt</span>
-        <% } else if (don.TrangThai === 1) { %>
-          <span class="badge bg-warning text-dark">Đang sử dụng</span>
-        <% } else if (don.TrangThai === 2) { %>
-          <span class="badge bg-success">Hoàn tất</span>
-        <% } else if (don.TrangThai === 3) { %>
-          <span class="badge bg-danger">Đã hủy</span>
-        <% } %>
-      </p>
+<div class="container mt-5 mb-5">
+  <div class="card shadow-lg border-0">
+    <div class="card-header bg-primary text-white text-center py-3 rounded-top">
+      <h3 class="mb-0">🧾 Chi tiết đơn đặt phòng</h3>
     </div>
-  
-    <hr>
-  
-    <h5 class="mt-4">🏨 Danh sách phòng trong đơn</h5>
-    <table class="table table-striped text-center">
-      <thead>
-        <tr>
-          <th>Tên phòng</th>
-          <th>Loại phòng</th>
-          <th>Nhà cung cấp</th>
-          <th>Giá</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% danhSachPhong.forEach(phong => { %>
-          <tr>
-            <td><%= phong.TenPhong %></td>
-            <td><%= phong.TenLoai %></td>
-            <td><%= phong.TenNCC %></td>
-            <td><%= phong.Gia ? phong.Gia.toLocaleString() : "0" %> ₫</td>
 
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-  
-    <div class="mt-4 text-center">
-      <% if (don.TrangThai === 0) { %>
-        <a href="/khachhang/don-dat-phong/huy/<%= don.MaDon %>" 
-           class="btn btn-danger"
-           onclick="return confirm('Bạn có chắc chắn muốn hủy đơn này không?');">
-          Hủy đơn
-        </a>
-      <% } %>
-      <a href="/khachhang/don-dat-phong" class="btn btn-secondary">Quay lại danh sách</a>
+    <div class="card-body p-4">
+
+      <!-- 🔹 Thông tin đơn -->
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <p><strong>Mã đơn:</strong> <%= don.MaDon %></p>
+          <p><strong>Khách hàng:</strong> <%= don.TenKH %> (<%= don.Email %> - <%= don.SDT %>)</p>
+          <p><strong>Ngày đặt:</strong> <%= new Date(don.NgayDat).toLocaleDateString("vi-VN") %></p>
+        </div>
+        <div class="col-md-6">
+          <p><strong>Ngày nhận:</strong> <%= new Date(don.NgayNhan).toLocaleDateString("vi-VN") %></p>
+          <p><strong>Ngày trả:</strong> <%= new Date(don.NgayTra).toLocaleDateString("vi-VN") %></p>
+          <p><strong>Tổng tiền:</strong>
+            <span class="fw-bold text-success"><%= (don.TongTien || 0).toLocaleString("vi-VN") %> ₫</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- 🔸 Trạng thái -->
+      <div class="text-center mb-4">
+        <h5>Trạng thái đơn:</h5>
+        <% if (don.TrangThai === 0) { %>
+          <span class="badge bg-primary p-2">Đã đặt</span>
+        <% } else if (don.TrangThai === 1) { %>
+          <span class="badge bg-warning text-dark p-2">Đang sử dụng</span>
+        <% } else if (don.TrangThai === 2) { %>
+          <span class="badge bg-success p-2">Hoàn tất</span>
+        <% } else if (don.TrangThai === 3) { %>
+          <span class="badge bg-danger p-2">Đã hủy</span>
+        <% } %>
+      </div>
+
+      <hr>
+
+      <!-- 🏨 Thông tin phòng -->
+      <h5 class="text-secondary mb-3">🏨 Thông tin phòng</h5>
+      <div class="row">
+        <div class="col-md-4 text-center">
+          <% if (don.HinhAnh) { %>
+            <img src="/uploads/<%= don.HinhAnh %>" class="img-fluid rounded shadow-sm" style="max-height: 220px;">
+          <% } else { %>
+            <div class="bg-light text-muted p-4 rounded">Không có ảnh</div>
+          <% } %>
+        </div>
+        <div class="col-md-8">
+          <p><strong>Tên phòng:</strong> <%= don.TenPhong %></p>
+          <p><strong>Loại phòng:</strong> <%= don.LoaiPhong || "Không rõ" %></p>
+          <p><strong>Nhà cung cấp:</strong> <%= don.TenChoO %></p>
+          <p><strong>Giá:</strong> <%= (don.GiaPhong || 0).toLocaleString("vi-VN") %> ₫ / đêm</p>
+        </div>
+      </div>
+
+      <hr>
+
+      <!-- ⚙️ Hành động -->
+      <div class="text-center mt-4">
+        <% if (don.TrangThai === 0) { %>
+          <!-- Đơn đã đặt → cho phép hủy -->
+          <form action="/khachhang/don-dat-phong/huy/<%= don.MaDon %>" method="POST" style="display:inline;">
+            <button class="btn btn-danger px-4" onclick="return confirm('Bạn chắc chắn muốn hủy đơn này?')">
+              ❌ Hủy đơn
+            </button>
+          </form>
+
+        <% } else if (don.TrangThai === 1) { %>
+          <!-- Đơn đang sử dụng → cho phép thanh toán -->
+          <a href="/khachhang/don-dat-phong/thanhtoan/<%= don.MaDon %>" class="btn btn-success px-4">
+            💳 Thanh toán
+          </a>
+
+        <% } else if (don.TrangThai === 2) { %>
+          <!-- Đơn đã hoàn tất → cho phép đánh giá -->
+          <% if (don.daDanhGia) { %>
+            <div class="border rounded p-3 mt-3 bg-light">
+              <p><strong>⭐ Đánh giá:</strong></p>
+              <p><%= don.danhGia.NoiDung %></p>
+              <% if (don.danhGia.HinhAnh) { %>
+                <img src="/uploads/<%= don.danhGia.HinhAnh %>" class="img-thumbnail mt-2" style="max-width: 200px;">
+              <% } %>
+              <a href="/khachhang/don-dat-phong/<%= don.MaDon %>/danhgia?edit=true" class="btn btn-warning btn-sm mt-3">
+                ✏️ Sửa đánh giá
+              </a>
+            </div>
+          <% } else { %>
+            <a href="/khachhang/don-dat-phong/<%= don.MaDon %>/danhgia" class="btn btn-warning mt-2">
+              ⭐ Đánh giá phòng
+            </a>
+          <% } %>
+        <% } %>
+
+        <!-- Quay lại -->
+        <a href="/khachhang/don-dat-phong" class="btn btn-secondary px-4 ms-2">⬅ Quay lại</a>
+      </div>
+
     </div>
   </div>
-  
+</div>
