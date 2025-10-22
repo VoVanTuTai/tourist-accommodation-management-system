@@ -55,6 +55,16 @@ router.get("/don-dat-phong/:maDon/danhgia", ensureKhachHang, danhGiaController.r
 router.post("/don-dat-phong/:maDon/danhgia", ensureKhachHang, upload.single("HinhAnh"), danhGiaController.handleDanhGia);
 
 
+const quanlytaikhoanContronller = require('../controllers/quanlythongtinController');
+const isAuthenticated = require('../middlewares/auth').isAuthenticated;
 
+
+// Danh sách đơn đặt phòng của khách
+router.get('/don-dat-phong', donDatPhongController.danhSachDonDatPhong);
+router.get("/don-dat-phong/:id", donDatPhongController.chiTietDonDatPhong);
+router.get("/don-dat-phong/huy/:id", donDatPhongController.huyDonDatPhong);
+// Quản lý tài khoản
+router.get('/thongtintaikhoan', isAuthenticated, quanlytaikhoanContronller.getTaiKhoanView);
+router.post('/thongtintaikhoan', isAuthenticated, quanlytaikhoanContronller.postCapNhatTaiKhoan);
 
 module.exports = router;

@@ -10,7 +10,7 @@ exports.renderDanhSachPhong = async (req, res) => {
     if (!ncc) return res.status(401).send("Vui lòng đăng nhập");
 
     const rooms = await Phong.getPhongByNCC(ncc.MaNCC);
-    res.render("ncc/phong/danhsach", { rooms, ncc });
+    res.render("nhacungcap/phong/danhsach", { rooms, ncc });
   } catch (err) {
     console.error("❌ Lỗi renderDanhSachPhong:", err);
     res.status(500).send("Lỗi khi tải danh sách phòng");
@@ -21,7 +21,7 @@ exports.renderDanhSachPhong = async (req, res) => {
 exports.renderThemPhong = async (req, res) => {
   try {
     const loaiPhongs = await LoaiPhong.getAll();
-    res.render("ncc/phong/themphong", { loaiPhongs });
+    res.render("nhacungcap/phong/themphong", { loaiPhongs });
   } catch (err) {
     console.error("❌ Lỗi renderThemPhong:", err);
     res.status(500).send("Lỗi khi tải form thêm phòng");
@@ -30,21 +30,27 @@ exports.renderThemPhong = async (req, res) => {
 
 // 📌 [POST] Xử lý thêm phòng
 exports.handleThemPhong = async (req, res) => {
-  try {
-    const ncc = req.session.ncc;
-    const { TenPhong, MaLoai, Gia, SucChua, TinhTrang } = req.body;
-    const HinhAnh = req.file ? req.file.filename : null;
+try {
+    const imageName = req.file ? req.file.filename : "";
 
-    const data = { TenPhong, MaLoai, Gia, SucChua, TinhTrang, HinhAnh, MaNhaCungCap: ncc.MaNCC };
+    const data = {
+      TenPhong: req.body.TenPhong,
+      MaLoai: req.body.MaLoai,
+      Gia: req.body.Gia,
+      SucChua: req.body.SucChua,
+      TinhTrang: req.body.TinhTrang,
+      HinhAnh: imageName,
+      MaDiaChi: req.body.MaDiaChi,
+      MaNhaCungCap: req.session.ncc
+    };
 
     await Phong.addPhong(data);
-    res.redirect("/ncc/phong");
+    res.redirect("/phong");
   } catch (err) {
-    console.error("❌ Lỗi handleThemPhong:", err);
-    res.status(500).send("Lỗi khi thêm phòng");
+    console.error("❌ Lỗi thêm phòng:", err);
+    res.status(500).send("Lỗi khi thêm phòng mới");
   }
 };
-
 
 // 📌 [GET] Form sửa phòng
 exports.renderSuaPhong = async (req, res) => {
@@ -60,7 +66,7 @@ exports.renderSuaPhong = async (req, res) => {
     console.log("🧠 LoaiPhong trả về:", loaiPhongs); // debug nhanh
 
     // 🧩 Gửi đầy đủ dữ liệu sang EJS
-    res.render("ncc/phong/suaphong", { phong, loaiPhongs });
+    res.render("nhacungcap/phong/suaphong", { phong, loaiPhongs });
   } catch (err) {
     console.error("❌ Lỗi renderSuaPhong:", err);
     res.status(500).send("Lỗi khi tải form sửa phòng");
@@ -90,7 +96,7 @@ exports.handleSuaPhong = async (req, res) => {
     const updatedData = { MaPhong, TenPhong, MaLoai, Gia, SucChua, TinhTrang, HinhAnh: finalImage };
     await Phong.updatePhong(updatedData);
 
-    res.redirect("/ncc/phong");
+    res.redirect("/nhacungcap/phong");
   } catch (err) {
     console.error("❌ Lỗi handleSuaPhong:", err);
     res.status(500).send("Lỗi khi cập nhật phòng");
@@ -104,7 +110,7 @@ exports.renderCapNhatTrangThai = async (req, res) => {
     const phong = await Phong.getPhongById(id);
     if (!phong) return res.status(404).send("Không tìm thấy phòng");
 
-    res.render("ncc/phong/capnhattrangthai", { phong });
+    res.render("nhacungcap/phong/capnhattrangthai", { phong });
   } catch (err) {
     console.error("❌ Lỗi renderCapNhatTrangThai:", err);
     res.status(500).send("Lỗi khi tải form cập nhật trạng thái");
@@ -116,7 +122,7 @@ exports.handleCapNhatTrangThai = async (req, res) => {
   try {
     const { MaPhong, TinhTrang } = req.body;
     await Phong.updateTrangThaiPhong(MaPhong, TinhTrang);
-    res.redirect("/ncc/phong");
+    res.redirect("/nhacungcap/phong");
   } catch (err) {
     console.error("❌ Lỗi handleCapNhatTrangThai:", err);
     res.status(500).send("Lỗi khi cập nhật trạng thái phòng");

@@ -1,3 +1,5 @@
+const dbPromise = require("../../config/db");
+
 const LoaiPhong = {
   async getAll() {
     try {

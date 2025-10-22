@@ -3,9 +3,15 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
+<<<<<<< HEAD
 -- Thời gian đã tạo: Th10 21, 2025 lúc 09:00 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.0.30
+=======
+-- Thời gian đã tạo: Th10 21, 2025 lúc 04:34 PM
+-- Phiên bản máy phục vụ: 10.4.32-MariaDB
+-- Phiên bản PHP: 8.2.12
+>>>>>>> d1bbd95ecfb188c0c725a6b69e33ce19434c4be8
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -35,10 +41,26 @@ CREATE TABLE `admin` (
 --
 -- Đang đổ dữ liệu cho bảng `admin`
 --
+<<<<<<< HEAD
 
 INSERT INTO `admin` (`MaAdmin`, `HoTen`) VALUES
 (1, 'David Beckham');
 
+=======
+
+INSERT INTO `admin` (`MaAdmin`, `HoTen`) VALUES
+(1, 'Nguyễn Minh Quân'),
+(2, 'Trần Thị Lan'),
+(3, 'Lê Hoàng Anh'),
+(4, 'Phạm Quốc Bảo'),
+(5, 'Đỗ Thị Hạnh'),
+(6, 'Vũ Hữu Tài'),
+(7, 'Hoàng Ngọc Mai'),
+(8, 'Ngô Thanh Bình'),
+(9, 'Bùi Nhật Minh'),
+(10, 'Phan Thu Hà');
+
+>>>>>>> d1bbd95ecfb188c0c725a6b69e33ce19434c4be8
 -- --------------------------------------------------------
 
 --
@@ -209,6 +231,7 @@ CREATE TABLE `khachhang` (
 -- Đang đổ dữ liệu cho bảng `khachhang`
 --
 
+<<<<<<< HEAD
 INSERT INTO `khachhang` (`MaKhachHang`, `HoTen`, `Email`, `SoDienThoai`, `NgaySinh`, `GioiTinh`, `TrangThai`) VALUES
 (1, 'Nguyễn Văn A', 'kh1@example.com', '0901000001', '1995-01-15', 'Nam', 'Hoạt động bình thường'),
 (2, 'Trần Thị B', 'kh2@example.com', '0901000002', '1996-02-20', 'Nữ', 'Hoạt động bình thường'),
@@ -221,6 +244,20 @@ INSERT INTO `khachhang` (`MaKhachHang`, `HoTen`, `Email`, `SoDienThoai`, `NgaySi
 (9, 'Phan Văn I', 'kh9@example.com', '0901000009', '1990-09-25', 'Nam', 'Hoạt động bình thường'),
 (10, 'Đặng Thị K', 'kh10@example.com', '0901000010', '1999-10-08', 'Nữ', 'Hoạt động bình thường'),
 (11, 'Tuyền', 'abc123@gmail.com', '0123456780', '2025-10-01', 'Nam', 'Hoạt động bình thường');
+=======
+INSERT INTO `khachhang` (`MaKhachHang`, `HoTen`, `Email`, `SoDienThoai`, `NgaySinh`, `GioiTinh`) VALUES
+(1, 'Nguyễn Văn A', 'kh1@example.com', '0901000001', '1995-01-15', 'Nam'),
+(2, 'Trần Thị B', 'kh2@example.com', '0901000002', '1996-02-20', 'Nữ'),
+(3, 'Lê Văn C', 'kh3@example.com', '0901000003', '1994-03-10', 'Nam'),
+(4, 'Phạm Thị D', 'kh4@example.com', '0901000004', '1993-04-22', 'Nữ'),
+(5, 'Hoàng Văn E', 'kh5@example.com', '0901000005', '1992-05-05', 'Nam'),
+(6, 'Đỗ Thị F', 'kh6@example.com', '0901000006', '1997-06-18', 'Nữ'),
+(7, 'Vũ Văn G', 'kh7@example.com', '0901000007', '1991-07-30', 'Nam'),
+(8, 'Bùi Thị H', 'kh8@example.com', '0901000008', '1998-08-12', 'Nữ'),
+(9, 'Phan Văn I', 'kh9@example.com', '0901000009', '1990-09-25', 'Nam'),
+(10, 'Đặng Thị K', 'kh10@example.com', '0901000010', '1999-10-08', 'Nữ'),
+(11, 'Tuyền', 'abc123@gmail.com', '0123456780', '2025-10-01', 'Nam');
+>>>>>>> d1bbd95ecfb188c0c725a6b69e33ce19434c4be8
 
 -- --------------------------------------------------------
 
@@ -398,7 +435,11 @@ CREATE TABLE `taikhoan` (
 
 INSERT INTO `taikhoan` (`MaTaiKhoan`, `TaiKhoan`, `MatKhau`, `NgayLap`, `PhanQuyen`, `TrangThai`, `MaKhachHang`, `MaAdmin`) VALUES
 (1, 'admin1@gmail.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:02:19', 'Admin', 'HoatDong', NULL, 1),
+<<<<<<< HEAD
 (2, 'admin2@gmail.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:02:19', 'Admin', 'HoatDong', NULL, NULL),
+=======
+(2, 'admin2@gmail.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:02:19', 'Admin', 'HoatDong', NULL, 2),
+>>>>>>> d1bbd95ecfb188c0c725a6b69e33ce19434c4be8
 (3, 'kh1@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong', 1, NULL),
 (4, 'kh2@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong', 2, NULL),
 (5, 'kh3@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong', 3, NULL),
