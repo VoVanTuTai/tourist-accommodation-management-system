@@ -3,9 +3,15 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
+<<<<<<< HEAD
+-- Thời gian đã tạo: Th10 21, 2025 lúc 09:00 PM
+-- Phiên bản máy phục vụ: 10.4.32-MariaDB
+-- Phiên bản PHP: 8.0.30
+=======
 -- Thời gian đã tạo: Th10 21, 2025 lúc 04:34 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
+>>>>>>> d1bbd95ecfb188c0c725a6b69e33ce19434c4be8
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -35,6 +41,12 @@ CREATE TABLE `admin` (
 --
 -- Đang đổ dữ liệu cho bảng `admin`
 --
+<<<<<<< HEAD
+
+INSERT INTO `admin` (`MaAdmin`, `HoTen`) VALUES
+(1, 'David Beckham');
+
+=======
 
 INSERT INTO `admin` (`MaAdmin`, `HoTen`) VALUES
 (1, 'Nguyễn Minh Quân'),
@@ -48,6 +60,7 @@ INSERT INTO `admin` (`MaAdmin`, `HoTen`) VALUES
 (9, 'Bùi Nhật Minh'),
 (10, 'Phan Thu Hà');
 
+>>>>>>> d1bbd95ecfb188c0c725a6b69e33ce19434c4be8
 -- --------------------------------------------------------
 
 --
@@ -210,13 +223,28 @@ CREATE TABLE `khachhang` (
   `Email` varchar(100) NOT NULL,
   `SoDienThoai` varchar(15) NOT NULL,
   `NgaySinh` date NOT NULL,
-  `GioiTinh` varchar(10) NOT NULL
+  `GioiTinh` varchar(10) NOT NULL,
+  `TrangThai` enum('Hoạt động bình thường','Đã khóa') NOT NULL DEFAULT 'Hoạt động bình thường'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `khachhang`
 --
 
+<<<<<<< HEAD
+INSERT INTO `khachhang` (`MaKhachHang`, `HoTen`, `Email`, `SoDienThoai`, `NgaySinh`, `GioiTinh`, `TrangThai`) VALUES
+(1, 'Nguyễn Văn A', 'kh1@example.com', '0901000001', '1995-01-15', 'Nam', 'Hoạt động bình thường'),
+(2, 'Trần Thị B', 'kh2@example.com', '0901000002', '1996-02-20', 'Nữ', 'Hoạt động bình thường'),
+(3, 'Lê Văn C', 'kh3@example.com', '0901000003', '1994-03-10', 'Nam', 'Hoạt động bình thường'),
+(4, 'Phạm Thị D', 'kh4@example.com', '0901000004', '1993-04-22', 'Nữ', 'Hoạt động bình thường'),
+(5, 'Hoàng Văn E', 'kh5@example.com', '0901000005', '1992-05-05', 'Nam', 'Hoạt động bình thường'),
+(6, 'Đỗ Thị F', 'kh6@example.com', '0901000006', '1997-06-18', 'Nữ', 'Hoạt động bình thường'),
+(7, 'Vũ Văn G', 'kh7@example.com', '0901000007', '1991-07-30', 'Nam', 'Hoạt động bình thường'),
+(8, 'Bùi Thị H', 'kh8@example.com', '0901000008', '1998-08-12', 'Nữ', 'Hoạt động bình thường'),
+(9, 'Phan Văn I', 'kh9@example.com', '0901000009', '1990-09-25', 'Nam', 'Hoạt động bình thường'),
+(10, 'Đặng Thị K', 'kh10@example.com', '0901000010', '1999-10-08', 'Nữ', 'Hoạt động bình thường'),
+(11, 'Tuyền', 'abc123@gmail.com', '0123456780', '2025-10-01', 'Nam', 'Hoạt động bình thường');
+=======
 INSERT INTO `khachhang` (`MaKhachHang`, `HoTen`, `Email`, `SoDienThoai`, `NgaySinh`, `GioiTinh`) VALUES
 (1, 'Nguyễn Văn A', 'kh1@example.com', '0901000001', '1995-01-15', 'Nam'),
 (2, 'Trần Thị B', 'kh2@example.com', '0901000002', '1996-02-20', 'Nữ'),
@@ -229,6 +257,7 @@ INSERT INTO `khachhang` (`MaKhachHang`, `HoTen`, `Email`, `SoDienThoai`, `NgaySi
 (9, 'Phan Văn I', 'kh9@example.com', '0901000009', '1990-09-25', 'Nam'),
 (10, 'Đặng Thị K', 'kh10@example.com', '0901000010', '1999-10-08', 'Nữ'),
 (11, 'Tuyền', 'abc123@gmail.com', '0123456780', '2025-10-01', 'Nam');
+>>>>>>> d1bbd95ecfb188c0c725a6b69e33ce19434c4be8
 
 -- --------------------------------------------------------
 
@@ -270,6 +299,7 @@ CREATE TABLE `nhacungcap` (
   `ThongTinThanhToan` varchar(200) DEFAULT NULL,
   `LoaiHinh` varchar(50) DEFAULT NULL,
   `GiayPhepKD` varchar(100) DEFAULT NULL,
+  `TrangThai` enum('Chờ Duyệt','Đang hoạt động','Đã khóa') NOT NULL,
   `MaDiaChi` varchar(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -277,17 +307,17 @@ CREATE TABLE `nhacungcap` (
 -- Đang đổ dữ liệu cho bảng `nhacungcap`
 --
 
-INSERT INTO `nhacungcap` (`MaNCC`, `TenNCC`, `ThongTinThanhToan`, `LoaiHinh`, `GiayPhepKD`, `MaDiaChi`) VALUES
-(1, 'Khách sạn Hoàng Gia', 'Vietcombank - 0123456789', 'Khách sạn', 'GP01', 'DC001'),
-(2, 'Resort Biển Xanh', 'Techcombank - 0234567890', 'Resort', 'GP02', 'DC002'),
-(3, 'Hotel Central', 'ACB - 0345678901', 'Khách sạn', 'GP03', 'DC003'),
-(4, 'Homestay Hòa Bình', 'MB Bank - 0456789012', 'Homestay', 'GP04', 'DC004'),
-(5, 'Villa Đại Dương', 'Agribank - 0567890123', 'Villa', 'GP05', 'DC005'),
-(6, 'Hotel Dĩ An', 'BIDV - 0678901234', 'Khách sạn', 'GP06', 'DC006'),
-(7, 'Resort Nha Trang Bay', 'VPBank - 0789012345', 'Resort', 'GP07', 'DC007'),
-(8, 'Sunrise Hotel', 'VietinBank - 0890123456', 'Khách sạn', 'GP08', 'DC008'),
-(9, 'Highland Retreat', 'Sacombank - 0901234567', 'Resort', 'GP09', 'DC009'),
-(10, 'Lâm Đồng Villa', 'ACB - 0912345678', 'Villa', 'GP10', 'DC010');
+INSERT INTO `nhacungcap` (`MaNCC`, `TenNCC`, `ThongTinThanhToan`, `LoaiHinh`, `GiayPhepKD`, `TrangThai`, `MaDiaChi`) VALUES
+(1, 'Khách sạn Hoàng Gia', 'Vietcombank - 0123456789', 'Khách sạn', 'GP01', 'Đang hoạt động', 'DC001'),
+(2, 'Resort Biển Xanh', 'Techcombank - 0234567890', 'Resort', 'GP02', 'Đã khóa', 'DC002'),
+(3, 'Hotel Central', 'ACB - 0345678901', 'Khách sạn', 'GP03', 'Đã khóa', 'DC003'),
+(4, 'Homestay Hòa Bình', 'MB Bank - 0456789012', 'Homestay', 'GP04', 'Đang hoạt động', 'DC004'),
+(5, 'Villa Đại Dương', 'Agribank - 0567890123', 'Villa', 'GP05', 'Đang hoạt động', 'DC005'),
+(6, 'Hotel Dĩ An', 'BIDV - 0678901234', 'Khách sạn', 'GP06', 'Đã khóa', 'DC006'),
+(7, 'Resort Nha Trang Bay', 'VPBank - 0789012345', 'Resort', 'GP07', 'Chờ Duyệt', 'DC007'),
+(8, 'Sunrise Hotel', 'VietinBank - 0890123456', 'Khách sạn', 'GP08', 'Chờ Duyệt', 'DC008'),
+(9, 'Highland Retreat', 'Sacombank - 0901234567', 'Resort', 'GP09', 'Đang hoạt động', 'DC009'),
+(10, 'Lâm Đồng Villa', 'ACB - 0912345678', 'Villa', 'GP10', 'Đang hoạt động', 'DC010');
 
 -- --------------------------------------------------------
 
@@ -405,7 +435,11 @@ CREATE TABLE `taikhoan` (
 
 INSERT INTO `taikhoan` (`MaTaiKhoan`, `TaiKhoan`, `MatKhau`, `NgayLap`, `PhanQuyen`, `TrangThai`, `MaKhachHang`, `MaAdmin`) VALUES
 (1, 'admin1@gmail.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:02:19', 'Admin', 'HoatDong', NULL, 1),
+<<<<<<< HEAD
+(2, 'admin2@gmail.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:02:19', 'Admin', 'HoatDong', NULL, NULL),
+=======
 (2, 'admin2@gmail.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:02:19', 'Admin', 'HoatDong', NULL, 2),
+>>>>>>> d1bbd95ecfb188c0c725a6b69e33ce19434c4be8
 (3, 'kh1@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong', 1, NULL),
 (4, 'kh2@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong', 2, NULL),
 (5, 'kh3@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong', 3, NULL),

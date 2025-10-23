@@ -17,6 +17,18 @@ const KhachHang = {
     return result.insertId;
   },
 
+  async getByTaiKhoan(maTaiKhoan) {
+    const db = await dbPromise;
+    const sql = `
+      SELECT kh.*
+      FROM KhachHang kh
+      JOIN TaiKhoan tk ON kh.MaKhachHang = tk.MaKhachHang
+      WHERE tk.MaTaiKhoan = ?
+    `;
+    const [rows] = await db.execute(sql, [maTaiKhoan]);
+    return rows.length > 0 ? rows[0] : null;
+
+  },
   // === 🔹 Hàm mới: Lấy thông tin KH theo MaTK (để hiển thị trong trang cá nhân) ===
   async findByMaTK(maTK) {
     const db = await dbPromise;
@@ -63,7 +75,7 @@ const KhachHang = {
 
     const [result] = await db.execute(sql, values);
     return result.affectedRows;
+
   }
 };
-
 module.exports = KhachHang;

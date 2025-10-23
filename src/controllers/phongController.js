@@ -10,7 +10,7 @@ exports.renderPhongList = async (req, res) => {
   try {
     const maNCC = 1; // NCC đăng nhập giả định
     const rooms = await Phong.getPhongByNCC(maNCC);
-    res.render("phong/danhsachphong", { rooms });
+    res.render("nhacungcap/danhsachphong", { rooms });
   } catch (err) {
     console.error("❌ Lỗi khi tải danh sách phòng:", err);
     res.status(500).send("Lỗi khi tải danh sách phòng");
@@ -23,7 +23,7 @@ exports.renderPhongList = async (req, res) => {
 exports.renderAddPhong = async (req, res) => {
   try {
     const loaiPhongs = await LoaiPhong.getAll();
-    res.render("phong/themphong", { loaiPhongs });
+    res.render("ncc/phong/themphong", { loaiPhongs });
   } catch (err) {
     console.error("❌ Lỗi khi tải loại phòng:", err);
     res.status(500).send("Lỗi khi tải danh sách loại phòng");
@@ -70,7 +70,7 @@ exports.renderEditPhong = async (req, res) => {
     const phong = phongResult[0];
     const loaiPhongs = await LoaiPhong.getAll();
 
-    res.render("phong/suaphong", { phong, loaiPhongs });
+    res.render("ncc/phong/suaphong", { phong, loaiPhongs });
   } catch (err) {
     console.error("❌ Lỗi khi tải dữ liệu sửa phòng:", err);
     res.status(500).send("Lỗi khi tải dữ liệu sửa phòng");
@@ -125,7 +125,7 @@ exports.renderUpdateStatus = async (req, res) => {
     if (!result || result.length === 0)
       return res.status(404).send("Không tìm thấy phòng");
 
-    res.render("phong/capnhatTrangThaiPhong", { phong: result[0] });
+    res.render("ncc/phong/capnhatTrangThaiPhong", { phong: result[0] });
   } catch (err) {
     console.error("❌ Lỗi khi tải form cập nhật trạng thái:", err);
     res.status(500).send("Lỗi khi tải form cập nhật trạng thái phòng");

@@ -1,84 +1,139 @@
 const db = require("../../config/db");
 
-// src/models/phong.js
-
+// ============================
+// Lấy danh sách phòng theo Nhà cung cấp
+// ============================
 exports.getPhongByNCC = async (maNhaCungCap) => {
-  const sql = `
-    SELECT 
-      p.MaPhong,
-      p.TenPhong,
-      p.Gia,
-      p.SucChua,
-      p.TinhTrang,
-      p.HinhAnh,
-      p.MaDiaChi
-      p.MaLoai,
-      lp.TenLoai,
-      p.MaNhaCungCap
-    FROM phong p
-    JOIN loaiphong lp ON p.MaLoai = lp.MaLoai
-    WHERE p.MaNhaCungCap = ?
-  `;
-  const [rows] = await db.execute(sql, [maNhaCungCap]);
-  return rows;
+  try {
+    const sql = `
+      SELECT 
+        p.MaPhong,
+        p.TenPhong,
+        p.Gia,
+        p.SucChua,
+        p.TinhTrang,
+        p.HinhAnh,
+        p.MaDiaChi,
+        p.MaLoai,
+        lp.TenLoai,
+        p.MaNhaCungCap
+      FROM Phong p
+      JOIN LoaiPhong lp ON p.MaLoai = lp.MaLoai
+      WHERE p.MaNhaCungCap = ?
+    `;
+    const [rows] = await db.execute(sql, [maNhaCungCap]);
+    return rows;
+  } catch (err) {
+    console.error("❌ Lỗi getPhongByNCC:", err);
+    throw err;
+  }
 };
 
+// ============================
+// Lấy thông tin chi tiết 1 phòng
+// ============================
 exports.getPhongById = async (maPhong) => {
-  const [rows] = await db.execute("SELECT * FROM phong WHERE MaPhong = ?", [maPhong]);
-  return rows;
+  try {
+    const [rows] = await db.execute("SELECT * FROM Phong WHERE MaPhong = ?", [maPhong]);
+    return rows[0] || null; // ✅ chỉ trả về 1 object
+  } catch (err) {
+    console.error("❌ Lỗi getPhongById:", err);
+    throw err;
+  }
 };
 
+// ============================
+// Thêm phòng mới
+// ============================
 exports.addPhong = async (data) => {
-  const sql = `
-    INSERT INTO phong (TenPhong, MaLoai, Gia, SucChua, TinhTrang, HinhAnh,MaDiaChi, MaNhaCungCap)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-  `;
-  const values = [
-    data.TenPhong, data.MaLoai, data.Gia,
-    data.SucChua, data.TinhTrang, data.HinhAnh, data.MaNhaCungCap
-  ];
-  await db.execute(sql, values);
+  try {
+    const sql = `
+      INSERT INTO Phong (TenPhong, MaLoai, Gia, SucChua, TinhTrang, HinhAnh, MaDiaChi, MaNhaCungCap)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+    const values = [
+      data.TenPhong,
+      data.MaLoai,
+      data.Gia,
+      data.SucChua,
+      data.TinhTrang,
+      data.HinhAnh,
+      data.MaDiaChi,
+      data.MaNhaCungCap
+    ];
+    await db.execute(sql, values);
+  } catch (err) {
+    console.error("❌ Lỗi addPhong:", err);
+    throw err;
+  }
 };
 
+// ============================
+// Cập nhật thông tin phòng
+// ============================
 exports.updatePhong = async (data) => {
-  const sql = `
-    UPDATE phong
-    SET TenPhong=?, MaLoai=?, Gia=?, SucChua=?, TinhTrang=?, HinhAnh=? MaDiaChi=?
-    WHERE MaPhong=?
-  `;
-  const values = [
-    data.TenPhong, data.MaLoai, data.Gia,
-    data.SucChua, data.TinhTrang, data.HinhAnh,data.MaDiaChi, data.MaPhong
-  ];
-  await db.execute(sql, values);
+  try {
+    const sql = `
+      UPDATE Phong
+      SET TenPhong = ?, MaLoai = ?, Gia = ?, SucChua = ?, TinhTrang = ?, HinhAnh = ?, MaDiaChi = ?
+      WHERE MaPhong = ?
+    `;
+    const values = [
+      data.TenPhong,
+      data.MaLoai,
+      data.Gia,
+      data.SucChua,
+      data.TinhTrang,
+      data.HinhAnh,
+      data.MaDiaChi,
+      data.MaPhong
+    ];
+    await db.execute(sql, values);
+  } catch (err) {
+    console.error("❌ Lỗi updatePhong:", err);
+    throw err;
+  }
 };
 
+// ============================
+// Cập nhật trạng thái phòng
+// ============================
 exports.updateTrangThaiPhong = async (maPhong, tinhTrang) => {
-  await db.execute("UPDATE phong SET TinhTrang=? WHERE MaPhong=?", [tinhTrang, maPhong]);
+  try {
+    await db.execute("UPDATE Phong SET TinhTrang = ? WHERE MaPhong = ?", [tinhTrang, maPhong]);
+  } catch (err) {
+    console.error("❌ Lỗi updateTrangThaiPhong:", err);
+    throw err;
+  }
 };
 
-
-// Lấy danh sách phòng có nhiều lượt đặt nhất
+// ============================
+// Lấy top phòng được đặt nhiều nhất
+// ============================
 exports.getTopBookedRooms = async () => {
-  const query = `
-    SELECT 
-      p.MaPhong,
-      p.TenPhong,
-      p.MaLoai,
-      p.Gia,
-      COUNT(dp.MaCTDon) AS so_luot_dat
-    FROM phong p
-    LEFT JOIN chitietdondatphong dp ON p.MaPhong = dp.MaPhong
-    GROUP BY p.MaPhong, p.TenPhong, p.MaLoai, p.Gia
-    ORDER BY so_luot_dat DESC
-    LIMIT 5;
-  `;
+  try {
+    const query = `
+      SELECT 
+        p.MaPhong,
+        p.TenPhong,
+        p.MaLoai,
+        p.Gia,
+        COUNT(dp.MaCTDon) AS so_luot_dat
+      FROM Phong p
+      LEFT JOIN ChiTietDonDatPhong dp ON p.MaPhong = dp.MaPhong
+      GROUP BY p.MaPhong, p.TenPhong, p.MaLoai, p.Gia
+      ORDER BY so_luot_dat DESC
+      LIMIT 10;
+    `;
+    const [rows] = await db.execute(query);
 
-  const [rows] = await db.execute(query);
-
-  // Ép kiểu số cho cột 'Gia' (tránh lỗi khi render EJS)
-  return rows.map(room => ({
-    ...room,
-    Gia: room.Gia ? Number(room.Gia) : 0,
-  }));
+    // ✅ Ép kiểu giá về số
+    return rows.map((room) => ({
+      ...room,
+      Gia: room.Gia ? Number(room.Gia) : 0,
+    }));
+  } catch (err) {
+    console.error("❌ Lỗi getTopBookedRooms:", err);
+    throw err;
+  }
 };
