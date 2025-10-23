@@ -21,19 +21,23 @@ const TaiKhoan = {
     MatKhau,
     PhanQuyen = 'KhachHang',
     MaKhachHang = null,
-    MaAdmin = null
+    MaAdmin = null,
+    MaNhaCungCap = null,
+    TrangThai = 'HoatDong'
   }) {
     try {
       const db = await dbPromise;
       const [result] = await db.execute(
-        `INSERT INTO TaiKhoan (TaiKhoan, MatKhau, PhanQuyen, MaKhachHang, MaAdmin)
-         VALUES (?, ?, ?, ?, ?)`,
+        `INSERT INTO TaiKhoan (TaiKhoan, MatKhau, PhanQuyen, MaKhachHang, MaAdmin, MaNhaCungCap, TrangThai)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [
           TaiKhoan || null,
           MatKhau || null,
           PhanQuyen || 'KhachHang',
           MaKhachHang || null,
-          MaAdmin || null
+          MaAdmin || null,
+          MaNhaCungCap || null,
+          TrangThai || 'HoatDong'
         ]
       );
       return result.insertId;

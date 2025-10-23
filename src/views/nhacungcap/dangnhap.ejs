@@ -10,26 +10,46 @@
       <div class="success-box">🎉 Đăng ký thành công! Vui lòng đăng nhập.</div>
     <% } %>
 
-    <% if (errors) { %>
-      <div class="error-box"><%= errors %></div>
+    <% if (errors && errors.Global) { %>
+      <div class="error-box"><%= errors.Global %></div>
     <% } %>
 
     <form action="/nhacungcap/dangnhap" method="POST" class="login-form">
-      <div class="form-group">
-        <label for="Email">Email:</label>
-        <input type="email" id="Email" name="Email" placeholder="Nhập email của bạn"
-               value="<%= f.Email || '' %>" required>
-      </div>
-
-      <div class="form-group">
-        <label for="MatKhau">Mật khẩu:</label>
-        <input type="password" id="MatKhau" name="MatKhau" placeholder="Nhập mật khẩu" required>
-      </div>
-
-      <div class="form-group remember-me">
-        <input type="checkbox" id="rememberMe" name="rememberMe">
-        <label for="rememberMe">Ghi nhớ đăng nhập</label>
-      </div>
+        <div class="row mb-3">
+            <div class="col-3">
+                <label for="Email" class="form-label">Email</label>
+            </div>
+            <div class="col-9">
+                <input type="text" class="form-control" name="Email" id="Email" value="<%= f.Email || '' %>" />
+                <span class="text-danger d-block text-error-email">
+                    <% if (errors) { %>
+                        <%= errors.Email %>
+                    <% } %>
+                </span>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-3">
+                <label for="Password" class="form-label">Password</label>
+            </div>
+            <div class="col-9">
+                <input type="password" class="form-control" name="Password" id="Password" />
+                <span class="text-danger d-block text-error-Password">
+                    <% if (errors) { %>
+                        <%= errors.Password %>
+                    <% } %>
+                </span>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-3">
+                
+            </div>
+            <div class="col-9">
+                <input type="checkbox" id="rememberMe" name="rememberMe">
+                <label for="rememberMe">Ghi nhớ đăng nhập</label>
+            </div>
+        </div>
 
       <div class="form-group submit">
         <button type="submit" class="btn-submit">Đăng nhập</button>
@@ -37,7 +57,7 @@
     </form>
 
     <p class="text-center mt-3">
-      Chưa có tài khoản? <a href="/khachhang/dangky">Đăng ký ngay</a>
+      Chưa có tài khoản? <a href="/nhacungcap/dangky">Đăng ký ngay</a>
     </p>
   </div>
 </div>
