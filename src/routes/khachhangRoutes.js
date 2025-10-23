@@ -67,4 +67,5 @@ router.get("/don-dat-phong/huy/:id", donDatPhongController.huyDonDatPhong);
 router.get('/thongtintaikhoan', isAuthenticated, quanlytaikhoanContronller.getTaiKhoanView);
 router.post('/thongtintaikhoan', isAuthenticated, quanlytaikhoanContronller.postCapNhatTaiKhoan);
 
+
 module.exports = router;
