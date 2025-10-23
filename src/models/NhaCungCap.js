@@ -59,16 +59,9 @@ const NhaCungCap = {
   }
 };
 
-
-// Bổ sung column LoaiNganHang
-exports.addColumnLoaiNganHang = (callback) => {
-  const sql = "ALTER TABLE NhaCungCap ADD COLUMN LoaiNganHang VARCHAR(255)";
-  db.query(sql, callback);
-}
-
 // Đăng ký nhà cung cấp
 // Thêm nha cung cap
-exports.addNhaCungCap = async(data, callback) => {
+const addNhaCungCap = async(data, callback) => {
   const sql = `
     INSERT INTO NhaCungCap (TenNCC, LoaiNganHang, ThongTinThanhToan, LoaiHinh, GiayPhepKD)
     VALUES (?, ?, ?, ?, ?)
@@ -80,8 +73,8 @@ exports.addNhaCungCap = async(data, callback) => {
     data.LoaiHinh,
     data.GiayPhepKD
   ];
-  const [result] = await db.execute(sql, values);
+  const [result] = await dbPromise.execute(sql, values);
   return result;
 };
 
-module.exports = NhaCungCap;
+module.exports = { NhaCungCap, addNhaCungCap};
