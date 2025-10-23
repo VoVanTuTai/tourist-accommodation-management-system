@@ -32,14 +32,21 @@ exports.getPhongByNCC = async (maNhaCungCap) => {
 // ============================
 // Lấy thông tin chi tiết 1 phòng
 // ============================
-exports.getPhongById = async (maPhong) => {
-  try {
-    const [rows] = await db.execute("SELECT * FROM Phong WHERE MaPhong = ?", [maPhong]);
-    return rows[0] || null; // ✅ chỉ trả về 1 object
-  } catch (err) {
-    console.error("❌ Lỗi getPhongById:", err);
-    throw err;
-  }
+exports.getPhongById = async (id) => {
+  const sql = `
+    SELECT 
+      p.*,
+      dc.ChiTiet,
+      x.TenXa,
+      t.TenTinh
+    FROM Phong p
+    JOIN DiaChi dc ON p.MaDiaChi = dc.MaDiaChi
+    JOIN Xa x ON dc.MaXa = x.MaXa
+    JOIN Tinh t ON x.MaTinh = t.MaTinh
+    WHERE p.MaPhong = ?
+  `;
+  const [rows] = await db.execute(sql, [id]);
+  return rows[0];
 };
 
 // ============================
@@ -73,21 +80,25 @@ exports.addPhong = async (data) => {
 // ============================
 exports.updatePhong = async (data) => {
   try {
+    const safe = (v) => (v === undefined ? null : v);
+
     const sql = `
       UPDATE Phong
-      SET TenPhong = ?, MaLoai = ?, Gia = ?, SucChua = ?, TinhTrang = ?, HinhAnh = ?, MaDiaChi = ?
+      SET TenPhong = ?, MaLoai = ?, Gia = ?, SucChua = ?, 
+          TinhTrang = ?, HinhAnh = ?, MaDiaChi = ?
       WHERE MaPhong = ?
     `;
     const values = [
-      data.TenPhong,
-      data.MaLoai,
-      data.Gia,
-      data.SucChua,
-      data.TinhTrang,
-      data.HinhAnh,
-      data.MaDiaChi,
-      data.MaPhong
+      safe(data.TenPhong),
+      safe(data.MaLoai),
+      safe(data.Gia),
+      safe(data.SucChua),
+      safe(data.TinhTrang),
+      safe(data.HinhAnh),
+      safe(data.MaDiaChi),
+      safe(data.MaPhong)
     ];
+
     await db.execute(sql, values);
   } catch (err) {
     console.error("❌ Lỗi updatePhong:", err);
