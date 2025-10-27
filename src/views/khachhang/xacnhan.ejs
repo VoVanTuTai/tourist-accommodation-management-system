@@ -1,0 +1,152 @@
+<div class="success-wrapper">
+    <div class="success-box">
+      <div class="circle-check">
+        <div class="checkmark"></div>
+      </div>
+  
+      <h2>🎉 Đặt phòng thành công!</h2>
+  
+      <div class="info-card">
+        <p><strong>Mã đơn:</strong> <%= don?.MaDon || "Không xác định" %></p>
+        <p><strong>Trạng thái:</strong> <%= don?.TrangThai || "Chưa thanh toán" %></p>
+        <p><strong>Tổng tiền:</strong> <%= don?.TongTien?.toLocaleString() %> VND</p>
+      </div>
+  
+      <p class="thank-text">
+        Cảm ơn bạn đã sử dụng dịch vụ của <strong>Tourist Management</strong>!  
+        Vui lòng tiến hành thanh toán để hoàn tất quá trình đặt phòng.
+      </p>
+  
+      <div class="btn-group">
+        <a href="/" class="btn-home">🏠 Về trang chủ</a>
+        <a href="/khachhang/thanh-toan/<%= don?.MaDon %>" class="btn-pay">💳 Thanh toán ngay</a>
+      </div>
+    </div>
+  </div>
+  
+  <style>
+    .success-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(to bottom right, #eef4ff, #f3e8ff);
+      min-height: 80vh;
+      padding: 50px 20px;
+    }
+  
+    .success-box {
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      text-align: center;
+      padding: 40px 60px;
+      max-width: 600px;
+      transition: all 0.3s ease;
+    }
+  
+    .success-box:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+    }
+  
+    .circle-check {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: #4caf50;
+      margin: 0 auto 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  
+    .checkmark {
+      width: 45px;
+      height: 25px;
+      border-left: 5px solid #fff;
+      border-bottom: 5px solid #fff;
+      transform: rotate(-45deg);
+      animation: drawCheck 0.6s ease forwards;
+    }
+  
+    @keyframes drawCheck {
+      from {
+        opacity: 0;
+        transform: scale(0.5) rotate(-45deg);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) rotate(-45deg);
+      }
+    }
+  
+    h2 {
+      color: #0077b6;
+      margin-bottom: 25px;
+      font-weight: 700;
+      font-size: 26px;
+    }
+  
+    .info-card {
+      background: #f7faff;
+      border: 1px solid #d6e0ff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+  
+    .info-card p {
+      color: #333;
+      font-size: 16px;
+      margin: 6px 0;
+    }
+  
+    .thank-text {
+      color: #555;
+      line-height: 1.6;
+      font-size: 15px;
+      margin-bottom: 30px;
+    }
+  
+    .thank-text strong {
+      color: #0077b6;
+    }
+  
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+  
+    .btn-home, .btn-pay {
+      padding: 12px 24px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      color: #fff;
+      transition: all 0.25s ease;
+    }
+  
+    .btn-home {
+      background: linear-gradient(135deg, #6c757d, #9ea4aa);
+    }
+  
+    .btn-home:hover {
+      background: linear-gradient(135deg, #5c636a, #7c838a);
+      transform: translateY(-2px);
+    }
+  
+    .btn-pay {
+      background: linear-gradient(135deg, #00b4d8, #0077b6);
+      box-shadow: 0 4px 10px rgba(0, 119, 182, 0.3);
+    }
+  
+    .btn-pay:hover {
+      background: linear-gradient(135deg, #0096c7, #005f8a);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 119, 182, 0.4);
+    }
+  </style>
+  

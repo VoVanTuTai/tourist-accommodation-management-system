@@ -1,11 +1,8 @@
-
 <div class="login-container">
   <div class="login-box">
     <h2>Đăng nhập tài khoản</h2>
 
-    <%
-      let success = null; 
-      if (success=='true') { %>
+    <% if (success) { %>
       <div class="success-box">🎉 Đăng ký thành công! Vui lòng đăng nhập.</div>
     <% } %>
 
@@ -16,13 +13,25 @@
     <form action="/khachhang/dangnhap" method="POST" class="login-form">
       <div class="form-group">
         <label for="Email">Email:</label>
-        <input type="email" id="Email" name="Email" placeholder="Nhập email của bạn"
-               value="<%= old.Email || '' %>" required>
+        <input 
+          type="email" 
+          id="Email" 
+          name="Email" 
+          placeholder="Nhập email của bạn"
+          value="<%= old.Email || '' %>" 
+          required
+        >
       </div>
 
       <div class="form-group">
         <label for="MatKhau">Mật khẩu:</label>
-        <input type="password" id="MatKhau" name="MatKhau" placeholder="Nhập mật khẩu" required>
+        <input 
+          type="password" 
+          id="MatKhau" 
+          name="MatKhau" 
+          placeholder="Nhập mật khẩu" 
+          required
+        >
       </div>
 
       <div class="form-group remember-me">
@@ -130,5 +139,18 @@
     background: #e8f8e8;
     border: 1px solid #b8e6b8;
     color: #006400;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  a {
+    color: #0077b6;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
   }
 </style>

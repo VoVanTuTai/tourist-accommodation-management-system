@@ -8,12 +8,19 @@ const path = require("path");
 // -------------------------
 exports.renderPhongList = async (req, res) => {
   try {
-    const maNCC = 1; // NCC đăng nhập giả định
-    const rooms = await Phong.getPhongByNCC(maNCC);
-    res.render("nhacungcap/danhsachphong", { rooms });
+    const phongList = await Phong.getAllPhong();
+    res.render("khachhang/danhsachphong", {
+      phongList,
+      message: null,
+      query: {}
+    });
   } catch (err) {
-    console.error("❌ Lỗi khi tải danh sách phòng:", err);
-    res.status(500).send("Lỗi khi tải danh sách phòng");
+    console.error("❌ Lỗi renderPhongList:", err);
+    res.render("khachhang/danhsachphong", {
+      phongList: [],
+      message: "Lỗi tải danh sách phòng.",
+      query: {}
+    });
   }
 };
 

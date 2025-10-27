@@ -4,29 +4,29 @@ const expressLayouts = require("express-ejs-layouts");
 const session = require("express-session");
 const MySQLStore = require("express-mysql-session")(session);
 
+const app = express();
+
 // ====== Import routes ======
 const homeRoutes = require("./src/routes/homeRoutes");
 const phongRoutes = require("./src/routes/phongRoutes");
 const khachhangRoutes = require("./src/routes/khachhangRoutes");
 const timkiemRoutes = require("./src/routes/timkiemRoutes");
-const diachiRoutes = require('./src/routes/diachiRoutes');
-const loaiphongRoutes = require('./src/routes/loaiphongRoutes');
-const nhaCungCapRoutes = require('./src/routes/nhaCungCapRoutes');
-const app = express();
+const diachiRoutes = require("./src/routes/diachiRoutes");
+const loaiphongRoutes = require("./src/routes/loaiphongRoutes");
+const nhaCungCapRoutes = require("./src/routes/nhaCungCapRoutes");
+const datPhongRoutes = require("./src/routes/datPhongRoutes");
 
 // ====== Thiết lập EJS + Layout ======
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "src", "views"));
 app.use(expressLayouts);
-// Nếu bạn có layout.ejs chung, bật dòng dưới
-// app.set("layout", "layout");
 
 // ====== Middleware cơ bản ======
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "src", "public")));
 
-// ====== Cấu hình kết nối MySQL + Session ======
+// ====== Cấu hình MySQL + Session ======
 const dbConfig = {
   host: "localhost",
   user: "root",
@@ -53,28 +53,34 @@ app.use((req, res, next) => {
   next();
 });
 
-// ====== Định nghĩa routes ======
-app.use("/", homeRoutes);
-app.use("/phong", phongRoutes);
-app.use("/khachhang", khachhangRoutes);
-app.use("/nhacungcap", nhaCungCapRoutes);
+// ====== Giả lập NCC (test tạm thời) ======
+// ⚠️ Đặt TRƯỚC khi dùng route /nhacungcap
 app.use((req, res, next) => {
   if (!req.session.ncc) {
     req.session.ncc = {
       MaNCC: 1,
       TenNCC: "Khách sạn Hoàng Gia",
-      Email: "hoanggia@example.com"
+      Email: "hoanggia@example.com",
     };
   }
   next();
 });
+
+// ====== Định nghĩa routes ======
+app.use("/", homeRoutes);
+app.use("/phong", phongRoutes);
 app.use("/timkiem", timkiemRoutes);
-app.use('/api', diachiRoutes);
-app.use('/api/loaiphong', loaiphongRoutes);
+app.use("/api", diachiRoutes);
+app.use("/api/loaiphong", loaiphongRoutes);
+
+// ====== Gộp route khách hàng ======
+app.use("/khachhang", khachhangRoutes);
+app.use("/khachhang", datPhongRoutes);
+
 app.use("/nhacungcap", nhaCungCapRoutes);
+
 // ====== Khởi động server ======
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () =>
-    console.log(`🚀 Server chạy tại: http://localhost:${PORT}`)
-);
-
+app.listen(PORT, () => {
+  console.log(`🚀 Server chạy tại: http://localhost:${PORT}`);
+});

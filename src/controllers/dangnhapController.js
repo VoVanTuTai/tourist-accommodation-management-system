@@ -13,7 +13,7 @@ function isValidEmail(email) {
 // ===============================
 exports.getLoginPage = (req, res) => {
   res.render('khachhang/dangnhap', {
-    error: null,
+    error: req.query.error || null, // ✅ nhận lỗi từ middleware nếu chưa đăng nhập
     success: req.query.success === 'true',
     old: {},
     user: req.session.user || null
@@ -45,8 +45,7 @@ exports.login = async (req, res) => {
       return res.render('khachhang/dangnhap', { error: 'Email không hợp lệ!', old, success: null });
 
     // 3️⃣ Lấy thông tin tài khoản từ DB
-    const account = await TaiKhoan.findByTaiKhoan(Email); // ✅ Không destructuring nữa
-
+    const account = await TaiKhoan.findByTaiKhoan(Email);
     if (!account)
       return res.render('khachhang/dangnhap', { error: 'Email hoặc mật khẩu không đúng!', old, success: null });
 
@@ -61,14 +60,12 @@ exports.login = async (req, res) => {
 
     // 6️⃣ Xử lý “Ghi nhớ đăng nhập”
     if (rememberMe) {
-      // cookie tồn tại 2 ngày
-      req.session.cookie.maxAge = 2 * 24 * 60 * 60 * 1000;
+      req.session.cookie.maxAge = 2 * 24 * 60 * 60 * 1000; // 2 ngày
     } else {
-      // cookie hết khi tắt trình duyệt
-      req.session.cookie.expires = false;
+      req.session.cookie.expires = false; // hết khi tắt trình duyệt
     }
 
-    // 7️⃣ Tạo session đăng nhập
+    // 7️⃣ Tạo session đăng nhập (chỉ giữ thông tin cần thiết)
     req.session.user = {
       MaTaiKhoan: account.MaTaiKhoan,
       TaiKhoan: account.TaiKhoan,
@@ -76,8 +73,13 @@ exports.login = async (req, res) => {
       TrangThai: account.TrangThai
     };
 
-    // 8️⃣ Điều hướng về trang chủ
-    res.redirect('/');
+    // ✅ 8️⃣ Sau khi đăng nhập thành công:
+    // Nếu trước đó có lưu URL cần quay lại (vd: /khachhang/dat-phong/5) → quay về đó
+    // Ngược lại, về trang chủ
+    const redirectUrl = req.session.redirectAfterLogin || '/';
+    delete req.session.redirectAfterLogin;
+
+    res.redirect(redirectUrl);
   } catch (err) {
     console.error('🔥 Lỗi đăng nhập:', err);
     res.render('khachhang/dangnhap', {

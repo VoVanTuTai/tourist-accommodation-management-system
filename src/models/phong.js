@@ -32,15 +32,15 @@ exports.getPhongByNCC = async (maNhaCungCap) => {
 // ============================
 // Lấy thông tin chi tiết 1 phòng
 // ============================
-exports.getPhongById = async (maPhong) => {
-  try {
-    const [rows] = await db.execute("SELECT * FROM Phong WHERE MaPhong = ?", [maPhong]);
-    return rows[0] || null; // ✅ chỉ trả về 1 object
-  } catch (err) {
-    console.error("❌ Lỗi getPhongById:", err);
-    throw err;
-  }
-};
+//exports.getPhongById = async (maPhong) => {
+  //try {
+    //const [rows] = await db.execute("SELECT * FROM Phong WHERE MaPhong = ?", [maPhong]);
+    //return rows[0] || null; // ✅ chỉ trả về 1 object
+  //} catch (err) {
+    //console.error("❌ Lỗi getPhongById:", err);
+    //throw err;
+  //}
+//};
 
 // ============================
 // Thêm phòng mới
@@ -64,6 +64,35 @@ exports.addPhong = async (data) => {
     await db.execute(sql, values);
   } catch (err) {
     console.error("❌ Lỗi addPhong:", err);
+    throw err;
+  }
+};
+
+exports.getAllPhong = async () => {
+  try {
+    const sql = `
+      SELECT 
+        p.MaPhong,
+        p.TenPhong,
+        p.Gia,
+        p.SucChua,
+        p.TinhTrang,
+        p.HinhAnh,
+        p.DanhGia,
+        lp.TenLoai,
+        d.ChiTiet AS DiaChiChiTiet,
+        x.TenXa,
+        t.TenTinh
+      FROM phong p
+      LEFT JOIN loaiphong lp ON p.MaLoai = lp.MaLoai
+      LEFT JOIN diachi d ON p.MaDiaChi = d.MaDiaChi
+      LEFT JOIN xa x ON d.MaXa = x.MaXa
+      LEFT JOIN tinh t ON x.MaTinh = t.MaTinh;
+    `;
+    const [rows] = await db.execute(sql);
+    return rows;
+  } catch (err) {
+    console.error("❌ Lỗi getAllPhong:", err);
     throw err;
   }
 };
