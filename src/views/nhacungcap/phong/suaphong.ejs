@@ -7,15 +7,17 @@
     body { font-family: "Segoe UI", sans-serif; background: #f5f6f7; }
     .container { max-width: 800px; margin: 40px auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
     label { display: block; margin-top: 10px; font-weight: bold; }
-    input, select { width: 100%; padding: 8px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; }
+    input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; }
     button { margin-top: 20px; width: 100%; padding: 10px; background: #007bff; border: none; color: white; font-size: 16px; border-radius: 6px; cursor: pointer; }
     button:hover { background: #0056b3; }
+    img { border-radius: 6px; margin-top: 10px; }
   </style>
 </head>
 <body>
 <div class="container">
-  <h2>Sửa thông tin phòng</h2>
-  <form action="/nhacungcap/phong/suaphong" method="POST" enctype="multipart/form-data">
+  <h2>✏️ Sửa thông tin phòng</h2>
+
+  <form action="/nhacungcap/phong/suaphong/<%= phong.MaPhong %>" method="POST" enctype="multipart/form-data">
     <input type="hidden" name="MaPhong" value="<%= phong.MaPhong %>">
 
     <label>Tên phòng:</label>
@@ -34,14 +36,19 @@
     <label>Sức chứa:</label>
     <input type="number" name="SucChua" value="<%= phong.SucChua %>" required>
 
+    <!-- 📝 Mô tả -->
+    <label>Mô tả:</label>
+    <textarea name="MoTa" rows="4" placeholder="Mô tả đặc điểm, tiện nghi của phòng..."><%= phong.MoTa || '' %></textarea>
+
     <label>Tình trạng:</label>
     <select name="TinhTrang" required>
-      <option value="Trống" <%= phong.TinhTrang === 'Trống' ? 'selected' : '' %>>Trống</option>
-      <option value="Đang thuê" <%= phong.TinhTrang === 'Đang thuê' ? 'selected' : '' %>>Đang thuê</option>
+      <option value="1" <%= phong.TinhTrang === 1 ? 'selected' : '' %>>🟢 Còn trống</option>
+      <option value="0" <%= phong.TinhTrang === 0 ? 'selected' : '' %>>🔴 Đã đặt</option>
+      <option value="2" <%= phong.TinhTrang === 2 ? 'selected' : '' %>>🟠 Bảo trì</option>
     </select>
 
     <hr>
-    <h3>Địa chỉ phòng</h3>
+    <h3>📍 Địa chỉ phòng</h3>
 
     <label>Chi tiết địa chỉ:</label>
     <input type="text" name="ChiTietDiaChi" value="<%= diaChiHienTai ? diaChiHienTai.ChiTiet : '' %>" required>
@@ -56,9 +63,7 @@
     <label>Xã:</label>
     <select name="MaXa" id="selectXa" required>
       <% xas.forEach(x => { %>
-        <option value="<%= x.MaXa %>" data-tinh="<%= x.MaTinh %>" <%= diaChiHienTai && x.MaXa === diaChiHienTai.MaXa ? 'selected' : '' %>>
-          <%= x.TenXa %>
-        </option>
+        <option value="<%= x.MaXa %>" data-tinh="<%= x.MaTinh %>" <%= diaChiHienTai && x.MaXa === diaChiHienTai.MaXa ? 'selected' : '' %>><%= x.TenXa %></option>
       <% }) %>
     </select>
 
@@ -71,23 +76,21 @@
         const tinhValue = selectTinh.value;
         selectXa.innerHTML = '';
         allXaOptions.forEach(opt => {
-          if (opt.dataset.tinh === tinhValue) {
-            selectXa.appendChild(opt);
-          }
+          if (opt.dataset.tinh === tinhValue) selectXa.appendChild(opt);
         });
       }
 
       selectTinh.addEventListener('change', filterXaByTinh);
-      filterXaByTinh(); // gọi lần đầu để lọc đúng xã của tỉnh hiện tại
+      filterXaByTinh(); // Gọi lần đầu để khớp xã của tỉnh hiện tại
     </script>
 
     <label>Ảnh phòng:</label>
     <% if (phong.HinhAnh) { %>
-      <img src="/images/<%= phong.HinhAnh %>" width="120">
+      <img src="/images/<%= phong.HinhAnh %>" width="150">
     <% } %>
-    <input type="file" name="HinhAnh">
+    <input type="file" name="HinhAnh" accept="image/*">
 
-    <button type="submit">Cập nhật phòng</button>
+    <button type="submit">💾 Cập nhật phòng</button>
   </form>
 </div>
 </body>

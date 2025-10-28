@@ -13,6 +13,7 @@ exports.getPhongByNCC = async (maNhaCungCap) => {
         p.SucChua,
         p.TinhTrang,
         p.HinhAnh,
+        p.MoTa,
         p.MaDiaChi,
         p.MaLoai,
         lp.TenLoai,
@@ -36,10 +37,12 @@ exports.getPhongById = async (id) => {
   const sql = `
     SELECT 
       p.*,
+      lp.TenLoai,
       dc.ChiTiet,
       x.TenXa,
       t.TenTinh
     FROM Phong p
+    JOIN LoaiPhong lp ON p.MaLoai = lp.MaLoai
     JOIN DiaChi dc ON p.MaDiaChi = dc.MaDiaChi
     JOIN Xa x ON dc.MaXa = x.MaXa
     JOIN Tinh t ON x.MaTinh = t.MaTinh
@@ -49,25 +52,31 @@ exports.getPhongById = async (id) => {
   return rows[0];
 };
 
+
 // ============================
 // Thêm phòng mới
 // ============================
 exports.addPhong = async (data) => {
   try {
     const sql = `
-      INSERT INTO Phong (TenPhong, MaLoai, Gia, SucChua, TinhTrang, HinhAnh, MaDiaChi, MaNhaCungCap)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO Phong 
+      (TenPhong, MaLoai, Gia, SucChua, MoTa, TinhTrang, HinhAnh, MaDiaChi, MaNhaCungCap)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
+
     const values = [
       data.TenPhong,
       data.MaLoai,
       data.Gia,
       data.SucChua,
+      data.MoTa || null, // ✅ thêm mô tả vào đây
       data.TinhTrang,
       data.HinhAnh,
       data.MaDiaChi,
       data.MaNhaCungCap
     ];
+
+    console.log("🧾 SQL Values:", values);
     await db.execute(sql, values);
   } catch (err) {
     console.error("❌ Lỗi addPhong:", err);
@@ -85,7 +94,7 @@ exports.updatePhong = async (data) => {
     const sql = `
       UPDATE Phong
       SET TenPhong = ?, MaLoai = ?, Gia = ?, SucChua = ?, 
-          TinhTrang = ?, HinhAnh = ?, MaDiaChi = ?
+          TinhTrang = ?, HinhAnh = ?, MoTa = ?, MaDiaChi = ?
       WHERE MaPhong = ?
     `;
     const values = [
@@ -95,6 +104,7 @@ exports.updatePhong = async (data) => {
       safe(data.SucChua),
       safe(data.TinhTrang),
       safe(data.HinhAnh),
+      safe(data.MoTa),
       safe(data.MaDiaChi),
       safe(data.MaPhong)
     ];
