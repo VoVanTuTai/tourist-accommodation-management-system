@@ -37,10 +37,12 @@ exports.getPhongById = async (id) => {
   const sql = `
     SELECT 
       p.*,
+      lp.TenLoai,
       dc.ChiTiet,
       x.TenXa,
       t.TenTinh
     FROM Phong p
+    JOIN LoaiPhong lp ON p.MaLoai = lp.MaLoai
     JOIN DiaChi dc ON p.MaDiaChi = dc.MaDiaChi
     JOIN Xa x ON dc.MaXa = x.MaXa
     JOIN Tinh t ON x.MaTinh = t.MaTinh
@@ -49,6 +51,7 @@ exports.getPhongById = async (id) => {
   const [rows] = await db.execute(sql, [id]);
   return rows[0];
 };
+
 
 // ============================
 // Thêm phòng mới
