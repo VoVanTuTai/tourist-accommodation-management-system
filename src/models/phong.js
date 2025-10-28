@@ -56,20 +56,24 @@ exports.getPhongById = async (id) => {
 exports.addPhong = async (data) => {
   try {
     const sql = `
-      INSERT INTO Phong (TenPhong, MaLoai, Gia, SucChua, TinhTrang, HinhAnh, MaDiaChi, MaNhaCungCap)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO Phong 
+      (TenPhong, MaLoai, Gia, SucChua, MoTa, TinhTrang, HinhAnh, MaDiaChi, MaNhaCungCap)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
+
     const values = [
       data.TenPhong,
       data.MaLoai,
       data.Gia,
       data.SucChua,
+      data.MoTa || null, // ✅ thêm mô tả vào đây
       data.TinhTrang,
       data.HinhAnh,
-      data.MoTa,
       data.MaDiaChi,
       data.MaNhaCungCap
     ];
+
+    console.log("🧾 SQL Values:", values);
     await db.execute(sql, values);
   } catch (err) {
     console.error("❌ Lỗi addPhong:", err);

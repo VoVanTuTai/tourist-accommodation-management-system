@@ -1,16 +1,26 @@
 <h2>🏨 Danh sách phòng của <%= ncc.TenNCC %></h2>
 
-<!-- Bộ lọc tình trạng -->
-<form method="GET" action="/nhacungcap/phong" style="margin-bottom: 20px;">
-  <label for="filter"><strong>Lọc theo tình trạng:</strong></label>
-  <select name="filter" id="filter" onchange="this.form.submit()">
-    <option value="all" <%= currentFilter === 'all' ? 'selected' : '' %>>Tất cả</option>
-    <option value="1" <%= currentFilter === '1' ? 'selected' : '' %>>🟢 Còn trống</option>
-    <option value="0" <%= currentFilter === '0' ? 'selected' : '' %>>🔴 Đã đặt</option>
-    <option value="2" <%= currentFilter === '2' ? 'selected' : '' %>>🟠 Bảo trì</option>
-  </select>
-</form>
+<!-- Thanh hành động đầu trang -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+  <!-- Bộ lọc tình trạng -->
+  <form method="GET" action="/nhacungcap/phong" style="margin: 0;">
+    <label for="filter"><strong>Lọc theo tình trạng:</strong></label>
+    <select name="filter" id="filter" onchange="this.form.submit()">
+      <option value="all" <%= currentFilter === 'all' ? 'selected' : '' %>>Tất cả</option>
+      <option value="1" <%= currentFilter === '1' ? 'selected' : '' %>>🟢 Còn trống</option>
+      <option value="0" <%= currentFilter === '0' ? 'selected' : '' %>>🔴 Đã đặt</option>
+      <option value="2" <%= currentFilter === '2' ? 'selected' : '' %>>🟠 Bảo trì</option>
+    </select>
+  </form>
 
+  <!-- Nút thêm phòng -->
+  <a href="/nhacungcap/phong/them" 
+     style="background: #28a745; color: white; padding: 8px 14px; border-radius: 6px; text-decoration: none; font-weight: 500;">
+    ➕ Thêm phòng
+  </a>
+</div>
+
+<!-- Bảng danh sách -->
 <table border="1" cellspacing="0" cellpadding="8" style="width: 100%; border-collapse: collapse; text-align: center;">
   <thead style="background-color: #f2f2f2;">
     <tr>

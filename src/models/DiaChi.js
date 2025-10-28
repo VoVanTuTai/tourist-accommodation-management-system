@@ -14,14 +14,17 @@ exports.getById = async (maDiaChi) => {
 };
 
 // Tạo mới địa chỉ
-exports.create = async ({ ChiTiet, MaXa, MaNhaCungCap }) => {
+
+
+exports.create = async (data) => {
   const sql = `
-    INSERT INTO DiaChi (ChiTiet, MaXa, MaNhaCungCap)
-    VALUES (?, ?, ?)
+    INSERT INTO DiaChi (ChiTiet, MaXa)
+    VALUES (?, ?)
   `;
-  const [result] = await db.execute(sql, [ChiTiet, MaXa, MaNhaCungCap]);
+  const [result] = await db.execute(sql, [data.ChiTiet, data.MaXa]);
   return result.insertId;
 };
+
 
 // Cập nhật địa chỉ hiện có
 exports.update = async ({ MaDiaChi, ChiTiet, MaXa }) => {

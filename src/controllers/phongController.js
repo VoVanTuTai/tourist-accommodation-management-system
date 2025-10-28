@@ -88,38 +88,52 @@ exports.renderThemPhong = async (req, res) => {
 exports.handleThemPhong = async (req, res) => {
   try {
     const ncc = req.session.ncc;
-    if (!ncc) return res.status(401).send("Vui lòng đăng nhập");
+    if (!ncc) return res.status(401).send("⚠️ Vui lòng đăng nhập trước khi thêm phòng.");
 
-    const { TenPhong, MaLoai, Gia, SucChua, MaXa, ChiTietDiaChi } = req.body;
+    const { TenPhong, MaLoai, Gia, SucChua, MaXa, ChiTietDiaChi, MoTa } = req.body;
     const image = req.file ? req.file.filename : null;
 
-    // 🧭 Tạo địa chỉ mới trước (vì phòng mới cần có MaDiaChi)
-    const newMaDiaChi = await DiaChi.create({
-      ChiTiet: ChiTietDiaChi,
-      MaXa,
-      MaNhaCungCap: ncc.MaNCC
-    });
+    console.log("📋 Dữ liệu nhận từ form:", req.body);
 
-    // 🧩 Tạo mới phòng
+    if (!TenPhong || !MaLoai || !Gia || !SucChua || !MaXa || !ChiTietDiaChi) {
+      console.error("⚠️ Thiếu dữ liệu bắt buộc:", { TenPhong, MaLoai, Gia, SucChua, MaXa, ChiTietDiaChi });
+      return res.status(400).send("Vui lòng nhập đầy đủ thông tin phòng!");
+    }
+
+    const newMaDiaChi = await DiaChi.create({ ChiTiet: ChiTietDiaChi, MaXa });
+
+    if (!newMaDiaChi) {
+      console.error("❌ Không thể tạo địa chỉ, dữ liệu đầu vào:", { ChiTietDiaChi, MaXa });
+      return res.status(500).send("Không thể tạo địa chỉ mới cho phòng.");
+    }
+
+    // ✅ Gán đúng MoTa từ form
     const data = {
       TenPhong,
       MaLoai,
+      MoTa: MoTa || null,
       Gia,
       SucChua,
-      TinhTrang: 1, // mặc định là còn trống
-      HinhAnh: image,
+      TinhTrang: 1,
+      HinhAnh: image ?? null,
       MaDiaChi: newMaDiaChi,
-      MaNhaCungCap: ncc.MaNCC
+      MaNhaCungCap: ncc.MaNCC ?? null
     };
+
+    console.log("📦 Chuẩn bị thêm phòng:", data);
 
     await Phong.addPhong(data);
 
+    console.log("✅ Thêm phòng thành công!");
     res.redirect("/nhacungcap/phong");
   } catch (err) {
     console.error("❌ Lỗi handleThemPhong:", err);
     res.status(500).send("Lỗi khi thêm phòng mới");
   }
 };
+
+
+
 // -------------------------
 // HIỂN THỊ FORM SỬA PHÒNG
 // -------------------------
