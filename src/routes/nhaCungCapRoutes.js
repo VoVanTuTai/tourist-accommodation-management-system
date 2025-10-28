@@ -28,6 +28,7 @@ router.post(
 
 // 🔑 Nhà cung cấp đăng nhập
 router.get("/dangnhap", nhaCungCapController.renderDangNhapNhaCungCap);
+router.post("/dangnhap", nhaCungCapController.loginNhaCungCap);
 
 // ================== QUẢN LÝ PHÒNG ==================
 

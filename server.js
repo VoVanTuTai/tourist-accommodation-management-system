@@ -60,11 +60,11 @@ app.use("/khachhang", khachhangRoutes);
 app.use("/nhacungcap", nhaCungCapRoutes);
 app.use((req, res, next) => {
   if (!req.session.ncc) {
-    req.session.ncc = {
-      MaNCC: 1,
-      TenNCC: "Khách sạn Hoàng Gia",
-      Email: "hoanggia@example.com"
-    };
+    // req.session.ncc = {
+    //   MaNCC: 1,
+    //   TenNCC: "Khách sạn Hoàng Gia",
+    //   Email: "hoanggia@example.com"
+    // };
   }
   next();
 });
