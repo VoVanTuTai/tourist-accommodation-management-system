@@ -1,28 +1,76 @@
-<h2>Thêm phòng mới</h2>
+<h2>➕ Thêm phòng mới</h2>
 
-<form action="/phong/add" method="POST" enctype="multipart/form-data">
-  <label>Tên phòng:</label><br>
-  <input type="text" name="TenPhong" required><br><br>
-  <label>Loại phòng:</label><br>
-  <select name="MaLoai" required>
-  <% loaiPhongs.forEach(lp => { %>
-    <option value="<%= lp.MaLoai %>"><%= lp.TenLoai %></option>
-  <% }) %>
-  </select><br>
-  <label>Giá (VND):</label><br>
-  <input type="number" name="Gia" required><br><br>
+<form action="/nhacungcap/phong/them" method="POST" enctype="multipart/form-data" style="width: 70%; margin:auto;">
+  <div style="margin-bottom: 10px;">
+    <label><strong>Tên phòng:</strong></label><br>
+    <input type="text" name="TenPhong" required style="width:100%;">
+  </div>
 
-  <label>Sức chứa:</label><br>
-  <input type="number" name="SucChua" required><br><br>
+  <div style="margin-bottom: 10px;">
+    <label><strong>Loại phòng:</strong></label><br>
+    <select name="MaLoai" required style="width:100%;">
+      <% loaiPhongs.forEach(loai => { %>
+        <option value="<%= loai.MaLoai %>"><%= loai.TenLoai %></option>
+      <% }) %>
+    </select>
+  </div>
 
-  <label>Tình trạng:</label><br>
-  <select name="TinhTrang">
-    <option value="1">Còn trống</option>
-    <option value="0">Đã đặt</option>
-  </select><br><br>
+  <div style="margin-bottom: 10px;">
+    <label><strong>Giá (VND):</strong></label><br>
+    <input type="number" name="Gia" min="0" required style="width:100%;">
+  </div>
 
-  <label>Hình ảnh:</label><br>
-  <input type="file" name="HinhAnh" accept="image/*"><br><br>
+  <div style="margin-bottom: 10px;">
+    <label><strong>Sức chứa:</strong></label><br>
+    <input type="number" name="SucChua" min="1" required style="width:100%;">
+  </div>
 
-  <button type="submit">Thêm phòng</button>
+  <!-- 📝 Thêm trường MÔ TẢ -->
+  <div style="margin-bottom: 10px;">
+    <label><strong>Mô tả:</strong></label><br>
+    <textarea name="MoTa" rows="4" placeholder="Mô tả đặc điểm, tiện nghi, hướng view của phòng..." style="width:100%;"></textarea>
+  </div>
+
+  <hr>
+
+  <div style="margin-bottom: 10px;">
+    <label><strong>Địa chỉ:</strong></label><br>
+
+    <select name="MaTinh" id="MaTinh" required onchange="filterXa()" style="width:100%; margin-bottom: 10px;">
+      <option value="">-- Chọn tỉnh --</option>
+      <% tinhs.forEach(t => { %>
+        <option value="<%= t.MaTinh %>"><%= t.TenTinh %></option>
+      <% }) %>
+    </select>
+
+    <select name="MaXa" id="MaXa" required style="width:100%;">
+      <option value="">-- Chọn xã --</option>
+      <% xas.forEach(x => { %>
+        <option value="<%= x.MaXa %>" data-tinh="<%= x.MaTinh %>"><%= x.TenXa %></option>
+      <% }) %>
+    </select>
+
+    <input type="text" name="ChiTietDiaChi" placeholder="Số nhà, đường, thôn..." required style="width:100%; margin-top:10px;">
+  </div>
+
+  <div style="margin-bottom: 10px;">
+    <label><strong>Hình ảnh:</strong></label><br>
+    <input type="file" name="HinhAnh" accept="image/*">
+  </div>
+
+  <div style="margin-top: 20px;">
+    <button type="submit">💾 Lưu phòng</button>
+    <a href="/nhacungcap/phong" style="margin-left:10px;">⬅️ Quay lại</a>
+  </div>
 </form>
+
+<script>
+  function filterXa() {
+    const maTinh = document.getElementById('MaTinh').value;
+    const options = document.querySelectorAll('#MaXa option');
+    options.forEach(o => {
+      if (!o.value) return;
+      o.style.display = o.dataset.tinh === maTinh ? 'block' : 'none';
+    });
+  }
+</script>

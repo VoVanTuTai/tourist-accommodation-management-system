@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-
+const phongController = require("../controllers/phongController");
 const nhaCungCapController = require("../controllers/nhaCungCapController");
-const nccPhongController = require("../controllers/nccPhongController");
+
+
 const uploadImage = require("../middlewares/upload");
 
 // ================= CẤU HÌNH UPLOAD ẢNH =================
@@ -31,19 +32,21 @@ router.get("/dangnhap", nhaCungCapController.renderDangNhapNhaCungCap);
 
 // ================== QUẢN LÝ PHÒNG ==================
 
-// 📋 Danh sách phòng của NCC
-router.get("/phong", nccPhongController.renderDanhSachPhong);
+// 📋 Danh sách phòng
+router.get("/phong", phongController.renderDanhSachPhongCuaNhaCungCap);
 
 // ➕ Thêm phòng
-router.get("/phong/them", nccPhongController.renderThemPhong);
-router.post("/phong/them", upload.single("HinhAnh"), nccPhongController.handleThemPhong);
+router.get("/phong/them", phongController.renderThemPhong);
+router.post("/phong/them", upload.single("HinhAnh"), phongController.handleThemPhong);
 
 // ✏️ Sửa phòng
-router.get("/phong/suaphong/:id", nccPhongController.renderSuaPhong);
-router.post("/phong/suaphong/:id", upload.single("HinhAnh"), nccPhongController.handleSuaPhong);
+router.get("/phong/suaphong/:id", phongController.renderSuaPhong);
+router.post("/phong/suaphong/:id", upload.single("HinhAnh"), phongController.handleSuaPhong);
 
-// 🔁 Cập nhật trạng thái phòng (Hoạt động / Bảo trì / Hết chỗ)
-router.get("/phong/trangthai/:id", nccPhongController.renderCapNhatTrangThai);
-router.post("/phong/trangthai/:id", nccPhongController.handleCapNhatTrangThai);
+// 🔁 Cập nhật trạng thái
+router.get("/phong/trangthai/:id", phongController.renderUpdateStatus);
+router.post("/phong/trangthai/:id", phongController.handleUpdateStatus);
 
+// 👁️ Xem chi tiết phòng (dành cho NCC)
+router.get("/phong/chitiet/:id", phongController.renderChiTietPhong);
 module.exports = router;

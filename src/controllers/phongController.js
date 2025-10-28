@@ -1,16 +1,58 @@
 const Phong = require("../models/phong"); // Model phòng
 const LoaiPhong = require("../models/loaiPhong"); // Model loại phòng
 const fs = require("fs");
+const DiaChi = require("../models/DiaChi");
+const db = require("../../config/db");
 const path = require("path");
 
 // -------------------------
 // HIỂN THỊ DANH SÁCH PHÒNG
 // -------------------------
+exports.renderDanhSachPhongCuaNhaCungCap = async (req, res) => {
+  try {
+    const ncc = req.session.ncc; // lấy NCC đăng nhập
+    if (!ncc) return res.status(401).send("Vui lòng đăng nhập");
+
+    const filter = req.query.filter || "all"; // lấy filter từ query ?filter=
+    const rooms = await Phong.getPhongByNCC(ncc.MaNCC);
+
+    // Lọc theo trạng thái nếu có filter
+    let filteredRooms = rooms;
+    if (filter !== "all") {
+      const filterValue = parseInt(filter); // vì TinhTrang là số 0,1,2
+      filteredRooms = rooms.filter((p) => p.TinhTrang === filterValue);
+    }
+
+    res.render("nhacungcap/phong/danhsach", {
+      rooms: filteredRooms,
+      currentFilter: filter,
+      ncc,
+    });
+  } catch (err) {
+    console.error("❌ Lỗi renderDanhSachPhong:", err);
+    res.status(500).send("Lỗi khi tải danh sách phòng");
+  }
+};
+exports.renderChiTietPhong = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const phong = await Phong.getPhongById(id);
+
+    if (!phong) {
+      return res.status(404).send("Không tìm thấy phòng");
+    }
+
+    res.render("nhacungcap/phong/chitietphong", { phong });
+  } catch (err) {
+    console.error("❌ Lỗi khi tải chi tiết phòng:", err);
+    res.status(500).send("Lỗi khi tải chi tiết phòng");
+  }
+};
 exports.renderPhongList = async (req, res) => {
   try {
     const maNCC = 1; // NCC đăng nhập giả định
     const rooms = await Phong.getPhongByNCC(maNCC);
-    res.render("nhacungcap/danhsachphong", { rooms });
+    res.render("nhacungcap/danhsach", { rooms });
   } catch (err) {
     console.error("❌ Lỗi khi tải danh sách phòng:", err);
     res.status(500).send("Lỗi khi tải danh sách phòng");
@@ -20,132 +62,184 @@ exports.renderPhongList = async (req, res) => {
 // -------------------------
 // HIỂN THỊ FORM THÊM PHÒNG
 // -------------------------
-exports.renderAddPhong = async (req, res) => {
+exports.renderThemPhong = async (req, res) => {
   try {
+    const ncc = req.session.ncc;
+    if (!ncc) return res.status(401).send("Vui lòng đăng nhập");
+
+    // Lấy danh sách loại phòng
     const loaiPhongs = await LoaiPhong.getAll();
-    res.render("ncc/phong/themphong", { loaiPhongs });
+
+    // Lấy danh sách tỉnh và xã để hiển thị select
+    const [tinhs] = await db.execute("SELECT * FROM Tinh");
+    const [xas] = await db.execute("SELECT * FROM Xa");
+
+    // Render form
+    res.render("nhacungcap/phong/themphong", { loaiPhongs, tinhs, xas, ncc });
   } catch (err) {
-    console.error("❌ Lỗi khi tải loại phòng:", err);
-    res.status(500).send("Lỗi khi tải danh sách loại phòng");
+    console.error("❌ Lỗi renderThemPhong:", err);
+    res.status(500).send("Lỗi khi tải form thêm phòng");
   }
 };
 
 // -------------------------
 // XỬ LÝ THÊM PHÒNG
 // -------------------------
-exports.handleAddPhong = async (req, res) => {
+exports.handleThemPhong = async (req, res) => {
   try {
-    const imageName = req.file ? req.file.filename : "";
+    const ncc = req.session.ncc;
+    if (!ncc) return res.status(401).send("Vui lòng đăng nhập");
 
+    const { TenPhong, MaLoai, Gia, SucChua, MaXa, ChiTietDiaChi } = req.body;
+    const image = req.file ? req.file.filename : null;
+
+    // 🧭 Tạo địa chỉ mới trước (vì phòng mới cần có MaDiaChi)
+    const newMaDiaChi = await DiaChi.create({
+      ChiTiet: ChiTietDiaChi,
+      MaXa,
+      MaNhaCungCap: ncc.MaNCC
+    });
+
+    // 🧩 Tạo mới phòng
     const data = {
-      TenPhong: req.body.TenPhong,
-      MaLoai: req.body.MaLoai,
-      Gia: req.body.Gia,
-      SucChua: req.body.SucChua,
-      TinhTrang: req.body.TinhTrang,
-      HinhAnh: imageName,
-      MaDiaChi: req.body.MaDiaChi,
-      MaNhaCungCap: 1, // NCC giả định
+      TenPhong,
+      MaLoai,
+      Gia,
+      SucChua,
+      TinhTrang: 1, // mặc định là còn trống
+      HinhAnh: image,
+      MaDiaChi: newMaDiaChi,
+      MaNhaCungCap: ncc.MaNCC
     };
 
     await Phong.addPhong(data);
-    res.redirect("/phong");
+
+    res.redirect("/nhacungcap/phong");
   } catch (err) {
-    console.error("❌ Lỗi thêm phòng:", err);
+    console.error("❌ Lỗi handleThemPhong:", err);
     res.status(500).send("Lỗi khi thêm phòng mới");
   }
 };
-
 // -------------------------
 // HIỂN THỊ FORM SỬA PHÒNG
 // -------------------------
-exports.renderEditPhong = async (req, res) => {
+exports.renderSuaPhong = async (req, res) => {
   try {
-    const { id } = req.params;
-    const phongResult = await Phong.getPhongById(id);
+    const id = req.params.id;
+    const phong = await Phong.getPhongById(id);
+    if (!phong) return res.status(404).send("Không tìm thấy phòng");
 
-    if (!phongResult || phongResult.length === 0)
-      return res.status(404).send("Không tìm thấy phòng");
-
-    const phong = phongResult[0];
     const loaiPhongs = await LoaiPhong.getAll();
 
-    res.render("ncc/phong/suaphong", { phong, loaiPhongs });
+    // 🧭 Lấy thông tin địa chỉ hiện tại của phòng (nếu có)
+    const diaChiHienTai = phong.MaDiaChi ? await DiaChi.getById(phong.MaDiaChi) : null;
+
+    // 🧭 Lấy danh sách tỉnh và xã (để hiển thị select)
+    const [tinhs] = await db.execute("SELECT * FROM Tinh");
+    const [xas] = await db.execute("SELECT * FROM Xa");
+
+    // ✅ Gửi dữ liệu chính xác sang view
+    res.render("nhacungcap/phong/suaphong", { phong, loaiPhongs, diaChiHienTai, tinhs, xas });
   } catch (err) {
-    console.error("❌ Lỗi khi tải dữ liệu sửa phòng:", err);
-    res.status(500).send("Lỗi khi tải dữ liệu sửa phòng");
+    console.error("❌ Lỗi renderSuaPhong:", err);
+    res.status(500).send("Lỗi khi tải form sửa phòng");
   }
 };
 
 // -------------------------
 // XỬ LÝ CẬP NHẬT PHÒNG
 // -------------------------
-exports.handleEditPhong = async (req, res) => {
+exports.handleSuaPhong = async (req, res) => {
   try {
-    const data = req.body;
-    const newImage = req.file ? req.file.filename : null;
-
-    // Lấy thông tin phòng cũ
-    const result = await Phong.getPhongById(data.MaPhong);
-    if (!result || result.length === 0) {
-      return res.status(404).send("Không tìm thấy phòng để cập nhật");
-    }
-
-    const oldPhong = result[0];
-    const oldImage = oldPhong.HinhAnh;
-
-    // Nếu có ảnh mới thì cập nhật và xóa ảnh cũ
-    if (newImage) {
-      if (oldImage) {
-        const oldPath = path.join(__dirname, "../public/images", oldImage);
-        fs.unlink(oldPath, (err) => {
-          if (err) console.warn("⚠️ Không thể xóa ảnh cũ:", err.message);
-        });
+      const {
+        MaPhong, TenPhong, MaLoai, Gia, SucChua, TinhTrang,
+        MaTinh, MaXa, ChiTietDiaChi
+      } = req.body;
+  
+      const newImage = req.file ? req.file.filename : null;
+  
+      const oldPhong = await Phong.getPhongById(MaPhong);
+      if (!oldPhong) return res.status(404).send("Không tìm thấy phòng");
+  
+      // 🖼️ Xử lý ảnh
+      let finalImage = oldPhong.HinhAnh;
+      if (newImage) {
+        if (oldPhong.HinhAnh) {
+          const oldPath = path.join(__dirname, "../public/images", oldPhong.HinhAnh);
+          fs.unlink(oldPath, (err) => {
+            if (err) console.warn("⚠️ Không thể xóa ảnh cũ:", err.message);
+          });
+        }
+        finalImage = newImage;
       }
-      data.HinhAnh = newImage;
-    } else {
-      data.HinhAnh = oldImage; // Giữ ảnh cũ
+  
+      // 🧭 Xử lý địa chỉ
+      let finalMaDiaChi = oldPhong.MaDiaChi;
+      if (oldPhong.MaDiaChi) {
+        // Cập nhật địa chỉ cũ
+        await DiaChi.update({
+          MaDiaChi: oldPhong.MaDiaChi,
+          ChiTiet: ChiTietDiaChi,
+          MaXa
+        });
+      } else {
+        // Tạo địa chỉ mới nếu chưa có
+        const newId = await DiaChi.create({
+          ChiTiet: ChiTietDiaChi,
+          MaXa,
+          MaNhaCungCap: oldPhong.MaNhaCungCap
+        });
+        finalMaDiaChi = newId;
+      }
+  
+      // 🧩 Cập nhật phòng
+      const updatedData = {
+        MaPhong,
+        TenPhong,
+        MaLoai,
+        Gia,
+        SucChua,
+        TinhTrang,
+        MaDiaChi: finalMaDiaChi,
+        HinhAnh: finalImage
+      };
+  
+      await Phong.updatePhong(updatedData);
+      res.redirect("/nhacungcap/phong");
+    } catch (err) {
+      console.error("❌ Lỗi handleSuaPhong:", err);
+      res.status(500).send("Lỗi khi cập nhật phòng");
     }
-
-    await Phong.updatePhong(data);
-    res.redirect("/phong");
-  } catch (err) {
-    console.error("❌ Lỗi SQL khi cập nhật phòng:", err);
-    res.status(500).send("Lỗi cập nhật phòng");
-  }
 };
 
-// -------------------------
-// HIỂN THỊ FORM CẬP NHẬT TRẠNG THÁI
-// -------------------------
+// ==================== HIỂN THỊ FORM CẬP NHẬT TRẠNG THÁI ====================
 exports.renderUpdateStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await Phong.getPhongById(id);
-    if (!result || result.length === 0)
-      return res.status(404).send("Không tìm thấy phòng");
+    const phong = await Phong.getPhongById(id); // ✅ trả về object
 
-    res.render("ncc/phong/capnhatTrangThaiPhong", { phong: result[0] });
+    if (!phong) {
+      return res.status(404).send("Không tìm thấy phòng");
+    }
+
+    res.render("nhacungcap/phong/capnhatTrangThaiPhong", { phong });
   } catch (err) {
     console.error("❌ Lỗi khi tải form cập nhật trạng thái:", err);
     res.status(500).send("Lỗi khi tải form cập nhật trạng thái phòng");
   }
 };
-
-// -------------------------
-// XỬ LÝ CẬP NHẬT TRẠNG THÁI
-// -------------------------
+// ==================== XỬ LÝ CẬP NHẬT TRẠNG THÁI ====================
 exports.handleUpdateStatus = async (req, res) => {
   try {
     const { MaPhong, TinhTrang } = req.body;
 
     if (!MaPhong || TinhTrang === undefined) {
-      console.warn("⚠️ Thiếu dữ liệu:", req.body);
+      console.warn("⚠️ Thiếu dữ liệu cập nhật trạng thái:", req.body);
       return res.status(400).send("Thiếu thông tin phòng hoặc trạng thái!");
     }
 
     await Phong.updateTrangThaiPhong(MaPhong, TinhTrang);
-    res.redirect("/phong");
+    res.redirect("/nhacungcap/phong");
   } catch (err) {
     console.error("❌ Lỗi khi thay đổi trạng thái phòng:", err);
     res.status(500).send("Lỗi khi thay đổi trạng thái phòng!");

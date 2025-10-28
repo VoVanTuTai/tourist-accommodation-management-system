@@ -13,6 +13,7 @@ exports.getPhongByNCC = async (maNhaCungCap) => {
         p.SucChua,
         p.TinhTrang,
         p.HinhAnh,
+        p.MoTa,
         p.MaDiaChi,
         p.MaLoai,
         lp.TenLoai,
@@ -65,6 +66,7 @@ exports.addPhong = async (data) => {
       data.SucChua,
       data.TinhTrang,
       data.HinhAnh,
+      data.MoTa,
       data.MaDiaChi,
       data.MaNhaCungCap
     ];
@@ -85,7 +87,7 @@ exports.updatePhong = async (data) => {
     const sql = `
       UPDATE Phong
       SET TenPhong = ?, MaLoai = ?, Gia = ?, SucChua = ?, 
-          TinhTrang = ?, HinhAnh = ?, MaDiaChi = ?
+          TinhTrang = ?, HinhAnh = ?, MoTa = ?, MaDiaChi = ?
       WHERE MaPhong = ?
     `;
     const values = [
@@ -95,6 +97,7 @@ exports.updatePhong = async (data) => {
       safe(data.SucChua),
       safe(data.TinhTrang),
       safe(data.HinhAnh),
+      safe(data.MoTa),
       safe(data.MaDiaChi),
       safe(data.MaPhong)
     ];
