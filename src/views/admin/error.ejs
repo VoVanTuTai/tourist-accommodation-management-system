@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title><%= title %></title>
+  <style>
+    body {
+      background: #f4f6f9;
+      font-family: "Segoe UI", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .error-box {
+      background: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 480px;
+      width: 90%;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+      color: #dc3545;
+      font-size: 1.8em;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #333;
+      font-size: 1.05em;
+      margin: 8px 0 18px;
+    }
+
+    a {
+      display: inline-block;
+      text-decoration: none;
+      background: #0d6efd;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: background 0.2s ease;
+    }
+
+    a:hover {
+      background: #0b5ed7;
+    }
+  </style>
+</head>
+<body>
+  <div class="error-box">
+    <h1>🚫 Truy cập bị từ chối</h1>
+    <p><%= message %></p>
+
+    <% if (user) { %>
+      <p>Tài khoản hiện tại: <b><%= user.TaiKhoan %></b> (<%= user.PhanQuyen %>)</p>
+    <% } %>
+
+    <a href="/">← Quay lại trang chủ</a>
+  </div>
+</body>
+</html>
