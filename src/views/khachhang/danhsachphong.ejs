@@ -1,77 +1,48 @@
-<h2>🏨 Danh sách phòng của <%= ncc.TenNCC %></h2>
+<%- include("../partials/timkiem") %>
 
-<!-- Bộ lọc tình trạng -->
-<form method="GET" action="/nhacungcap/phong" style="margin-bottom: 20px;">
-  <label for="filter"><strong>Lọc theo tình trạng:</strong></label>
-  <select name="filter" id="filter" onchange="this.form.submit()">
-    <option value="all" <%= currentFilter === 'all' ? 'selected' : '' %>>Tất cả</option>
-    <option value="1" <%= currentFilter === '1' ? 'selected' : '' %>>🟢 Còn trống</option>
-    <option value="0" <%= currentFilter === '0' ? 'selected' : '' %>>🔴 Đã đặt</option>
-    <option value="2" <%= currentFilter === '2' ? 'selected' : '' %>>🟠 Bảo trì</option>
-  </select>
-</form>
+<div class="container mt-4">
+  <h3 class="text-center mb-3">Kết quả tìm kiếm phòng</h3>
 
-<table border="1" cellspacing="0" cellpadding="8" style="width: 100%; border-collapse: collapse;">
-  <thead style="background-color: #f2f2f2;">
-    <tr>
-      <th>Mã phòng</th>
-      <th>Tên phòng</th>
-      <th>Loại phòng</th>
-      <th>Giá (VNĐ)</th>
-      <th>Sức chứa</th>
-      <th>Tình trạng</th>
-      <th>Hình ảnh</th>
-      <th>Hành động</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% if (rooms.length === 0) { %>
-      <tr>
-        <td colspan="8" style="text-align:center;">Không có phòng nào</td>
-      </tr>
-    <% } else { %>
-      <% rooms.forEach(p => { %>
-        <tr>
-          <td><%= p.MaPhong %></td>
-          <td><%= p.TenPhong %></td>
-          <td><%= p.TenLoai %></td>
-          <td><%= Number(p.Gia).toLocaleString() %></td>
-          <td><%= p.SucChua %></td>
-          <td>
-            <% if (p.TinhTrang === 1) { %>
-              🟢 Còn trống
-            <% } else if (p.TinhTrang === 0) { %>
-              🔴 Đã đặt
-            <% } else { %>
-              🟠 Bảo trì
-            <% } %>
-          </td>
-          <td>
-            <% if (p.HinhAnh) { %>
-              <img src="/images/<%= p.HinhAnh %>" width="80" style="border-radius:5px;">
-            <% } else { %> — <% } %>
-          </td>
+  <% if (message) { %>
+    <div class="alert alert-warning text-center"><%= message %></div>
+  <% } %>
 
-          <td>
-            <!-- 👁️ Nút xem chi tiết luôn hiển thị -->
-            <a href="/nhacungcap/phong/chitiet/<%= p.MaPhong %>">👁️ Xem</a>
+  <% if (phongList && phongList.length > 0) { %>
 
-            <% if (p.TinhTrang === 0) { %>
-              <!-- 🔴 Đã đặt: chỉ xem được -->
-              | <span style="color: gray;">🚫 Không thể thao tác</span>
-
-            <% } else if (p.TinhTrang === 1) { %>
-              <!-- 🟢 Còn trống: xem + cập nhật -->
-              | <a href="/nhacungcap/phong/trangthai/<%= p.MaPhong %>">🔄 Cập nhật trạng thái</a>
-
-            <% } else if (p.TinhTrang === 2) { %>
-              <!-- 🟠 Bảo trì: xem + sửa + cập nhật -->
-              | <a href="/nhacungcap/phong/suaphong/<%= p.MaPhong %>">✏️ Sửa</a> |
-              <a href="/nhacungcap/phong/trangthai/<%= p.MaPhong %>">🔄 Cập nhật trạng thái</a>
-            <% } %>
-          </td>
-        </tr>
-      <% }) %>
+    <% if (query.giaMin || query.giaMax) { %>
+      <p class="text-muted text-center">
+        Kết quả cho phòng có giá từ 
+        <%= parseInt(query.giaMin || 0).toLocaleString() %> ₫ 
+        đến <%= parseInt(query.giaMax || 0).toLocaleString() %> ₫
+      </p>
     <% } %>
-  </tbody>
-</table>
+
+    <div class="row">
+      <% phongList.forEach(phong => { %>
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 shadow-sm">
+            <img src="<%= phong.HinhAnh ? '/uploads/' + phong.HinhAnh : '/public/images/no-image.jpg' %>"
+                 class="card-img-top" alt="Ảnh phòng"
+                 style="height:220px; object-fit:cover;">
+
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title"><%= phong.TenPhong %></h5>
+              <p class="card-text mb-2">
+                <strong>Loại:</strong> <%= phong.TenLoai %><br>
+                <strong>Địa điểm:</strong> <%= phong.TenXa %>, <%= phong.TenTinh %><br>
+                <strong>Giá:</strong> <%= phong.Gia.toLocaleString() %> ₫ / đêm<br>
+                <strong>Đánh giá:</strong> ⭐ <%= phong.DanhGia ? phong.DanhGia.toFixed(1) : 'Chưa có' %>
+              </p>
+              <div class="mt-auto">
+                <a href="/phong/<%= phong.MaPhong %>" class="btn btn-outline-primary w-100">Xem chi tiết</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+
+  <% } else { %>
+    <div class="alert alert-info text-center">Không có phòng nào để hiển thị.</div>
+  <% } %>
+</div>
