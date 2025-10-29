@@ -40,7 +40,7 @@ exports.update = async ({ MaDiaChi, ChiTiet, MaXa }) => {
 exports.addDiaChi = async (ChiTiet, MaXa) => {
   const randomBytes = crypto.randomBytes(5).toString('hex');
   const maDiaChi = `DC_${randomBytes}`.slice(0, 10);
-  const sql = "INSERT INTO DiaChi (MaDiaChi, ChiTiet, MaXa) VALUES (?, ?, ?)";
-  await db.execute(sql, [maDiaChi, ChiTiet, MaXa]);
-  return maDiaChi;
+  const sql = "INSERT INTO DiaChi (ChiTiet, MaXa) VALUES (?, ?)";
+  const [result] = await db.execute(sql, [ChiTiet, MaXa]);
+  return result.insertId;
 };
