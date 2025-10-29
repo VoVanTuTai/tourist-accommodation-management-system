@@ -15,11 +15,11 @@ exports.getPhongById = async (maPhong) => {
         d.ChiTiet AS DiaChiChiTiet,
         x.TenXa,
         t.TenTinh
-      FROM phong p
-      LEFT JOIN loaiphong lp ON p.MaLoai = lp.MaLoai
-      LEFT JOIN diachi d ON p.MaDiaChi = d.MaDiaChi
-      LEFT JOIN xa x ON d.MaXa = x.MaXa
-      LEFT JOIN tinh t ON x.MaTinh = t.MaTinh
+      FROM Phong p
+      LEFT JOIN LoaiPhong lp ON p.MaLoai = lp.MaLoai
+      LEFT JOIN DiaChi d ON p.MaDiaChi = d.MaDiaChi
+      LEFT JOIN Xa x ON d.MaXa = x.MaXa
+      LEFT JOIN Tinh t ON x.MaTinh = t.MaTinh
       WHERE p.MaPhong = ?;
     `;
     const [rows] = await db.execute(sql, [maPhong]);
