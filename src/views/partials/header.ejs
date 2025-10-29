@@ -24,11 +24,11 @@
       <a href="/khachhang/thongtintaikhoan" class="username">👤 <%= session.user.TaiKhoan %></a>
 
       <% if (session.user.PhanQuyen === 'NhaCungCap') { %>
-          <a href="/nha-cung-cap/dashboard" class="btn">Quản lý chỗ ở</a>
+          <a href="/nhacungcap/dashboard" class="btn">Quản lý chỗ ở</a>
       <% } else if (session.user.PhanQuyen === 'Admin') { %>
           <a href="/admin/dashboard" class="btn btn-warning">Trang quản trị</a>
       <% } else { %>
-          <a href="/khachhang/quanlythongtin" class="btn">Tài khoản</a>
+          <a href="/khachhang/thongtintaikhoan" class="btn">Tài khoản</a>
       <% } %>
 
       <a href="/khachhang/dangxuat" class="btn btn-logout">Đăng xuất</a>
