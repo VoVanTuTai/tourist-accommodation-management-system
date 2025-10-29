@@ -77,7 +77,15 @@ exports.login = async (req, res) => {
     };
 
     // 8️⃣ Điều hướng về trang chủ
-    res.redirect('/');
+    if(req.session.user.PhanQuyen === 'Admin'){
+      return  res.redirect('admin/dashboard');
+    }
+    if(req.session.user.PhanQuyen === 'NhaCungCap'){
+      return res.redirect('/nha-cung-cap/dashboard');
+    }
+    else{
+      return res.redirect('/');
+    }
   } catch (err) {
     console.error('🔥 Lỗi đăng nhập:', err);
     res.render('khachhang/dangnhap', {

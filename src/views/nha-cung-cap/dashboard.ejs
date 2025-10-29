@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Bảng điều khiển - Nhà Cung Cấp</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { background-color: #f8f9fa; font-family: "Inter", sans-serif; }
+    .dashboard-container { padding: 2rem; }
+    .card { border: none; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    .card h5 { color: #6c757d; }
+    .value { font-size: 1.9rem; font-weight: 700; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; }
+    .chart-container { margin-top: 3rem; background: white; border-radius: 10px; padding: 1.5rem; box-shadow: 0 3px 8px rgba(0,0,0,0.05); }
+    .welcome { margin-bottom: 2rem; }
+  </style>
+</head>
+<body>
+<% if (!user || user.PhanQuyen !== 'NhaCungCap') { %>
+  <script>window.location.href = '/home';</script>
+<% } else { %>
+
+  <div class="dashboard-container">
+    <div class="welcome">
+      <h2>👋 Xin chào, <%= user.HoTen %>!</h2>
+      <p class="text-muted">Đây là bảng điều khiển tổng quan hoạt động của bạn.</p>
+    </div>
+
+    <!-- Thống kê tổng quan -->
+    <div class="grid">
+      <div class="card p-3 text-center bg-primary text-white">
+        <h5>Tổng số phòng</h5>
+        <div class="value"><%= stats.tongPhong %></div>
+      </div>
+
+      <div class="card p-3 text-center bg-success text-white">
+        <h5>Phòng đang hoạt động</h5>
+        <div class="value"><%= stats.phongHoatDong %></div>
+      </div>
+
+      <div class="card p-3 text-center bg-warning text-dark">
+        <h5>Phòng bảo trì</h5>
+        <div class="value"><%= stats.phongBaoTri %></div>
+      </div>
+
+      <div class="card p-3 text-center bg-info text-white">
+        <h5>Tổng đơn đặt</h5>
+        <div class="value"><%= stats.tongDon %></div>
+      </div>
+
+      <div class="card p-3 text-center bg-danger text-white">
+        <h5>Doanh thu</h5>
+        <div class="value"><%= Number(stats.doanhThu).toLocaleString() %> VND</div>
+      </div>
+    </div>
+
+    <!-- Biểu đồ -->
+    <div class="chart-container mt-5">
+      <h5 class="mb-3">Biểu đồ tình trạng phòng</h5>
+      <canvas id="chart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('chart');
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Đang hoạt động', 'Bảo trì', 'Đã đặt'],
+        datasets: [{
+          label: 'Tình trạng phòng',
+          data: [
+            <%= stats.phongHoatDong %>,
+            <%= stats.phongBaoTri %>,
+            <%= stats.tongPhong - stats.phongHoatDong - stats.phongBaoTri %>
+          ],
+          backgroundColor: ['#28a745', '#ffc107', '#0d6efd'],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } }
+      }
+    });
+  </script>
+
+<% } %>
+</body>
+</html>

@@ -17,6 +17,9 @@
             <% if (session.user.PhanQuyen === 'Admin') { %>
               <li class="nav-item"><a class="nav-link" href="/admin/dashboard">Quản trị</a></li>
             <% } %>
+            <% if (session.user.PhanQuyen === 'NhaCungCap') { %>
+              <li class="nav-item"><a class="nav-link" href="/nha-cung-cap/dashboard">Quản lý</a></li>
+            <% } %>
             <li class="nav-item"><a class="nav-link" href="/khachhang/dangxuat">Đăng xuất</a></li>
             <li class="nav-item">
     <a class="nav-link" href="/khachhang/thongtintaikhoan"> 
