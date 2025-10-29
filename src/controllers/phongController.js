@@ -1,11 +1,61 @@
-const Phong = require("../models/phong"); // Model phòng
-const LoaiPhong = require("../models/loaiPhong"); // Model loại phòng
+const Phong = require("../models/phong");
+const LoaiPhong = require("../models/loaiPhong");
 const fs = require("fs");
+const DiaChi = require("../models/DiaChi");
+const db = require("../../config/db");
 const path = require("path");
 
-// -------------------------
-// HIỂN THỊ DANH SÁCH PHÒNG
-// -------------------------
+/* =====================================================
+   ✅ 1. HIỂN THỊ DANH SÁCH PHÒNG CỦA NHÀ CUNG CẤP
+===================================================== */
+exports.renderDanhSachPhongCuaNhaCungCap = async (req, res) => {
+  try {
+    const ncc = req.session.ncc; // Lấy thông tin NCC đăng nhập
+    if (!ncc) return res.status(401).send("Vui lòng đăng nhập");
+
+    const filter = req.query.filter || "all"; // Lấy filter từ query (nếu có)
+    const rooms = await Phong.getPhongByNCC(ncc.MaNCC);
+
+    // Lọc theo trạng thái
+    let filteredRooms = rooms;
+    if (filter !== "all") {
+      const filterValue = parseInt(filter); // vì TinhTrang là số
+      filteredRooms = rooms.filter(p => p.TinhTrang === filterValue);
+    }
+
+    res.render("nhacungcap/phong/danhsach", {
+      rooms: filteredRooms,
+      currentFilter: filter,
+      ncc
+    });
+  } catch (err) {
+    console.error("❌ Lỗi renderDanhSachPhongCuaNhaCungCap:", err);
+    res.status(500).send("Lỗi khi tải danh sách phòng");
+  }
+};
+
+/* =====================================================
+   ✅ 2. HIỂN THỊ CHI TIẾT PHÒNG
+===================================================== */
+exports.renderChiTietPhong = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const phong = await Phong.getPhongById(id);
+
+    if (!phong) {
+      return res.status(404).send("Không tìm thấy phòng");
+    }
+
+    res.render("nhacungcap/phong/chitietphong", { phong });
+  } catch (err) {
+    console.error("❌ Lỗi khi tải chi tiết phòng:", err);
+    res.status(500).send("Lỗi khi tải chi tiết phòng");
+  }
+};
+
+/* =====================================================
+   ✅ 3. HIỂN THỊ DANH SÁCH PHÒNG CHO KHÁCH HÀNG
+===================================================== */
 exports.renderPhongList = async (req, res) => {
   try {
     const phongList = await Phong.getAllPhong();
@@ -24,135 +74,186 @@ exports.renderPhongList = async (req, res) => {
   }
 };
 
-// -------------------------
-// HIỂN THỊ FORM THÊM PHÒNG
-// -------------------------
-exports.renderAddPhong = async (req, res) => {
+/* =====================================================
+   ✅ 4. HIỂN THỊ FORM THÊM PHÒNG
+===================================================== */
+exports.renderThemPhong = async (req, res) => {
   try {
+    const ncc = req.session.ncc;
+    if (!ncc) return res.status(401).send("Vui lòng đăng nhập");
+
     const loaiPhongs = await LoaiPhong.getAll();
-    res.render("ncc/phong/themphong", { loaiPhongs });
+    const [tinhs] = await db.execute("SELECT * FROM Tinh");
+    const [xas] = await db.execute("SELECT * FROM Xa");
+
+    res.render("nhacungcap/phong/themphong", { loaiPhongs, tinhs, xas, ncc });
   } catch (err) {
-    console.error("❌ Lỗi khi tải loại phòng:", err);
-    res.status(500).send("Lỗi khi tải danh sách loại phòng");
+    console.error("❌ Lỗi renderThemPhong:", err);
+    res.status(500).send("Lỗi khi tải form thêm phòng");
   }
 };
 
-// -------------------------
-// XỬ LÝ THÊM PHÒNG
-// -------------------------
-exports.handleAddPhong = async (req, res) => {
+/* =====================================================
+   ✅ 5. XỬ LÝ THÊM PHÒNG
+===================================================== */
+exports.handleThemPhong = async (req, res) => {
   try {
-    const imageName = req.file ? req.file.filename : "";
+    const ncc = req.session.ncc;
+    if (!ncc) return res.status(401).send("⚠️ Vui lòng đăng nhập trước khi thêm phòng.");
+
+    const { TenPhong, MaLoai, Gia, SucChua, MaXa, ChiTietDiaChi, MoTa } = req.body;
+    const image = req.file ? req.file.filename : null;
+
+    console.log("📋 Dữ liệu nhận từ form:", req.body);
+
+    if (!TenPhong || !MaLoai || !Gia || !SucChua || !MaXa || !ChiTietDiaChi) {
+      console.error("⚠️ Thiếu dữ liệu bắt buộc:", { TenPhong, MaLoai, Gia, SucChua, MaXa, ChiTietDiaChi });
+      return res.status(400).send("Vui lòng nhập đầy đủ thông tin phòng!");
+    }
+
+    const newMaDiaChi = await DiaChi.create({ ChiTiet: ChiTietDiaChi, MaXa });
+
+    if (!newMaDiaChi) {
+      console.error("❌ Không thể tạo địa chỉ:", { ChiTietDiaChi, MaXa });
+      return res.status(500).send("Không thể tạo địa chỉ mới cho phòng.");
+    }
 
     const data = {
-      TenPhong: req.body.TenPhong,
-      MaLoai: req.body.MaLoai,
-      Gia: req.body.Gia,
-      SucChua: req.body.SucChua,
-      TinhTrang: req.body.TinhTrang,
-      HinhAnh: imageName,
-      MaDiaChi: req.body.MaDiaChi,
-      MaNhaCungCap: 1, // NCC giả định
+      TenPhong,
+      MaLoai,
+      MoTa: MoTa || null,
+      Gia,
+      SucChua,
+      TinhTrang: 1,
+      HinhAnh: image ?? null,
+      MaDiaChi: newMaDiaChi,
+      MaNhaCungCap: ncc.MaNCC ?? null
     };
 
+    console.log("📦 Chuẩn bị thêm phòng:", data);
+
     await Phong.addPhong(data);
-    res.redirect("/phong");
+    console.log("✅ Thêm phòng thành công!");
+    res.redirect("/nhacungcap/phong");
   } catch (err) {
-    console.error("❌ Lỗi thêm phòng:", err);
+    console.error("❌ Lỗi handleThemPhong:", err);
     res.status(500).send("Lỗi khi thêm phòng mới");
   }
 };
 
-// -------------------------
-// HIỂN THỊ FORM SỬA PHÒNG
-// -------------------------
-exports.renderEditPhong = async (req, res) => {
+/* =====================================================
+   ✅ 6. HIỂN THỊ FORM SỬA PHÒNG
+===================================================== */
+exports.renderSuaPhong = async (req, res) => {
   try {
-    const { id } = req.params;
-    const phongResult = await Phong.getPhongById(id);
+    const id = req.params.id;
+    const phong = await Phong.getPhongById(id);
+    if (!phong) return res.status(404).send("Không tìm thấy phòng");
 
-    if (!phongResult || phongResult.length === 0)
-      return res.status(404).send("Không tìm thấy phòng");
-
-    const phong = phongResult[0];
     const loaiPhongs = await LoaiPhong.getAll();
+    const diaChiHienTai = phong.MaDiaChi ? await DiaChi.getById(phong.MaDiaChi) : null;
+    const [tinhs] = await db.execute("SELECT * FROM Tinh");
+    const [xas] = await db.execute("SELECT * FROM Xa");
 
-    res.render("ncc/phong/suaphong", { phong, loaiPhongs });
+    res.render("nhacungcap/phong/suaphong", { phong, loaiPhongs, diaChiHienTai, tinhs, xas });
   } catch (err) {
-    console.error("❌ Lỗi khi tải dữ liệu sửa phòng:", err);
-    res.status(500).send("Lỗi khi tải dữ liệu sửa phòng");
+    console.error("❌ Lỗi renderSuaPhong:", err);
+    res.status(500).send("Lỗi khi tải form sửa phòng");
   }
 };
 
-// -------------------------
-// XỬ LÝ CẬP NHẬT PHÒNG
-// -------------------------
-exports.handleEditPhong = async (req, res) => {
+/* =====================================================
+   ✅ 7. XỬ LÝ CẬP NHẬT PHÒNG
+===================================================== */
+exports.handleSuaPhong = async (req, res) => {
   try {
-    const data = req.body;
+    const {
+      MaPhong, TenPhong, MaLoai, Gia, SucChua, TinhTrang,
+      MaTinh, MaXa, ChiTietDiaChi
+    } = req.body;
+
     const newImage = req.file ? req.file.filename : null;
+    const oldPhong = await Phong.getPhongById(MaPhong);
+    if (!oldPhong) return res.status(404).send("Không tìm thấy phòng");
 
-    // Lấy thông tin phòng cũ
-    const result = await Phong.getPhongById(data.MaPhong);
-    if (!result || result.length === 0) {
-      return res.status(404).send("Không tìm thấy phòng để cập nhật");
-    }
-
-    const oldPhong = result[0];
-    const oldImage = oldPhong.HinhAnh;
-
-    // Nếu có ảnh mới thì cập nhật và xóa ảnh cũ
+    // 🖼️ Ảnh
+    let finalImage = oldPhong.HinhAnh;
     if (newImage) {
-      if (oldImage) {
-        const oldPath = path.join(__dirname, "../public/images", oldImage);
+      if (oldPhong.HinhAnh) {
+        const oldPath = path.join(__dirname, "../public/images", oldPhong.HinhAnh);
         fs.unlink(oldPath, (err) => {
           if (err) console.warn("⚠️ Không thể xóa ảnh cũ:", err.message);
         });
       }
-      data.HinhAnh = newImage;
-    } else {
-      data.HinhAnh = oldImage; // Giữ ảnh cũ
+      finalImage = newImage;
     }
 
-    await Phong.updatePhong(data);
-    res.redirect("/phong");
+    // 🧭 Địa chỉ
+    let finalMaDiaChi = oldPhong.MaDiaChi;
+    if (oldPhong.MaDiaChi) {
+      await DiaChi.update({
+        MaDiaChi: oldPhong.MaDiaChi,
+        ChiTiet: ChiTietDiaChi,
+        MaXa
+      });
+    } else {
+      const newId = await DiaChi.create({
+        ChiTiet: ChiTietDiaChi,
+        MaXa,
+        MaNhaCungCap: oldPhong.MaNhaCungCap
+      });
+      finalMaDiaChi = newId;
+    }
+
+    const updatedData = {
+      MaPhong,
+      TenPhong,
+      MaLoai,
+      Gia,
+      SucChua,
+      TinhTrang,
+      MaDiaChi: finalMaDiaChi,
+      HinhAnh: finalImage
+    };
+
+    await Phong.updatePhong(updatedData);
+    res.redirect("/nhacungcap/phong");
   } catch (err) {
-    console.error("❌ Lỗi SQL khi cập nhật phòng:", err);
-    res.status(500).send("Lỗi cập nhật phòng");
+    console.error("❌ Lỗi handleSuaPhong:", err);
+    res.status(500).send("Lỗi khi cập nhật phòng");
   }
 };
 
-// -------------------------
-// HIỂN THỊ FORM CẬP NHẬT TRẠNG THÁI
-// -------------------------
+/* =====================================================
+   ✅ 8. HIỂN THỊ FORM CẬP NHẬT TRẠNG THÁI PHÒNG
+===================================================== */
 exports.renderUpdateStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await Phong.getPhongById(id);
-    if (!result || result.length === 0)
-      return res.status(404).send("Không tìm thấy phòng");
+    const phong = await Phong.getPhongById(id);
+    if (!phong) return res.status(404).send("Không tìm thấy phòng");
 
-    res.render("ncc/phong/capnhatTrangThaiPhong", { phong: result[0] });
+    res.render("nhacungcap/phong/capnhatTrangThaiPhong", { phong });
   } catch (err) {
     console.error("❌ Lỗi khi tải form cập nhật trạng thái:", err);
     res.status(500).send("Lỗi khi tải form cập nhật trạng thái phòng");
   }
 };
 
-// -------------------------
-// XỬ LÝ CẬP NHẬT TRẠNG THÁI
-// -------------------------
+/* =====================================================
+   ✅ 9. XỬ LÝ CẬP NHẬT TRẠNG THÁI PHÒNG
+===================================================== */
 exports.handleUpdateStatus = async (req, res) => {
   try {
     const { MaPhong, TinhTrang } = req.body;
 
     if (!MaPhong || TinhTrang === undefined) {
-      console.warn("⚠️ Thiếu dữ liệu:", req.body);
+      console.warn("⚠️ Thiếu dữ liệu cập nhật trạng thái:", req.body);
       return res.status(400).send("Thiếu thông tin phòng hoặc trạng thái!");
     }
 
     await Phong.updateTrangThaiPhong(MaPhong, TinhTrang);
-    res.redirect("/phong");
+    res.redirect("/nhacungcap/phong");
   } catch (err) {
     console.error("❌ Lỗi khi thay đổi trạng thái phòng:", err);
     res.status(500).send("Lỗi khi thay đổi trạng thái phòng!");

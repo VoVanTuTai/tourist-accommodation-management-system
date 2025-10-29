@@ -6,7 +6,9 @@ const MySQLStore = require("express-mysql-session")(session);
 
 const app = express();
 
-// ====== Import routes ======
+/* =====================================================
+   ✅ IMPORT CÁC ROUTES
+===================================================== */
 const homeRoutes = require("./src/routes/homeRoutes");
 const phongRoutes = require("./src/routes/phongRoutes");
 const khachhangRoutes = require("./src/routes/khachhangRoutes");
@@ -16,17 +18,23 @@ const loaiphongRoutes = require("./src/routes/loaiphongRoutes");
 const nhaCungCapRoutes = require("./src/routes/nhaCungCapRoutes");
 const datPhongRoutes = require("./src/routes/datPhongRoutes");
 
-// ====== Thiết lập EJS + Layout ======
+/* =====================================================
+   ✅ THIẾT LẬP EJS + LAYOUT
+===================================================== */
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "src", "views"));
 app.use(expressLayouts);
 
-// ====== Middleware cơ bản ======
+/* =====================================================
+   ✅ MIDDLEWARE CƠ BẢN
+===================================================== */
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "src", "public")));
 
-// ====== Cấu hình MySQL + Session ======
+/* =====================================================
+   ✅ CẤU HÌNH MYSQL + SESSION
+===================================================== */
 const dbConfig = {
   host: "localhost",
   user: "root",
@@ -47,14 +55,18 @@ app.use(
   })
 );
 
-// ====== Cho phép EJS truy cập session trong mọi view ======
+/* =====================================================
+   ✅ CHO PHÉP EJS TRUY CẬP SESSION TRONG MỌI VIEW
+===================================================== */
 app.use((req, res, next) => {
   res.locals.session = req.session || {};
   next();
 });
 
-// ====== Giả lập NCC (test tạm thời) ======
-// ⚠️ Đặt TRƯỚC khi dùng route /nhacungcap
+/* =====================================================
+   ✅ GIẢ LẬP NHÀ CUNG CẤP (TẠM THỜI ĐỂ TEST)
+   ⚠️ Đặt TRƯỚC khi dùng route /nhacungcap
+===================================================== */
 app.use((req, res, next) => {
   if (!req.session.ncc) {
     req.session.ncc = {
@@ -66,21 +78,26 @@ app.use((req, res, next) => {
   next();
 });
 
-// ====== Định nghĩa routes ======
+/* =====================================================
+   ✅ ĐỊNH NGHĨA ROUTES
+===================================================== */
 app.use("/", homeRoutes);
 app.use("/phong", phongRoutes);
 app.use("/timkiem", timkiemRoutes);
 app.use("/api", diachiRoutes);
 app.use("/api/loaiphong", loaiphongRoutes);
 
-// ====== Gộp route khách hàng ======
+// 🧭 Route khách hàng
 app.use("/khachhang", khachhangRoutes);
 app.use("/khachhang", datPhongRoutes);
 
+// 🧱 Route nhà cung cấp
 app.use("/nhacungcap", nhaCungCapRoutes);
 
-// ====== Khởi động server ======
+/* =====================================================
+   ✅ KHỞI ĐỘNG SERVER
+===================================================== */
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server chạy tại: http://localhost:${PORT}`);
+  console.log(`🚀 Server đang chạy tại: http://localhost:${PORT}`);
 });

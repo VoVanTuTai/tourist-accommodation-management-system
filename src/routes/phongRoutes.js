@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const path = require("path");
+
+// ===== Import Controllers =====
 const phongController = require("../controllers/phongController");
 const chitietphongController = require("../controllers/chitietphongController");
 
@@ -15,25 +17,25 @@ const storage = multer.diskStorage({
     cb(null, uniqueName);
   },
 });
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
 // ================= ROUTES =================
 
-//  Xem chi tiết phòng — đặt TRƯỚC route "/"
+// 🏠 Xem chi tiết phòng — đặt TRƯỚC route "/"
 router.get("/chi-tiet/:maPhong", chitietphongController.xemChiTietPhong);
 
-//  Danh sách phòng
+// 📋 Danh sách phòng (cho khách hàng)
 router.get("/", phongController.renderPhongList);
 
-//  Thêm phòng
-router.get("/add", phongController.renderAddPhong);
-router.post("/add", upload.single("HinhAnh"), phongController.handleAddPhong);
+// 🏗️ Thêm phòng (cho nhà cung cấp)
+router.get("/add", phongController.renderThemPhong);
+router.post("/add", upload.single("HinhAnh"), phongController.handleThemPhong);
 
-//  Sửa phòng
-router.get("/edit/:id", phongController.renderEditPhong);
-router.post("/edit", upload.single("HinhAnh"), phongController.handleEditPhong);
+// ✏️ Sửa phòng (cho nhà cung cấp)
+router.get("/edit/:id", phongController.renderSuaPhong);
+router.post("/edit", upload.single("HinhAnh"), phongController.handleSuaPhong);
 
-//  Thay đổi trạng thái
+// 🔁 Cập nhật trạng thái phòng
 router.get("/status/:id", phongController.renderUpdateStatus);
 router.post("/status", phongController.handleUpdateStatus);
 

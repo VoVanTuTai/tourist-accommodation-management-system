@@ -1,19 +1,24 @@
-<h2>Thay đổi trạng thái phòng</h2>
+<h2>🔄 Thay đổi trạng thái phòng</h2>
 
-<form action="/phong/status" method="POST">
-  <input type="hidden" name="MaPhong" value="<%= phong.MaPhong %>">
+    <form action="/nhacungcap/phong/trangthai/<%= phong.MaPhong %>" method="POST">
+      <input type="hidden" name="MaPhong" value="<%= phong.MaPhong %>">
 
-  <p><strong>Tên phòng:</strong> <%= phong.TenPhong %></p>
-  <p><strong>Trạng thái hiện tại:</strong> 
-     <%= phong.TinhTrang === 1 ? "Còn trống" : phong.TinhTrang === 0 ? "Đã đặt" : "Bảo trì" %>
-  </p>
+      <p><strong>Tên phòng:</strong> <%= phong.TenPhong %></p>
+      <p><strong>Trạng thái hiện tại:</strong>
+        <% if (phong.TinhTrang === 1) { %> 🟢 Còn trống
+        <% } else if (phong.TinhTrang === 0) { %> 🔴 Đã đặt
+        <% } else { %> 🟠 Bảo trì <% } %>
+      </p>
 
-  <label>Chọn trạng thái mới:</label><br>
-  <select name="TinhTrang">
-    <option value="1">Còn trống</option>
-    <option value="0">Đã đặt</option>
-    <option value="2">Đang bảo trì</option>
-  </select><br><br>
+      <label for="TinhTrang">Chọn trạng thái mới:</label>
+      <select name="TinhTrang" id="TinhTrang" required>
+        <option value="1" <%= phong.TinhTrang === 1 ? "selected" : "" %>>🟢 Còn trống</option>
+        <option value="0" <%= phong.TinhTrang === 0 ? "selected" : "" %>>🔴 Đã đặt</option>
+        <option value="2" <%= phong.TinhTrang === 2 ? "selected" : "" %>>🟠 Đang bảo trì</option>
+      </select>
 
-  <button type="submit">Cập nhật</button>
-</form>
+      <button type="submit">💾 Cập nhật trạng thái</button>
+    </form>
+
+    <a href="/nhacungcap/phong" class="back">⬅️ Quay lại danh sách</a>
+  </div>

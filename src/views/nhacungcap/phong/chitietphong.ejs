@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Chi tiết phòng</title>
+  <style>
+    body { font-family: "Segoe UI", sans-serif; background: #f5f6f7; }
+    .container { max-width: 800px; margin: 40px auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h2 { text-align: center; color: #333; }
+    p { font-size: 16px; margin: 8px 0; }
+    img { display: block; margin: 15px auto; border-radius: 10px; }
+    .actions { margin-top: 25px; text-align: center; }
+    .actions a {
+      display: inline-block;
+      margin: 0 10px;
+      padding: 8px 14px;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+    .btn-edit { background-color: #007bff; color: white; }
+    .btn-status { background-color: #28a745; color: white; }
+    .btn-back { background-color: #6c757d; color: white; }
+    .btn-edit:hover { background-color: #0056b3; }
+    .btn-status:hover { background-color: #1e7e34; }
+    .btn-back:hover { background-color: #5a6268; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>🛏️ Chi tiết phòng: <%= phong.TenPhong %></h2>
+
+  <p><strong>Mã phòng:</strong> <%= phong.MaPhong %></p>
+  <p><strong>Loại phòng:</strong> <%= phong.TenLoai %></p>
+  <p><strong>Giá:</strong> <%= Number(phong.Gia).toLocaleString() %> VND/đêm</p>
+  <p><strong>Sức chứa:</strong> <%= phong.SucChua %> người</p>
+
+  <p><strong>Trạng thái:</strong>
+    <% if (phong.TinhTrang === 1) { %>
+      🟢 Còn trống
+    <% } else if (phong.TinhTrang === 0) { %>
+      🔴 Đã đặt
+    <% } else { %>
+      🟠 Bảo trì
+    <% } %>
+  </p>
+
+  <% if (phong.MoTa) { %>
+    <p><strong>Mô tả:</strong> <%= phong.MoTa %></p>
+  <% } %>
+
+  <% if (phong.TenXa && phong.TenTinh && phong.ChiTiet) { %>
+    <p><strong>Địa chỉ:</strong>
+      <%= phong.ChiTiet %>, <%= phong.TenXa %>, <%= phong.TenTinh %>
+    </p>
+  <% } else { %>
+    <p><strong>Địa chỉ:</strong> Không xác định</p>
+  <% } %>
+
+  <% if (phong.HinhAnh) { %>
+    <img src="/images/<%= phong.HinhAnh %>" width="300" alt="Ảnh phòng">
+  <% } else { %>
+    <p style="text-align:center; color:#888;">Không có hình ảnh</p>
+  <% } %>
+
+  <div class="actions">
+    <% if (phong.TinhTrang === 0) { %>
+      <!-- 🔴 ĐÃ ĐẶT: Không có nút nào -->
+      <span style="color: gray;">🚫 Không thể thao tác</span>
+    <% } else if (phong.TinhTrang === 1) { %>
+      <!-- 🟢 CÒN TRỐNG: Chỉ nút cập nhật trạng thái -->
+      <a href="/nhacungcap/phong/trangthai/<%= phong.MaPhong %>" class="btn-status">🔄 Cập nhật trạng thái</a>
+    <% } else if (phong.TinhTrang === 2) { %>
+      <!-- 🟠 BẢO TRÌ: Có cả sửa và cập nhật -->
+      <a href="/nhacungcap/phong/suaphong/<%= phong.MaPhong %>" class="btn-edit">✏️ Sửa phòng</a>
+      <a href="/nhacungcap/phong/trangthai/<%= phong.MaPhong %>" class="btn-status">🔄 Cập nhật trạng thái</a>
+    <% } %>
+
+    <a href="/nhacungcap/phong" class="btn-back">⬅️ Quay lại danh sách</a>
+  </div>
+</div>
+</body>
+</html>
