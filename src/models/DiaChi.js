@@ -1,4 +1,5 @@
 const db = require("../../config/db");
+const crypto = require('crypto');
 
 // Lấy địa chỉ theo mã địa chỉ
 exports.getById = async (maDiaChi) => {
@@ -34,4 +35,12 @@ exports.update = async ({ MaDiaChi, ChiTiet, MaXa }) => {
     WHERE MaDiaChi = ?
   `;
   await db.execute(sql, [ChiTiet, MaXa, MaDiaChi]);
+};
+
+exports.addDiaChi = async (ChiTiet, MaXa) => {
+  const randomBytes = crypto.randomBytes(5).toString('hex');
+  const maDiaChi = `DC_${randomBytes}`.slice(0, 10);
+  const sql = "INSERT INTO DiaChi (MaDiaChi, ChiTiet, MaXa) VALUES (?, ?, ?)";
+  await db.execute(sql, [maDiaChi, ChiTiet, MaXa]);
+  return maDiaChi;
 };

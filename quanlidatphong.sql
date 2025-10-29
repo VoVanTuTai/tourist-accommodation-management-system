@@ -3,11 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
-
--- Thời gian đã tạo: Th10 29, 2025 lúc 07:30 AM
+-- Thời gian đã tạo: Th10 21, 2025 lúc 04:34 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
--- Phiên bản PHP: 8.0.30
-
+-- Phiên bản PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -22,147 +20,126 @@ SET time_zone = "+00:00";
 --
 -- Cơ sở dữ liệu: `quanlidatphong`
 --
-
+CREATE DATABASE quanlidatphong
+  DEFAULT CHARACTER SET utf8mb4
+  DEFAULT COLLATE utf8mb4_unicode_ci;
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `admin`
+-- Cấu trúc bảng cho bảng `Admin`
 --
 
-CREATE TABLE `admin` (
+CREATE TABLE `Admin` (
   `MaAdmin` int(11) NOT NULL,
   `MaTaiKhoan` int(11) DEFAULT NULL,
   `HoTen` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `admin`
+-- Đang đổ dữ liệu cho bảng `Admin`
 --
 
-
-INSERT INTO `admin` (`MaAdmin`, `MaTaiKhoan`, `HoTen`) VALUES
-(1, NULL, 'David Beckham');
-
+INSERT INTO `Admin` (`MaAdmin`, `MaTaiKhoan`, `HoTen`) VALUES
+(1, NULL, 'Admin');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `chitietdondatphong`
+-- Cấu trúc bảng cho bảng `LoaiPhong`
 --
 
-CREATE TABLE `chitietdondatphong` (
-  `MaCTDon` int(11) NOT NULL,
-  `MaDon` int(11) NOT NULL,
-  `MaPhong` int(11) NOT NULL,
-  `Gia` double DEFAULT NULL
+CREATE TABLE `LoaiPhong` (
+  `MaLoai` int(11) NOT NULL,
+  `TenLoai` varchar(100) NOT NULL,
+  `MoTa` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `chitietdondatphong`
+-- Đang đổ dữ liệu cho bảng `LoaiPhong`
 --
 
-INSERT INTO `chitietdondatphong` (`MaCTDon`, `MaDon`, `MaPhong`, `Gia`) VALUES
-(1, 1, 1, 500000),
-(2, 2, 2, 700000),
-(3, 3, 3, 1200000),
-(4, 4, 4, 900000),
-(5, 5, 5, 400000),
-(6, 6, 6, 1500000),
-(7, 7, 7, 1800000),
-(8, 8, 8, 1600000),
-(9, 9, 9, 2000000),
-(10, 10, 10, 2200000),
-(11, 1, 2, 600000),
-(12, 1, 3, 600000),
-(13, 2, 5, 1800000),
-(14, 3, 4, 950000),
-(15, 5, 6, 2100000),
-(16, 11, 1, 1200000),
-(17, 12, 2, 1800000),
-(18, 13, 5, 950000),
-(19, 14, 4, 1350000),
-(20, 15, 6, 2100000);
+INSERT INTO `LoaiPhong` (`MaLoai`, `TenLoai`, `MoTa`) VALUES
+(1, 'Phòng đơn', 'Phòng cho 1 người, có giường đơn'),
+(2, 'Phòng đôi', 'Phòng cho 2 người, có giường đôi'),
+(3, 'Phòng VIP', 'Phòng cao cấp có tiện nghi đầy đủ'),
+(4, 'Phòng gia đình', 'Phòng rộng cho 4 người'),
+(5, 'Phòng tập thể', 'Phòng nhiều giường cho nhóm bạn'),
+(6, 'Phòng hướng biển', 'Có view biển, ban công thoáng mát'),
+(7, 'Phòng cao cấp', 'Phòng sang trọng, nội thất hiện đại'),
+(8, 'Suite Hạng Sang', 'Phòng suite cao cấp, có phòng khách riêng'),
+(9, 'Bungalow', 'Nhà gỗ riêng biệt, vườn riêng'),
+(10, 'Penthouse', 'Căn hộ áp mái, tầm nhìn toàn cảnh');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `danhgia`
+-- Cấu trúc bảng cho bảng `Tinh`
 --
 
-CREATE TABLE `danhgia` (
-  `MaDanhGia` int(11) NOT NULL,
-  `MaKhachHang` int(11) DEFAULT NULL,
-  `MaPhong` int(11) DEFAULT NULL,
-  `NgayDang` date DEFAULT NULL,
-  `SoSao` tinyint(4) DEFAULT NULL,
-  `NoiDung` text DEFAULT NULL,
-  `HinhAnh` varchar(255) DEFAULT NULL
+CREATE TABLE `Tinh` (
+  `MaTinh` varchar(5) NOT NULL,
+  `TenTinh` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `danhgia`
+-- Đang đổ dữ liệu cho bảng `Tinh`
 --
 
-INSERT INTO `danhgia` (`MaDanhGia`, `MaKhachHang`, `MaPhong`, `NgayDang`, `SoSao`, `NoiDung`, `HinhAnh`) VALUES
-(1, 1, 1, '2025-10-06', 5, 'Phòng sạch sẽ, nhân viên thân thiện.', NULL),
-(2, 2, 2, '2025-10-07', 4, 'Ổn so với tầm giá.', NULL),
-(3, 3, 3, '2025-10-08', 5, 'Rất tiện nghi và yên tĩnh.', 'rv3.jpg'),
-(4, 4, 4, '2025-10-09', 4, 'Phù hợp gia đình.', NULL),
-(5, 5, 5, '2025-10-10', 3, 'Giá rẻ nhưng hơi ồn.', NULL),
-(6, 6, 6, '2025-10-11', 5, 'View biển cực đẹp.', 'rv6.jpg'),
-(7, 7, 7, '2025-10-12', 5, 'Dịch vụ tuyệt vời.', NULL),
-(8, 8, 8, '2025-10-13', 4, 'Suite rộng rãi, sang trọng.', 'rv8.jpg'),
-(9, 9, 9, '2025-10-14', 4, 'Bungalow ấm cúng.', NULL),
-(10, 10, 10, '2025-10-15', 5, 'Penthouse đỉnh cao!', 'rv10.jpg'),
-(11, 8, 1, '2025-10-08', 1, 'CŨng tạm', NULL),
-(12, 12, 3, '2025-10-22', 5, 'Phòng đẹp quá ', NULL),
-(13, 12, 5, '2025-10-23', 5, 'cwqdwiowqiqw', NULL);
-
---
--- Bẫy `danhgia`
---
-DELIMITER $$
-CREATE TRIGGER `tg_danhgia_delete` AFTER DELETE ON `danhgia` FOR EACH ROW UPDATE phong
-SET DanhGia = (
-  SELECT IFNULL(AVG(SoSao), 0) FROM danhgia WHERE MaPhong = OLD.MaPhong
-)
-WHERE MaPhong = OLD.MaPhong
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `tg_danhgia_insert` AFTER INSERT ON `danhgia` FOR EACH ROW UPDATE phong
-SET DanhGia = (
-  SELECT AVG(SoSao) FROM danhgia WHERE MaPhong = NEW.MaPhong
-)
-WHERE MaPhong = NEW.MaPhong
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `tg_danhgia_update` AFTER UPDATE ON `danhgia` FOR EACH ROW UPDATE phong
-SET DanhGia = (
-  SELECT AVG(SoSao) FROM danhgia WHERE MaPhong = NEW.MaPhong
-)
-WHERE MaPhong = NEW.MaPhong
-$$
-DELIMITER ;
+INSERT INTO `Tinh` (`MaTinh`, `TenTinh`) VALUES
+('T01', 'Hà Nội'),
+('T02', 'Hồ Chí Minh'),
+('T03', 'Đà Nẵng'),
+('T04', 'Hải Phòng'),
+('T05', 'Cần Thơ'),
+('T06', 'Bình Dương'),
+('T07', 'Khánh Hòa'),
+('T08', 'Bà Rịa - Vũng Tàu'),
+('T09', 'Đắk Lắk'),
+('T10', 'Lâm Đồng');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `diachi`
+-- Cấu trúc bảng cho bảng `Xa`
 --
 
-CREATE TABLE `diachi` (
+CREATE TABLE `Xa` (
+  `MaXa` varchar(5) NOT NULL,
+  `TenXa` varchar(100) NOT NULL,
+  `MaTinh` varchar(5) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `Xa`
+--
+
+INSERT INTO `Xa` (`MaXa`, `TenXa`, `MaTinh`) VALUES
+('X01', 'Phường Hoàn Kiếm', 'T01'),
+('X02', 'Phường Bến Nghé', 'T02'),
+('X03', 'Phường Hải Châu', 'T03'),
+('X04', 'Phường Hồng Bàng', 'T04'),
+('X05', 'Phường Ninh Kiều', 'T05'),
+('X06', 'Phường Dĩ An', 'T06'),
+('X07', 'Phường Nha Trang', 'T07'),
+('X08', 'Phường Thắng Tam', 'T08'),
+('X09', 'Phường Tân Lập', 'T09'),
+('X10', 'Phường 9', 'T10');
+
+--
+-- Cấu trúc bảng cho bảng `DiaChi`
+--
+
+CREATE TABLE `DiaChi` (
   `MaDiaChi` int(11) NOT NULL,
   `ChiTiet` text DEFAULT NULL,
   `MaXa` varchar(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `diachi`
+-- Đang đổ dữ liệu cho bảng `DiaChi`
 --
 
-INSERT INTO `diachi` (`MaDiaChi`, `ChiTiet`, `MaXa`) VALUES
+INSERT INTO `DiaChi` (`MaDiaChi`, `ChiTiet`, `MaXa`) VALUES
 (1, '12 nhà mới', 'X07'),
 (2, '12 Lý Thường Kiệt', 'X01'),
 (3, '45 Nguyễn Huệ', 'X02'),
@@ -183,114 +160,81 @@ INSERT INTO `diachi` (`MaDiaChi`, `ChiTiet`, `MaXa`) VALUES
 (19, 'Chỗ đó đó', 'X01'),
 (20, 'Ngay biển', 'X01'),
 (21, 'Ngay biển', 'X01');
-
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `dondatphong`
+-- Cấu trúc bảng cho bảng `TaiKhoan`
 --
 
-CREATE TABLE `dondatphong` (
-  `MaDon` int(11) NOT NULL,
-  `MaKhachHang` int(11) NOT NULL,
-  `NgayDat` date DEFAULT NULL,
-  `NgayNhan` date NOT NULL DEFAULT current_timestamp(),
-  `NgayTra` date NOT NULL DEFAULT current_timestamp(),
-  `TrangThai` tinyint(4) DEFAULT 0,
-  `TongTien` double DEFAULT 0
+CREATE TABLE `TaiKhoan` (
+  `MaTaiKhoan` int(11) NOT NULL,
+  `TaiKhoan` varchar(100) NOT NULL,
+  `MatKhau` varchar(255) NOT NULL,
+  `NgayLap` timestamp NOT NULL DEFAULT current_timestamp(),
+  `PhanQuyen` enum('KhachHang','NhaCungCap','Admin') DEFAULT 'KhachHang',
+  `TrangThai` enum('HoatDong','Khoa') DEFAULT 'HoatDong'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `dondatphong`
+-- Đang đổ dữ liệu cho bảng `TaiKhoan`
 --
 
-INSERT INTO `dondatphong` (`MaDon`, `MaKhachHang`, `NgayDat`, `NgayNhan`, `NgayTra`, `TrangThai`, `TongTien`) VALUES
-(1, 1, '2025-10-01', '2025-10-05', '2025-10-06', 1, 500000),
-(2, 2, '2025-10-02', '2025-10-06', '2025-10-07', 1, 700000),
-(3, 3, '2025-10-03', '2025-10-07', '2025-10-08', 1, 1200000),
-(4, 4, '2025-10-04', '2025-10-08', '2025-10-09', 1, 900000),
-(5, 5, '2025-10-05', '2025-10-09', '2025-10-10', 1, 400000),
-(6, 6, '2025-10-06', '2025-10-10', '2025-10-11', 1, 1500000),
-(7, 7, '2025-10-07', '2025-10-11', '2025-10-12', 1, 1800000),
-(8, 8, '2025-10-08', '2025-10-12', '2025-10-13', 1, 1600000),
-(9, 9, '2025-10-09', '2025-10-13', '2025-10-14', 1, 2000000),
-(10, 10, '2025-10-10', '2025-10-14', '2025-10-15', 1, 2200000),
-(11, 12, '2025-10-10', '2025-10-15', '2025-10-17', 0, 1200000),
-(12, 12, '2025-09-25', '2025-09-28', '2025-09-30', 1, 1800000),
-(13, 12, '2025-09-10', '2025-09-12', '2025-09-14', 2, 950000),
-(14, 12, '2025-08-20', '2025-08-22', '2025-08-24', 3, 1350000),
-(15, 12, '2025-10-18', '2025-10-20', '2025-10-22', 3, 2100000);
+INSERT INTO `TaiKhoan` (`MaTaiKhoan`, `TaiKhoan`, `MatKhau`, `NgayLap`, `PhanQuyen`, `TrangThai`) VALUES
+(1, 'admin1@gmail.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:02:19', 'Admin', 'HoatDong'),
+(2, 'admin2@gmail.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:02:19', 'Admin', 'HoatDong'),
+(3, 'kh1@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong'),
+(4, 'kh2@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong'),
+(5, 'kh3@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong'),
+(6, 'kh4@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong'),
+(7, 'kh5@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong'),
+(8, 'kh6@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong'),
+(9, 'kh7@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong'),
+(10, 'kh8@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong'),
+(11, 'abc123@gmail.com', '$2b$10$.j/ciBEvJN2lBN97REPI8uVvX.ZSmFakHE6rf/uAa5OtvARZZySty', '2025-10-21 05:52:30', 'KhachHang', 'HoatDong'),
+(12, 'tutai@gmail.com', '$2b$10$Z2t9fzKHiZQZoUTsUPJY2uVo4xrCo06UWmCiwKHDuRC4zzV0IrRpm', '2025-10-22 00:00:04', 'NhaCungCap', 'HoatDong'),
+(13, 'cc@gmail.com', '$2b$10$dFZzbNEdicLY.l42EMe/nO6XbZXDo2Bx9aYgxNQU8bYktAb..WEdu', '2025-10-23 09:35:32', 'KhachHang', 'Khoa');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `khachhang`
+-- Cấu trúc bảng cho bảng `KhachHang`
 --
 
-CREATE TABLE `khachhang` (
+CREATE TABLE `KhachHang` (
   `MaKhachHang` int(11) NOT NULL,
   `MaTaiKhoan` int(11) DEFAULT NULL,
   `HoTen` varchar(100) NOT NULL,
   `Email` varchar(100) NOT NULL,
   `SoDienThoai` varchar(15) NOT NULL,
   `NgaySinh` date NOT NULL,
-  `GioiTinh` varchar(10) NOT NULL
+  `GioiTinh` varchar(10) NOT NULL,
+  `TrangThai` enum('Hoạt động bình thường','Đã khóa') NOT NULL DEFAULT 'Hoạt động bình thường'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `khachhang`
+-- Đang đổ dữ liệu cho bảng `KhachHang`
 --
 
-
-INSERT INTO `khachhang` (`MaKhachHang`, `MaTaiKhoan`, `HoTen`, `Email`, `SoDienThoai`, `NgaySinh`, `GioiTinh`) VALUES
-(1, NULL, 'Nguyễn Văn A', 'kh1@example.com', '0901000001', '1995-01-15', 'Nam'),
-(2, NULL, 'Trần Thị B', 'kh2@example.com', '0901000002', '1996-02-20', 'Nữ'),
-(3, NULL, 'Lê Văn C', 'kh3@example.com', '0901000003', '1994-03-10', 'Nam'),
-(4, NULL, 'Phạm Thị D', 'kh4@example.com', '0901000004', '1993-04-22', 'Nữ'),
-(5, NULL, 'Hoàng Văn E', 'kh5@example.com', '0901000005', '1992-05-05', 'Nam'),
-(6, NULL, 'Đỗ Thị F', 'kh6@example.com', '0901000006', '1997-06-18', 'Nữ'),
-(7, NULL, 'Vũ Văn G', 'kh7@example.com', '0901000007', '1991-07-30', 'Nam'),
-(8, NULL, 'Bùi Thị H', 'kh8@example.com', '0901000008', '1998-08-12', 'Nữ'),
-(9, NULL, 'Phan Văn I', 'kh9@example.com', '0901000009', '1990-09-25', 'Nam'),
-(10, NULL, 'Đặng Thị K', 'kh10@example.com', '0901000010', '1999-10-08', 'Nữ'),
-(11, NULL, 'Tuyền', 'abc123@gmail.com', '0123456780', '2025-10-01', 'Nam'),
-(12, 12, 'Tú Tài', 'tutai@gmail.com', '0909090909', '1111-01-01', 'Khác'),
-(13, NULL, 'Tuyn', 'cc@gmail.com', '0123456789', '2025-10-01', 'Nam'),
-(14, NULL, 'ngườ mới', 'nguoimoi@gmail.com', '0123481901', '1111-11-11', 'Nam');
->>>>>>> VoVanTuTai
+INSERT INTO `KhachHang` (`MaKhachHang`, `MaTaiKhoan`, `HoTen`, `Email`, `SoDienThoai`, `NgaySinh`, `GioiTinh`, `TrangThai`) VALUES
+(1, NULL, 'Nguyễn Văn A', 'kh1@example.com', '0901000001', '1995-01-15', 'Nam', 'Hoạt động bình thường'),
+(2, NULL, 'Trần Thị B', 'kh2@example.com', '0901000002', '1996-02-20', 'Nữ', 'Hoạt động bình thường'),
+(3, NULL, 'Lê Văn C', 'kh3@example.com', '0901000003', '1994-03-10', 'Nam', 'Hoạt động bình thường'),
+(4, NULL, 'Phạm Thị D', 'kh4@example.com', '0901000004', '1993-04-22', 'Nữ', 'Hoạt động bình thường'),
+(5, NULL, 'Hoàng Văn E', 'kh5@example.com', '0901000005', '1992-05-05', 'Nam', 'Hoạt động bình thường'),
+(6, NULL, 'Đỗ Thị F', 'kh6@example.com', '0901000006', '1997-06-18', 'Nữ', 'Hoạt động bình thường'),
+(7, NULL, 'Vũ Văn G', 'kh7@example.com', '0901000007', '1991-07-30', 'Nam', 'Hoạt động bình thường'),
+(8, NULL, 'Bùi Thị H', 'kh8@example.com', '0901000008', '1998-08-12', 'Nữ', 'Hoạt động bình thường'),
+(9, NULL, 'Phan Văn I', 'kh9@example.com', '0901000009', '1990-09-25', 'Nam', 'Hoạt động bình thường'),
+(10, NULL, 'Đặng Thị K', 'kh10@example.com', '0901000010', '1999-10-08', 'Nữ', 'Hoạt động bình thường'),
+(11, NULL, 'Tuyền', 'abc123@gmail.com', '0123456780', '2025-10-01', 'Nam', 'Hoạt động bình thường'),
+(12, 12, 'Tú Tài', 'tutai@gmail.com', '0909090909', '1111-01-01', 'Khác', 'Hoạt động bình thường'),
+(13, NULL, 'Tuyn', 'cc@gmail.com', '0123456789', '2025-10-01', 'Nam', 'Hoạt động bình thường'),
+(14, NULL, 'ngườ mới', 'nguoimoi@gmail.com', '0123481901', '1111-11-11', 'Nam', 'Hoạt động bình thường');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `loaiphong`
---
-
-CREATE TABLE `loaiphong` (
-  `MaLoai` int(11) NOT NULL,
-  `TenLoai` varchar(100) NOT NULL,
-  `MoTa` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Đang đổ dữ liệu cho bảng `loaiphong`
---
-
-INSERT INTO `loaiphong` (`MaLoai`, `TenLoai`, `MoTa`) VALUES
-(1, 'Phòng đơn', 'Phòng cho 1 người, có giường đơn'),
-(2, 'Phòng đôi', 'Phòng cho 2 người, có giường đôi'),
-(3, 'Phòng VIP', 'Phòng cao cấp có tiện nghi đầy đủ'),
-(4, 'Phòng gia đình', 'Phòng rộng cho 4 người'),
-(5, 'Phòng tập thể', 'Phòng nhiều giường cho nhóm bạn'),
-(6, 'Phòng hướng biển', 'Có view biển, ban công thoáng mát'),
-(7, 'Phòng cao cấp', 'Phòng sang trọng, nội thất hiện đại'),
-(8, 'Suite Hạng Sang', 'Phòng suite cao cấp, có phòng khách riêng'),
-(9, 'Bungalow', 'Nhà gỗ riêng biệt, vườn riêng'),
-(10, 'Penthouse', 'Căn hộ áp mái, tầm nhìn toàn cảnh');
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `nhacungcap`
+-- Cấu trúc bảng cho bảng `NhaCungCap`
 --
 
 CREATE TABLE `NhaCungCap` (
@@ -305,10 +249,10 @@ CREATE TABLE `NhaCungCap` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `nhacungcap`
+-- Đang đổ dữ liệu cho bảng `NhaCungCap`
 --
 
-INSERT INTO `nhacungcap` (`MaNCC`, `MaTaiKhoan`, `TenNCC`, `ThongTinThanhToan`, `LoaiHinh`, `GiayPhepKD`, `TrangThai`, `MaDiaChi`) VALUES
+INSERT INTO `NhaCungCap` (`MaNCC`, `MaTaiKhoan`, `TenNCC`, `ThongTinThanhToan`, `LoaiHinh`, `GiayPhepKD`, `TrangThai`, `MaDiaChi`) VALUES
 (1, 1, 'Khách sạn Hoàng Gia', 'Vietcombank - 0123456789', 'Khách sạn', 'GP01', 'Đang hoạt động', 1),
 (2, 2, 'Resort Biển Xanh', 'Techcombank - 0234567890', 'Resort', 'GP02', 'Đã khóa', 2),
 (3, 3, 'Hotel Central', 'ACB - 0345678901', 'Khách sạn', 'GP03', 'Đã khóa', 4),
@@ -320,46 +264,15 @@ INSERT INTO `nhacungcap` (`MaNCC`, `MaTaiKhoan`, `TenNCC`, `ThongTinThanhToan`, 
 (9, 9, 'Highland Retreat', 'Sacombank - 0901234567', 'Resort', 'GP09', 'Đang hoạt động', 9),
 (10, 10, 'Lâm Đồng Villa', 'ACB - 0912345678', 'Villa', 'GP10', 'Đang hoạt động', 10);
 
-
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `phanhoi`
+-- Cấu trúc bảng cho bảng `Phong`
 --
 
-CREATE TABLE `phanhoi` (
-  `MaPh` varchar(10) NOT NULL,
-  `NoiDung` text DEFAULT NULL,
-  `NgayPh` date DEFAULT NULL,
-  `MaDanhGia` int(11) DEFAULT NULL,
-  `MaNhaCungCap` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Đang đổ dữ liệu cho bảng `phanhoi`
---
-
-INSERT INTO `phanhoi` (`MaPh`, `NoiDung`, `NgayPh`, `MaDanhGia`, `MaNhaCungCap`) VALUES
-('PH001', 'Cảm ơn bạn đã đánh giá!', '2025-10-06', 1, 1),
-('PH002', 'Rất vui được phục vụ bạn.', '2025-10-07', 2, 2),
-('PH003', 'Cảm ơn góp ý, chúng tôi sẽ cải thiện.', '2025-10-08', 3, 3),
-('PH004', 'Hân hạnh đón tiếp gia đình bạn.', '2025-10-09', 4, 4),
-('PH005', 'Xin lỗi về sự bất tiện, chúng tôi sẽ xử lý.', '2025-10-10', 5, 5),
-('PH006', 'Cảm ơn bạn đã yêu thích view biển.', '2025-10-11', 6, 6),
-('PH007', 'Rất cảm kích phản hồi tích cực.', '2025-10-12', 7, 7),
-('PH008', 'Cảm ơn, mong được gặp lại bạn.', '2025-10-13', 8, 8),
-('PH009', 'Trân trọng phản hồi của bạn.', '2025-10-14', 9, 9),
-('PH010', 'Xin cảm ơn và hẹn gặp lại.', '2025-10-15', 10, 10);
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `phong`
---
-
-CREATE TABLE `phong` (
+CREATE TABLE `Phong` (
   `MaPhong` int(11) NOT NULL,
-  `TenPhong` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'Phòng xịn',
+  `TenPhong` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'Phòng xịn',
   `MaLoai` int(11) NOT NULL,
   `Gia` double NOT NULL DEFAULT 0,
   `SucChua` int(11) DEFAULT 1,
@@ -372,10 +285,10 @@ CREATE TABLE `phong` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `phong`
+-- Đang đổ dữ liệu cho bảng `Phong`
 --
 
-INSERT INTO `phong` (`MaPhong`, `TenPhong`, `MaLoai`, `Gia`, `SucChua`, `TinhTrang`, `HinhAnh`, `MoTa`, `MaDiaChi`, `DanhGia`, `MaNhaCungCap`) VALUES
+INSERT INTO `Phong` (`MaPhong`, `TenPhong`, `MaLoai`, `Gia`, `SucChua`, `TinhTrang`, `HinhAnh`, `MoTa`, `MaDiaChi`, `DanhGia`, `MaNhaCungCap`) VALUES
 (1, 'phòng xịn 123122', 1, 500000, 1, 2, 'unnamed.jpg', 'Mô tả hay ho cho phòng một', 1, 3, 1),
 (2, 'phòng xịn', 2, 700000, 2, 1, 'unnamed.jpg', NULL, 2, 5, 2),
 (3, 'phòng xịn', 3, 1200000, 2, 1, 'unnamed.jpg', NULL, 3, 5, 3),
@@ -395,20 +308,142 @@ INSERT INTO `phong` (`MaPhong`, `TenPhong`, `MaLoai`, `Gia`, `SucChua`, `TinhTra
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `sessions`
+-- Cấu trúc bảng cho bảng `ChiTietDonDatPhong`
 --
 
-CREATE TABLE `sessions` (
+CREATE TABLE `ChiTietDonDatPhong` (
+  `MaCTDon` int(11) NOT NULL,
+  `MaDon` int(11) NOT NULL,
+  `MaPhong` int(11) NOT NULL,
+  `Gia` double DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `ChiTietDonDatPhong`
+--
+
+INSERT INTO `ChiTietDonDatPhong` (`MaCTDon`, `MaDon`, `MaPhong`, `Gia`) VALUES
+(1, 1, 1, 500000),
+(2, 2, 2, 700000),
+(3, 3, 3, 1200000),
+(4, 4, 4, 900000),
+(5, 5, 5, 400000),
+(6, 6, 6, 1500000),
+(7, 7, 7, 1800000),
+(8, 8, 8, 1600000),
+(9, 9, 9, 2000000),
+(10, 10, 10, 2200000);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `DanhGia`
+--
+
+CREATE TABLE `DanhGia` (
+  `MaDanhGia` int(11) NOT NULL,
+  `MaKhachHang` int(11) DEFAULT NULL,
+  `MaPhong` int(11) DEFAULT NULL,
+  `NgayDang` date DEFAULT NULL,
+  `SoSao` tinyint(4) DEFAULT NULL,
+  `NoiDung` text DEFAULT NULL,
+  `HinhAnh` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `DanhGia`
+--
+
+INSERT INTO `DanhGia` (`MaDanhGia`, `MaKhachHang`, `MaPhong`, `NgayDang`, `SoSao`, `NoiDung`, `HinhAnh`) VALUES
+(1, 1, 1, '2025-10-06', 5, 'Phòng sạch sẽ, nhân viên thân thiện.', NULL),
+(2, 2, 2, '2025-10-07', 4, 'Ổn so với tầm giá.', NULL),
+(3, 3, 3, '2025-10-08', 5, 'Rất tiện nghi và yên tĩnh.', 'rv3.jpg'),
+(4, 4, 4, '2025-10-09', 4, 'Phù hợp gia đình.', NULL),
+(5, 5, 5, '2025-10-10', 3, 'Giá rẻ nhưng hơi ồn.', NULL),
+(6, 6, 6, '2025-10-11', 5, 'View biển cực đẹp.', 'rv6.jpg'),
+(7, 7, 7, '2025-10-12', 5, 'Dịch vụ tuyệt vời.', NULL),
+(8, 8, 8, '2025-10-13', 4, 'Suite rộng rãi, sang trọng.', 'rv8.jpg'),
+(9, 9, 9, '2025-10-14', 4, 'Bungalow ấm cúng.', NULL),
+(10, 10, 10, '2025-10-15', 5, 'Penthouse đỉnh cao!', 'rv10.jpg'),
+(11, 8, 1, '2025-10-08', 1, 'CŨng tạm', NULL);
+
+--
+-- Cấu trúc bảng cho bảng `DonDatPhong`
+--
+
+CREATE TABLE `DonDatPhong` (
+  `MaDon` int(11) NOT NULL,
+  `MaKhachHang` int(11) NOT NULL,
+  `NgayDat` date DEFAULT NULL,
+  `NgayNhan` datetime NOT NULL DEFAULT current_timestamp(),
+  `NgayTra` datetime NOT NULL DEFAULT current_timestamp(),
+  `TrangThai` tinyint(4) DEFAULT 0,
+  `TongTien` double DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `DonDatPhong`
+--
+
+INSERT INTO `DonDatPhong` (`MaDon`, `MaKhachHang`, `NgayDat`, `NgayNhan`, `NgayTra`, `TrangThai`, `TongTien`) VALUES
+(1, 1, '2025-10-01', '2025-10-05', '2025-10-06', 1, 500000),
+(2, 2, '2025-10-02', '2025-10-06', '2025-10-07', 1, 700000),
+(3, 3, '2025-10-03', '2025-10-07', '2025-10-08', 1, 1200000),
+(4, 4, '2025-10-04', '2025-10-08', '2025-10-09', 1, 900000),
+(5, 5, '2025-10-05', '2025-10-09', '2025-10-10', 1, 400000),
+(6, 6, '2025-10-06', '2025-10-10', '2025-10-11', 1, 1500000),
+(7, 7, '2025-10-07', '2025-10-11', '2025-10-12', 1, 1800000),
+(8, 8, '2025-10-08', '2025-10-12', '2025-10-13', 1, 1600000),
+(9, 9, '2025-10-09', '2025-10-13', '2025-10-14', 1, 2000000),
+(10, 10, '2025-10-10', '2025-10-14', '2025-10-15', 1, 2200000);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `PhanHoi`
+--
+
+CREATE TABLE `PhanHoi` (
+  `MaPh` varchar(10) NOT NULL,
+  `NoiDung` text DEFAULT NULL,
+  `NgayPh` date DEFAULT NULL,
+  `MaDanhGia` int(11) DEFAULT NULL,
+  `MaNhaCungCap` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `PhanHoi`
+--
+
+INSERT INTO `PhanHoi` (`MaPh`, `NoiDung`, `NgayPh`, `MaDanhGia`, `MaNhaCungCap`) VALUES
+('PH001', 'Cảm ơn bạn đã đánh giá!', '2025-10-06', 1, 1),
+('PH002', 'Rất vui được phục vụ bạn.', '2025-10-07', 2, 2),
+('PH003', 'Cảm ơn góp ý, chúng tôi sẽ cải thiện.', '2025-10-08', 3, 3),
+('PH004', 'Hân hạnh đón tiếp gia đình bạn.', '2025-10-09', 4, 4),
+('PH005', 'Xin lỗi về sự bất tiện, chúng tôi sẽ xử lý.', '2025-10-10', 5, 5),
+('PH006', 'Cảm ơn bạn đã yêu thích view biển.', '2025-10-11', 6, 6),
+('PH007', 'Rất cảm kích phản hồi tích cực.', '2025-10-12', 7, 7),
+('PH008', 'Cảm ơn, mong được gặp lại bạn.', '2025-10-13', 8, 8),
+('PH009', 'Trân trọng phản hồi của bạn.', '2025-10-14', 9, 9),
+('PH010', 'Xin cảm ơn và hẹn gặp lại.', '2025-10-15', 10, 10);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `Sessions`
+--
+
+CREATE TABLE `Sessions` (
   `session_id` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `expires` int(11) UNSIGNED NOT NULL,
   `data` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `sessions`
+-- Đang đổ dữ liệu cho bảng `Sessions`
 --
 
-INSERT INTO `sessions` (`session_id`, `expires`, `data`) VALUES
+INSERT INTO `Sessions` (`session_id`, `expires`, `data`) VALUES
 ('Q17h-s6Sui06f9XL02YxON5AeyMYiTtT', 1761728373, '{\"cookie\":{\"originalMaxAge\":false,\"expires\":false,\"httpOnly\":true,\"path\":\"/\"},\"ncc\":{\"MaNCC\":1,\"TenNCC\":\"Khách sạn Hoàng Gia\",\"Email\":\"hoanggia@example.com\"},\"user\":{\"MaTaiKhoan\":12,\"TaiKhoan\":\"tutai@gmail.com\",\"PhanQuyen\":\"NhaCungCap\",\"TrangThai\":\"HoatDong\"}}'),
 ('sess_0001', 1893456000, '{\"user\":\"1\"}'),
 ('sess_0002', 1893456000, '{\"user\":\"2\"}'),
@@ -425,45 +460,10 @@ INSERT INTO `sessions` (`session_id`, `expires`, `data`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `taikhoan`
+-- Cấu trúc bảng cho bảng `ThanhToan`
 --
 
-CREATE TABLE `taikhoan` (
-  `MaTaiKhoan` int(11) NOT NULL,
-  `TaiKhoan` varchar(100) NOT NULL,
-  `MatKhau` varchar(255) NOT NULL,
-  `NgayLap` timestamp NOT NULL DEFAULT current_timestamp(),
-  `PhanQuyen` enum('KhachHang','NhaCungCap','Admin') DEFAULT 'KhachHang',
-  `TrangThai` enum('HoatDong','Khoa') DEFAULT 'HoatDong'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Đang đổ dữ liệu cho bảng `taikhoan`
---
-
-INSERT INTO `taikhoan` (`MaTaiKhoan`, `TaiKhoan`, `MatKhau`, `NgayLap`, `PhanQuyen`, `TrangThai`) VALUES
-(1, 'admin1@gmail.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:02:19', 'Admin', 'HoatDong'),
-(2, 'admin2@gmail.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:02:19', 'Admin', 'HoatDong'),
-(3, 'kh1@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong'),
-(4, 'kh2@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong'),
-(5, 'kh3@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong'),
-(6, 'kh4@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong'),
-(7, 'kh5@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong'),
-(8, 'kh6@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong'),
-(9, 'kh7@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong'),
-(10, 'kh8@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong'),
-(11, 'abc123@gmail.com', '$2b$10$.j/ciBEvJN2lBN97REPI8uVvX.ZSmFakHE6rf/uAa5OtvARZZySty', '2025-10-21 05:52:30', 'KhachHang', 'HoatDong'),
-(12, 'tutai@gmail.com', '$2b$10$Z2t9fzKHiZQZoUTsUPJY2uVo4xrCo06UWmCiwKHDuRC4zzV0IrRpm', '2025-10-22 00:00:04', 'NhaCungCap', 'HoatDong'),
-(13, 'cc@gmail.com', '$2b$10$dFZzbNEdicLY.l42EMe/nO6XbZXDo2Bx9aYgxNQU8bYktAb..WEdu', '2025-10-23 09:35:32', 'KhachHang', 'Khoa');
-
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `thanhtoan`
---
-
-CREATE TABLE `thanhtoan` (
+CREATE TABLE `ThanhToan` (
   `MaThanhToan` int(11) NOT NULL,
   `MaDon` int(11) NOT NULL,
   `NgayTT` date DEFAULT NULL,
@@ -471,10 +471,10 @@ CREATE TABLE `thanhtoan` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `thanhtoan`
+-- Đang đổ dữ liệu cho bảng `ThanhToan`
 --
 
-INSERT INTO `thanhtoan` (`MaThanhToan`, `MaDon`, `NgayTT`, `SoTien`) VALUES
+INSERT INTO `ThanhToan` (`MaThanhToan`, `MaDon`, `NgayTT`, `SoTien`) VALUES
 (1, 1, '2025-10-06', 500000),
 (2, 2, '2025-10-07', 700000),
 (3, 3, '2025-10-08', 1200000),
@@ -489,115 +489,62 @@ INSERT INTO `thanhtoan` (`MaThanhToan`, `MaDon`, `NgayTT`, `SoTien`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `tinh`
---
-
-CREATE TABLE `tinh` (
-  `MaTinh` varchar(5) NOT NULL,
-  `TenTinh` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Đang đổ dữ liệu cho bảng `tinh`
---
-
-INSERT INTO `tinh` (`MaTinh`, `TenTinh`) VALUES
-('T01', 'Hà Nội'),
-('T02', 'Hồ Chí Minh'),
-('T03', 'Đà Nẵng'),
-('T04', 'Hải Phòng'),
-('T05', 'Cần Thơ'),
-('T06', 'Bình Dương'),
-('T07', 'Khánh Hòa'),
-('T08', 'Bà Rịa - Vũng Tàu'),
-('T09', 'Đắk Lắk'),
-('T10', 'Lâm Đồng');
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `xa`
---
-
-CREATE TABLE `xa` (
-  `MaXa` varchar(5) NOT NULL,
-  `TenXa` varchar(100) NOT NULL,
-  `MaTinh` varchar(5) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Đang đổ dữ liệu cho bảng `xa`
---
-
-INSERT INTO `xa` (`MaXa`, `TenXa`, `MaTinh`) VALUES
-('X01', 'Phường Hoàn Kiếm', 'T01'),
-('X02', 'Phường Bến Nghé', 'T02'),
-('X03', 'Phường Hải Châu', 'T03'),
-('X04', 'Phường Hồng Bàng', 'T04'),
-('X05', 'Phường Ninh Kiều', 'T05'),
-('X06', 'Phường Dĩ An', 'T06'),
-('X07', 'Phường Nha Trang', 'T07'),
-('X08', 'Phường Thắng Tam', 'T08'),
-('X09', 'Phường Tân Lập', 'T09'),
-('X10', 'Phường 9', 'T10');
-
---
 -- Chỉ mục cho các bảng đã đổ
 --
 
 --
--- Chỉ mục cho bảng `admin`
+-- Chỉ mục cho bảng `Admin`
 --
-ALTER TABLE `admin`
+ALTER TABLE `Admin`
   ADD PRIMARY KEY (`MaAdmin`),
   ADD KEY `fk_admin_taikhoan` (`MaTaiKhoan`);
 
 --
--- Chỉ mục cho bảng `chitietdondatphong`
+-- Chỉ mục cho bảng `ChiTietDonDatPhong`
 --
-ALTER TABLE `chitietdondatphong`
+ALTER TABLE `ChiTietDonDatPhong`
   ADD PRIMARY KEY (`MaCTDon`),
   ADD KEY `fk_ctd_maDon` (`MaDon`),
   ADD KEY `fk_ctd_phong` (`MaPhong`);
 
 --
--- Chỉ mục cho bảng `danhgia`
+-- Chỉ mục cho bảng `DanhGia`
 --
-ALTER TABLE `danhgia`
+ALTER TABLE `DanhGia`
   ADD PRIMARY KEY (`MaDanhGia`),
   ADD KEY `fk_dg_kh` (`MaKhachHang`),
   ADD KEY `fk_dg_phong` (`MaPhong`);
 
 --
--- Chỉ mục cho bảng `diachi`
+-- Chỉ mục cho bảng `DiaChi`
 --
-ALTER TABLE `diachi`
+ALTER TABLE `DiaChi`
   ADD PRIMARY KEY (`MaDiaChi`),
   ADD KEY `fk_diachi_xa` (`MaXa`);
 
 --
--- Chỉ mục cho bảng `dondatphong`
+-- Chỉ mục cho bảng `DonDatPhong`
 --
-ALTER TABLE `dondatphong`
+ALTER TABLE `DonDatPhong`
   ADD PRIMARY KEY (`MaDon`),
   ADD KEY `fk_dondat_kh` (`MaKhachHang`);
 
 --
--- Chỉ mục cho bảng `khachhang`
+-- Chỉ mục cho bảng `KhachHang`
 --
-ALTER TABLE `khachhang`
+ALTER TABLE `KhachHang`
   ADD PRIMARY KEY (`MaKhachHang`),
   ADD UNIQUE KEY `Email` (`Email`),
   ADD KEY `fk_khachhang_taikhoan` (`MaTaiKhoan`);
 
 --
--- Chỉ mục cho bảng `loaiphong`
+-- Chỉ mục cho bảng `LoaiPhong`
 --
-ALTER TABLE `loaiphong`
+ALTER TABLE `LoaiPhong`
   ADD PRIMARY KEY (`MaLoai`);
 
 --
--- Chỉ mục cho bảng `nhacungcap`
+-- Chỉ mục cho bảng `NhaCungCap`
 --
 ALTER TABLE `NhaCungCap`
   ADD PRIMARY KEY (`MaNCC`),
@@ -605,52 +552,52 @@ ALTER TABLE `NhaCungCap`
   ADD KEY `fk_nhacungcap_taikhoan` (`MaTaiKhoan`);
 
 --
--- Chỉ mục cho bảng `phanhoi`
+-- Chỉ mục cho bảng `PhanHoi`
 --
-ALTER TABLE `phanhoi`
+ALTER TABLE `PhanHoi`
   ADD PRIMARY KEY (`MaPh`),
   ADD KEY `fk_phanhoi_danhgia` (`MaDanhGia`),
   ADD KEY `fk_phanhoi_ncc` (`MaNhaCungCap`);
 
 --
--- Chỉ mục cho bảng `phong`
+-- Chỉ mục cho bảng `Phong`
 --
-ALTER TABLE `phong`
+ALTER TABLE `Phong`
   ADD PRIMARY KEY (`MaPhong`),
   ADD KEY `fk_phong_loai` (`MaLoai`),
   ADD KEY `fk_phong_ncc` (`MaNhaCungCap`),
   ADD KEY `MaDiaChi` (`MaDiaChi`);
 
 --
--- Chỉ mục cho bảng `sessions`
+-- Chỉ mục cho bảng `Sessions`
 --
-ALTER TABLE `sessions`
+ALTER TABLE `Sessions`
   ADD PRIMARY KEY (`session_id`);
 
 --
--- Chỉ mục cho bảng `taikhoan`
+-- Chỉ mục cho bảng `TaiKhoan`
 --
-ALTER TABLE `taikhoan`
+ALTER TABLE `TaiKhoan`
   ADD PRIMARY KEY (`MaTaiKhoan`),
   ADD UNIQUE KEY `TaiKhoan` (`TaiKhoan`);
 
 --
--- Chỉ mục cho bảng `thanhtoan`
+-- Chỉ mục cho bảng `ThanhToan`
 --
-ALTER TABLE `thanhtoan`
+ALTER TABLE `ThanhToan`
   ADD PRIMARY KEY (`MaThanhToan`),
   ADD KEY `fk_thanhtoan_don` (`MaDon`);
 
 --
--- Chỉ mục cho bảng `tinh`
+-- Chỉ mục cho bảng `Tinh`
 --
-ALTER TABLE `tinh`
+ALTER TABLE `Tinh`
   ADD PRIMARY KEY (`MaTinh`);
 
 --
--- Chỉ mục cho bảng `xa`
+-- Chỉ mục cho bảng `Xa`
 --
-ALTER TABLE `xa`
+ALTER TABLE `Xa`
   ADD PRIMARY KEY (`MaXa`),
   ADD KEY `fk_xa_tinh` (`MaTinh`);
 
@@ -659,45 +606,45 @@ ALTER TABLE `xa`
 --
 
 --
--- AUTO_INCREMENT cho bảng `admin`
+-- AUTO_INCREMENT cho bảng `Admin`
 --
-ALTER TABLE `admin`
+ALTER TABLE `Admin`
   MODIFY `MaAdmin` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT cho bảng `chitietdondatphong`
+-- AUTO_INCREMENT cho bảng `ChiTietDonDatPhong`
 --
-ALTER TABLE `chitietdondatphong`
+ALTER TABLE `ChiTietDonDatPhong`
   MODIFY `MaCTDon` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
--- AUTO_INCREMENT cho bảng `danhgia`
+-- AUTO_INCREMENT cho bảng `DanhGia`
 --
-ALTER TABLE `danhgia`
+ALTER TABLE `DanhGia`
   MODIFY `MaDanhGia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
--- AUTO_INCREMENT cho bảng `diachi`
+-- AUTO_INCREMENT cho bảng `DiaChi`
 --
-ALTER TABLE `diachi`
+ALTER TABLE `DiaChi`
   MODIFY `MaDiaChi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
--- AUTO_INCREMENT cho bảng `dondatphong`
+-- AUTO_INCREMENT cho bảng `DonDatPhong`
 --
-ALTER TABLE `dondatphong`
+ALTER TABLE `DonDatPhong`
   MODIFY `MaDon` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
--- AUTO_INCREMENT cho bảng `khachhang`
+-- AUTO_INCREMENT cho bảng `KhachHang`
 --
-ALTER TABLE `khachhang`
+ALTER TABLE `KhachHang`
   MODIFY `MaKhachHang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
--- AUTO_INCREMENT cho bảng `loaiphong`
+-- AUTO_INCREMENT cho bảng `LoaiPhong`
 --
-ALTER TABLE `loaiphong`
+ALTER TABLE `LoaiPhong`
   MODIFY `MaLoai` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
@@ -707,101 +654,93 @@ ALTER TABLE `NhaCungCap`
   MODIFY `MaNCC` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT cho bảng `phong`
+-- AUTO_INCREMENT cho bảng `Phong`
 --
-ALTER TABLE `phong`
+ALTER TABLE `Phong`
   MODIFY `MaPhong` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
--- AUTO_INCREMENT cho bảng `taikhoan`
+-- AUTO_INCREMENT cho bảng `TaiKhoan`
 --
-ALTER TABLE `taikhoan`
+ALTER TABLE `TaiKhoan`
   MODIFY `MaTaiKhoan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
--- AUTO_INCREMENT cho bảng `thanhtoan`
+-- AUTO_INCREMENT cho bảng `ThanhToan`
 --
-ALTER TABLE `thanhtoan`
+ALTER TABLE `ThanhToan`
   MODIFY `MaThanhToan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
 --
 
---
--- Các ràng buộc cho bảng `admin`
---
-ALTER TABLE `admin`
-  ADD CONSTRAINT `fk_admin_taikhoan` FOREIGN KEY (`MaTaiKhoan`) REFERENCES `taikhoan` (`MaTaiKhoan`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Các ràng buộc cho bảng `chitietdondatphong`
+-- Các ràng buộc cho bảng `Admin`
 --
-ALTER TABLE `chitietdondatphong`
-  ADD CONSTRAINT `fk_ctd_maDon` FOREIGN KEY (`MaDon`) REFERENCES `dondatphong` (`MaDon`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_ctd_phong` FOREIGN KEY (`MaPhong`) REFERENCES `phong` (`MaPhong`) ON UPDATE CASCADE;
+ALTER TABLE `Admin`
+  ADD CONSTRAINT `fk_admin_taikhoan` FOREIGN KEY (`MaTaiKhoan`) REFERENCES `TaiKhoan` (`MaTaiKhoan`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Các ràng buộc cho bảng `danhgia`
+-- Các ràng buộc cho bảng `ChiTietDonDatPhong`
 --
-ALTER TABLE `danhgia`
-  ADD CONSTRAINT `fk_dg_kh` FOREIGN KEY (`MaKhachHang`) REFERENCES `khachhang` (`MaKhachHang`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_dg_phong` FOREIGN KEY (`MaPhong`) REFERENCES `phong` (`MaPhong`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `ChiTietDonDatPhong`
+  ADD CONSTRAINT `fk_ctd_maDon` FOREIGN KEY (`MaDon`) REFERENCES `DonDatPhong` (`MaDon`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_ctd_phong` FOREIGN KEY (`MaPhong`) REFERENCES `Phong` (`MaPhong`) ON UPDATE CASCADE;
 
 --
--- Các ràng buộc cho bảng `diachi`
+-- Các ràng buộc cho bảng `DanhGia`
 --
-ALTER TABLE `diachi`
-  ADD CONSTRAINT `fk_diachi_xa` FOREIGN KEY (`MaXa`) REFERENCES `xa` (`MaXa`) ON UPDATE CASCADE;
+ALTER TABLE `DanhGia`
+  ADD CONSTRAINT `fk_dg_kh` FOREIGN KEY (`MaKhachHang`) REFERENCES `KhachHang` (`MaKhachHang`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_dg_phong` FOREIGN KEY (`MaPhong`) REFERENCES `Phong` (`MaPhong`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Các ràng buộc cho bảng `khachhang`
+-- Các ràng buộc cho bảng `DiaChi`
 --
-ALTER TABLE `khachhang`
-  ADD CONSTRAINT `fk_khachhang_taikhoan` FOREIGN KEY (`MaTaiKhoan`) REFERENCES `taikhoan` (`MaTaiKhoan`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `DiaChi`
+  ADD CONSTRAINT `fk_diachi_xa` FOREIGN KEY (`MaXa`) REFERENCES `Xa` (`MaXa`) ON UPDATE CASCADE;
+
+
+--
+-- Các ràng buộc cho bảng `KhachHang`
+--
+ALTER TABLE `KhachHang`
+  ADD CONSTRAINT `fk_khachhang_taikhoan` FOREIGN KEY (`MaTaiKhoan`) REFERENCES `TaiKhoan` (`MaTaiKhoan`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `NhaCungCap`
 --
-
-ALTER TABLE `nhacungcap`
-  ADD CONSTRAINT `fk_ncc_diachi` FOREIGN KEY (`MaDiaChi`) REFERENCES `diachi` (`MaDiaChi`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_nhacungcap_taikhoan` FOREIGN KEY (`MaTaiKhoan`) REFERENCES `taikhoan` (`MaTaiKhoan`) ON DELETE SET NULL ON UPDATE CASCADE;
-
+ALTER TABLE `NhaCungCap`
+  ADD CONSTRAINT `fk_ncc_diachi` FOREIGN KEY (`MaDiaChi`) REFERENCES `DiaChi` (`MaDiaChi`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_nhacungcap_taikhoan` FOREIGN KEY (`MaTaiKhoan`) REFERENCES `TaiKhoan` (`MaTaiKhoan`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Các ràng buộc cho bảng `phanhoi`
+-- Các ràng buộc cho bảng `PhanHoi`
 --
-ALTER TABLE `phanhoi`
-  ADD CONSTRAINT `fk_phanhoi_danhgia` FOREIGN KEY (`MaDanhGia`) REFERENCES `danhgia` (`MaDanhGia`) ON DELETE CASCADE ON UPDATE CASCADE,
+ALTER TABLE `PhanHoi`
+  ADD CONSTRAINT `fk_phanhoi_danhgia` FOREIGN KEY (`MaDanhGia`) REFERENCES `DanhGia` (`MaDanhGia`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_phanhoi_ncc` FOREIGN KEY (`MaNhaCungCap`) REFERENCES `NhaCungCap` (`MaNCC`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Các ràng buộc cho bảng `phong`
+-- Các ràng buộc cho bảng `Phong`
 --
-ALTER TABLE `phong`
-  ADD CONSTRAINT `fk_phong_loai` FOREIGN KEY (`MaLoai`) REFERENCES `loaiphong` (`MaLoai`) ON UPDATE CASCADE,
+ALTER TABLE `Phong`
+  ADD CONSTRAINT `fk_phong_loai` FOREIGN KEY (`MaLoai`) REFERENCES `LoaiPhong` (`MaLoai`) ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_phong_ncc` FOREIGN KEY (`MaNhaCungCap`) REFERENCES `NhaCungCap` (`MaNCC`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Các ràng buộc cho bảng `thanhtoan`
+-- Các ràng buộc cho bảng `ThanhToan`
 --
-ALTER TABLE `thanhtoan`
-  ADD CONSTRAINT `fk_thanhtoan_don` FOREIGN KEY (`MaDon`) REFERENCES `dondatphong` (`MaDon`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `ThanhToan`
+  ADD CONSTRAINT `fk_thanhtoan_don` FOREIGN KEY (`MaDon`) REFERENCES `DonDatPhong` (`MaDon`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Các ràng buộc cho bảng `xa`
+-- Các ràng buộc cho bảng `Xa`
 --
-ALTER TABLE `xa`
-  ADD CONSTRAINT `fk_xa_tinh` FOREIGN KEY (`MaTinh`) REFERENCES `tinh` (`MaTinh`) ON UPDATE CASCADE;
-
--- Thêm column MaNhaCungCap vao Table TaiKhoan
-alter table TaiKhoan 
-add column MaNhaCungCap int(11) DEFAULT NULL;
-
--- Thêm foreign key
-alter table TaiKhoan 
-ADD CONSTRAINT `fk_taikhoan_nhacungcap` FOREIGN KEY (`MaNhaCungCap`) REFERENCES `NhaCungCap` (`MaNCC`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `Xa`
+  ADD CONSTRAINT `fk_xa_tinh` FOREIGN KEY (`MaTinh`) REFERENCES `Tinh` (`MaTinh`) ON UPDATE CASCADE;
 
 
 -- Thêm TrangThai ChoDuyet vao column TrangThai table TaiKhoan
@@ -811,6 +750,38 @@ MODIFY COLUMN TrangThai ENUM('ChoDuyet', 'HoatDong', 'Khoa') default 'HoatDong';
 -- Thêm column LoaiNganHang vào Table NhaCungCap
 ALTER TABLE NhaCungCap ADD COLUMN LoaiNganHang VARCHAR(255);
 
+-- Thêm column MoTa vào Table Phong
+-- ALTER TABLE Phong ADD COLUMN MoTa text;
+
+--
+-- Bẫy `DanhGia`
+--
+DELIMITER $$
+CREATE TRIGGER `tg_danhgia_delete` AFTER DELETE ON `DanhGia` FOR EACH ROW UPDATE Phong
+SET DanhGia = (
+  SELECT IFNULL(AVG(SoSao), 0) FROM DanhGia WHERE MaPhong = OLD.MaPhong
+)
+WHERE MaPhong = OLD.MaPhong
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `tg_danhgia_insert` AFTER INSERT ON `DanhGia` FOR EACH ROW UPDATE Phong
+SET DanhGia = (
+  SELECT AVG(SoSao) FROM DanhGia WHERE MaPhong = NEW.MaPhong
+)
+WHERE MaPhong = NEW.MaPhong
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `tg_danhgia_update` AFTER UPDATE ON `DanhGia` FOR EACH ROW UPDATE Phong
+SET DanhGia = (
+  SELECT AVG(SoSao) FROM DanhGia WHERE MaPhong = NEW.MaPhong
+)
+WHERE MaPhong = NEW.MaPhong
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

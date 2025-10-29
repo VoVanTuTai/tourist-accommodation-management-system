@@ -1,6 +1,8 @@
 const { NhaCungCap, addNhaCungCap } = require("../models/NhaCungCap") // Model phòng
 const bcrypt = require("bcryptjs")
 const TaiKhoan = require("../models/taikhoan")
+const db = require("../../config/db");
+const DiaChi = require("../models/DiaChi");
 
 const {
     isValidFullname,
@@ -19,16 +21,23 @@ const jsLibraries = [
     "/js/nhacungcap/dangky.js",
 ]
 
-exports.renderDangKyNhaCungCap = (req, res) => {
+exports.renderDangKyNhaCungCap = async (req, res) => {
+    // 🧭 Lấy danh sách tỉnh và xã (để hiển thị select)
+    const [tinhs] = await db.execute("SELECT * FROM Tinh");
+
     res.render("nhacungcap/dangky", {
         title: "Đăng ký nhà cung cấp",
         js: jsLibraries, // Gán JS riêng cho view đăng ký nhà cung cấp,
         errors: {},
         formData: {},
+        tinhs
     })
 }
 
 exports.registerNhaCungCap = async (req, res) => {
+    const [tinhs] = await db.execute("SELECT * FROM Tinh");
+    await db.query('START TRANSACTION;');
+
     try {
         const {
             TenNCC,
@@ -39,6 +48,9 @@ exports.registerNhaCungCap = async (req, res) => {
             LoaiHinh,
             Password,
             ConfirmPassword,
+            Tinh,
+            Xa,
+            DiaChiChiTiet
         } = req.body
         const errors = {}
 
@@ -57,6 +69,15 @@ exports.registerNhaCungCap = async (req, res) => {
         if (!isValidPassword(Password)) {
             errors.Password =
                 "Mật khẩu không hợp lệ. Ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt."
+        }
+        if (!Tinh || Tinh.trim() === "") {
+            errors.Tinh = "Vui lòng chọn tỉnh."
+        }
+        if (!Xa || Xa.trim() === "") {
+            errors.Xa = "Vui lòng chọn xã."
+        }
+        if (!DiaChiChiTiet || DiaChiChiTiet.trim() === "") {
+            errors.DiaChiChiTiet = "Vui lòng nhập địa chỉ chi tiết."
         }
         if (Password !== ConfirmPassword) {
             errors.ConfirmPassword = "Mật khẩu xác nhận không khớp."
@@ -90,6 +111,7 @@ exports.registerNhaCungCap = async (req, res) => {
                 js: jsLibraries,
                 errors,
                 formData: req.body,
+                tinhs
             })
         }
 
@@ -98,7 +120,7 @@ exports.registerNhaCungCap = async (req, res) => {
             LoaiNganHang: LoaiNganHang,
             ThongTinThanhToan: ThongTinThanhToan,
             LoaiHinh: LoaiHinh,
-            GiayPhepKD: giayPhepKD, // ✅ lưu tên file ảnh
+            GiayPhepKD: giayPhepKD, // ✅ lưu tên file ảnh,
         }
         // Kiểm tra tồn tại tài khoản đăng ký nhà cung cấp
         const isEmailRegistered = await TaiKhoan.findByTaiKhoan(Email)
@@ -115,8 +137,12 @@ exports.registerNhaCungCap = async (req, res) => {
                 js: jsLibraries,
                 errors,
                 formData: req.body,
+                tinhs
             })
         }
+        // Tạo địa chỉ cho nhà cung cấp
+        const maDiaChi = await DiaChi.addDiaChi(DiaChiChiTiet, Xa)
+        data.MaDiaChi = maDiaChi
         // Tạo tài khoản cho nhà cung cấp
         const result = await addNhaCungCap(data)
         const maNCC = result.insertId // Lấy MaNhaCungCap vừa tạo
@@ -130,6 +156,7 @@ exports.registerNhaCungCap = async (req, res) => {
             MaAdmin: null,
             TrangThai: "ChoDuyet",
         })
+        await db.query("COMMIT;");
         res.send(`
         <html>
             <body style="font-family: sans-serif; text-align:center; margin-top:100px;">
@@ -141,11 +168,13 @@ exports.registerNhaCungCap = async (req, res) => {
     `)
     } catch (error) {
         console.error("Xảy ra lỗi trong khi đăng ký nhà cung cấp:", error)
-        res.render("nhacungcap/dangky", {
+        await db.query("ROLLBACK;");
+        res.status(500).render("nhacungcap/dangky", {
             title: "Đăng ký nhà cung cấp",
             js: jsLibraries,
             errors: {},
             formData: req.body,
+            tinhs
         })
     }
 }
