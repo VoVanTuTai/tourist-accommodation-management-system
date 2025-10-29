@@ -1,0 +1,60 @@
+[33m3e025b5[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mtuyen[m[33m)[m HEAD@{0}: checkout: moving from main to tuyen
+[33m6f95343[m[33m ([m[1;32mmain[m[33m)[m HEAD@{1}: checkout: moving from tuyen to main
+[33m3e025b5[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mtuyen[m[33m)[m HEAD@{2}: checkout: moving from main to tuyen
+[33m6f95343[m[33m ([m[1;32mmain[m[33m)[m HEAD@{3}: reset: moving to 6f95343
+[33mbcfe052[m HEAD@{4}: reset: moving to bcfe052
+[33m3e025b5[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mtuyen[m[33m)[m HEAD@{5}: reset: moving to 3e025b5
+[33m6f95343[m[33m ([m[1;32mmain[m[33m)[m HEAD@{6}: reset: moving to 6f95343
+[33m3e025b5[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mtuyen[m[33m)[m HEAD@{7}: reset: moving to 3e025b5
+[33m3e025b5[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mtuyen[m[33m)[m HEAD@{8}: reset: moving to 3e025b5
+[33m1bf557a[m HEAD@{9}: reset: moving to 1bf557a
+[33m6f95343[m[33m ([m[1;32mmain[m[33m)[m HEAD@{10}: reset: moving to 6f95343
+[33m5c2a0b0[m HEAD@{11}: reset: moving to 5c2a0b0
+[33m1bf557a[m HEAD@{12}: reset: moving to 1bf557a
+[33m5f5bcce[m[33m ([m[1;31morigin/VoVanTutai[m[33m)[m HEAD@{13}: reset: moving to 5f5bcce
+[33m7d1b704[m HEAD@{14}: reset: moving to 7d1b704
+[33mae5751f[m HEAD@{15}: reset: moving to ae5751f
+[33mae5751f[m HEAD@{16}: checkout: moving from tuyen to main
+[33m3e025b5[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mtuyen[m[33m)[m HEAD@{17}: reset: moving to 3e025b5
+[33m53733cd[m HEAD@{18}: reset: moving to 53733cd
+[33m5f5bcce[m[33m ([m[1;31morigin/VoVanTutai[m[33m)[m HEAD@{19}: reset: moving to 5f5bcce
+[33m6fc1c8e[m HEAD@{20}: reset: moving to 6fc1c8e
+[33mae5751f[m HEAD@{21}: reset: moving to ae5751f
+[33m9686907[m[33m ([m[1;31morigin/tuyen[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{22}: reset: moving to 9686907
+[33m9686907[m[33m ([m[1;31morigin/tuyen[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{23}: checkout: moving from 3e025b5b2fffe042edc7fd30029b1ca22a9ca3f6 to tuyen
+[33m3e025b5[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mtuyen[m[33m)[m HEAD@{24}: checkout: moving from 1bf557aab65918f726c6e90b8ce0891a629735ab to 3e025b5
+[33m1bf557a[m HEAD@{25}: checkout: moving from 5f5bccead7dbf294c2820ab1552cd6b6efc71018 to 1bf557a
+[33m5f5bcce[m[33m ([m[1;31morigin/VoVanTutai[m[33m)[m HEAD@{26}: checkout: moving from 7d1b704433ff7703536b4c63dad2145f96691e92 to 5f5bcce
+[33m7d1b704[m HEAD@{27}: checkout: moving from ae5751f9c8557aeed61a3eb859db7fbe3c4c165e to 7d1b704
+[33mae5751f[m HEAD@{28}: checkout: moving from 5c2a0b09b864c4c0a0b77b5bfff02042e26f746d to ae5751f
+[33m5c2a0b0[m HEAD@{29}: checkout: moving from main to 5c2a0b0
+[33mae5751f[m HEAD@{30}: reset: moving to ae5751f
+[33m0f01b53[m HEAD@{31}: reset: moving to 0f01b53
+[33m9686907[m[33m ([m[1;31morigin/tuyen[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{32}: checkout: moving from tuyen to main
+[33m9686907[m[33m ([m[1;31morigin/tuyen[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{33}: checkout: moving from main to tuyen
+[33m9686907[m[33m ([m[1;31morigin/tuyen[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{34}: checkout: moving from tuyen to main
+[33m9686907[m[33m ([m[1;31morigin/tuyen[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{35}: checkout: moving from main to tuyen
+[33m9686907[m[33m ([m[1;31morigin/tuyen[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{36}: Branch: renamed refs/heads/tuyen to refs/heads/main
+[33m9686907[m[33m ([m[1;31morigin/tuyen[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{38}: checkout: moving from main to tuyen
+[33mb733349[m HEAD@{39}: commit: Cicd
+[33m98806ed[m HEAD@{40}: commit (merge): Cicd
+[33md82a8ad[m HEAD@{41}: commit: Cicd
+[33m5e7bd7e[m HEAD@{42}: checkout: moving from main to main
+[33m5e7bd7e[m HEAD@{43}: commit: 21/10
+[33mc438bc3[m HEAD@{44}: checkout: moving from tuyen to main
+[33m9686907[m[33m ([m[1;31morigin/tuyen[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{45}: checkout: moving from main to tuyen
+[33mc438bc3[m HEAD@{46}: commit: 21/10
+[33m0860f30[m HEAD@{47}: checkout: moving from tuyen to main
+[33m9686907[m[33m ([m[1;31morigin/tuyen[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{48}: checkout: moving from main to tuyen
+[33m0860f30[m HEAD@{49}: commit (merge): 21/10
+[33mac31ded[m HEAD@{50}: checkout: moving from tuyen to main
+[33m9686907[m[33m ([m[1;31morigin/tuyen[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{51}: checkout: moving from tuyen to tuyen
+[33m9686907[m[33m ([m[1;31morigin/tuyen[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{52}: checkout: moving from main to tuyen
+[33mac31ded[m HEAD@{53}: commit: 21/10
+[33m76ca66b[m HEAD@{54}: pull origin main: Fast-forward
+[33m5f5bcce[m[33m ([m[1;31morigin/VoVanTutai[m[33m)[m HEAD@{55}: checkout: moving from tuyen to main
+[33m9686907[m[33m ([m[1;31morigin/tuyen[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{56}: pull origin main: Merge made by the 'ort' strategy.
+[33mae5751f[m HEAD@{57}: commit: 20/10
+[33m7d1b704[m HEAD@{58}: commit: 20/10
+[33m5f5bcce[m[33m ([m[1;31morigin/VoVanTutai[m[33m)[m HEAD@{59}: checkout: moving from main to tuyen
+[33m5f5bcce[m[33m ([m[1;31morigin/VoVanTutai[m[33m)[m HEAD@{60}: clone: from https://github.com/VoVanTuTai/Tourist_Accommodation_Management_System_ThieuNu.git
