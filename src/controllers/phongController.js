@@ -8,8 +8,11 @@ const path = require("path");
 /* =====================================================
    ✅ 1. HIỂN THỊ DANH SÁCH PHÒNG CỦA NHÀ CUNG CẤP
 ===================================================== */
+
 exports.renderDanhSachPhongCuaNhaCungCap = async (req, res) => {
   try {
+    console.log("📘 NCC trong session:", req.session.ncc);
+
     const ncc = req.session.ncc; // Lấy thông tin NCC đăng nhập
     if (!ncc) return res.status(401).send("Vui lòng đăng nhập");
 
