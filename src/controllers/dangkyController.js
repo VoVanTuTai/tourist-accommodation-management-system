@@ -55,39 +55,45 @@ exports.register = async (req, res) => {
     const existingKH = await KhachHang.findByEmail(Email);
     const existingTK = await TaiKhoan.findByTaiKhoan(Email);
 
-    if (existingKH !== null || existingTK !== null)
+    if (existingKH || existingTK)
       return res.render('khachhang/dangky', { error: 'Email đã được sử dụng!', old });
 
-    // 4️⃣ Tạo khách hàng
-    const maKH = await KhachHang.create({ HoTen, Email, SoDienThoai, NgaySinh, GioiTinh });
-
-    // 5️⃣ Băm mật khẩu
+    // 4️⃣ Băm mật khẩu
     const hashedPassword = await bcrypt.hash(MatKhau, 10);
 
-    // 6️⃣ Tạo tài khoản
-    await TaiKhoan.create({
+    // 5️⃣ Tạo tài khoản (bảng TaiKhoan)
+    const maTaiKhoan = await TaiKhoan.create({
       TaiKhoan: Email,
       MatKhau: hashedPassword,
       PhanQuyen: 'KhachHang',
-      MaKhachHang: maKH,
+      MaKhachHang: null,
       MaAdmin: null
     });
-      res.send(`
-  <html>
-    <body style="font-family: sans-serif; text-align:center; margin-top:100px;">
-      <h2 style="color: green;">Đăng ký thành công!</h2>
-      <p>Đang chuyển hướng đến trang đăng nhập...</p>
-      <script>
-        setTimeout(() => {
-          window.location.href = '/khachhang/dangnhap';
-        }, 1000);
-      </script>
-    </body>
-  </html>
-`);
 
+    // 6️⃣ Tạo khách hàng (bảng KhachHang, gắn MaTaiKhoan)
+    await KhachHang.create({
+      MaTaiKhoan: maTaiKhoan,
+      HoTen,
+      Email,
+      SoDienThoai,
+      NgaySinh,
+      GioiTinh
+    });
 
-        // ✅ 7️⃣ Sau khi đăng ký thành công → chuyển tới trang đăng nhập
+    // 7️⃣ Giao diện thông báo
+    res.send(`
+      <html>
+        <body style="font-family: sans-serif; text-align:center; margin-top:100px;">
+          <h2 style="color: green;">🎉 Đăng ký thành công!</h2>
+          <p>Đang chuyển hướng đến trang đăng nhập...</p>
+          <script>
+            setTimeout(() => {
+              window.location.href = '/khachhang/dangnhap';
+            }, 1000);
+          </script>
+        </body>
+      </html>
+    `);
   } catch (err) {
     console.error('🔥 Lỗi đăng ký:', err);
     res.render('khachhang/dangky', {
@@ -99,6 +105,6 @@ exports.register = async (req, res) => {
 
 /** ------------------ TRANG QUẢN LÝ TÀI KHOẢN ------------------ **/
 exports.getAccountPage = (req, res) => {
-  if (!req.session.user) return res.redirect('/dangnhap');
+  if (!req.session.user) return res.redirect('/khachhang/dangnhap');
   res.render('khachhang/quanlytaikhoan', { user: req.session.user });
 };

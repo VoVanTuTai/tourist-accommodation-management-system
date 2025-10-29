@@ -21,7 +21,7 @@
       <a href="/khachhang/dangky" class="btn">Đăng ký</a>
       <a href="/khachhang/dangnhap" class="btn">Đăng nhập</a>
   <% } else { %>
-      <span class="username">👤 <%= session.user.TaiKhoan %></span>
+      <a href="/khachhang/thongtintaikhoan" class="username">👤 <%= session.user.TaiKhoan %></a>
 
       <% if (session.user.PhanQuyen === 'NhaCungCap') { %>
           <a href="/nha-cung-cap/dashboard" class="btn">Quản lý chỗ ở</a>

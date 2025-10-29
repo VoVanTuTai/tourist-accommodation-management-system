@@ -1,49 +1,49 @@
 const dbPromise = require('../../config/db');
 
 const KhachHang = {
-  // === Giữ nguyên các hàm cũ ===
+  // 🔹 Tìm theo Email (để tránh trùng)
   async findByEmail(email) {
     const db = await dbPromise;
     const [rows] = await db.execute('SELECT * FROM KhachHang WHERE Email = ?', [email]);
     return rows.length > 0 ? rows[0] : null;
   },
 
-  async create({ HoTen, Email, SoDienThoai, NgaySinh, GioiTinh }) {
+  // 🔹 Thêm khách hàng mới sau khi đã có MaTaiKhoan
+  async create({ MaTaiKhoan, HoTen, Email, SoDienThoai, NgaySinh, GioiTinh }) {
+    if (!MaTaiKhoan) throw new Error("Thiếu MaTaiKhoan khi tạo KhachHang");
+
     const db = await dbPromise;
     const [result] = await db.execute(
-      'INSERT INTO KhachHang (HoTen, Email, SoDienThoai, NgaySinh, GioiTinh) VALUES (?, ?, ?, ?, ?)',
-      [HoTen, Email, SoDienThoai, NgaySinh, GioiTinh]
+      `INSERT INTO KhachHang (MaTaiKhoan, HoTen, Email, SoDienThoai, NgaySinh, GioiTinh)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [MaTaiKhoan, HoTen, Email, SoDienThoai, NgaySinh, GioiTinh]
     );
+
     return result.insertId;
   },
 
-  async getByTaiKhoan(maTaiKhoan) {
-    const db = await dbPromise;
-    const sql = `
-      SELECT kh.*
-      FROM KhachHang kh
-      JOIN TaiKhoan tk ON kh.MaKhachHang = tk.MaKhachHang
-      WHERE tk.MaTaiKhoan = ?
-    `;
-    const [rows] = await db.execute(sql, [maTaiKhoan]);
-    return rows.length > 0 ? rows[0] : null;
-
-  },
-  // === 🔹 Hàm mới: Lấy thông tin KH theo MaTK (để hiển thị trong trang cá nhân) ===
-  async findByMaTK(maTK) {
+  // 🔹 Lấy thông tin KH theo MaTaiKhoan
+  async findByMaTK(maTaiKhoan) {
     const db = await dbPromise;
     const [rows] = await db.execute(
-      `SELECT kh.*, tk.TaiKhoan, tk.PhanQuyen
-       FROM KhachHang kh
-       JOIN TaiKhoan tk ON kh.MaKhachHang = tk.MaKhachHang
-       WHERE tk.MaTaiKhoan = ? LIMIT 1`,
-      [maTK]
+      'SELECT * FROM KhachHang WHERE MaTaiKhoan = ? LIMIT 1',
+      [maTaiKhoan]
     );
     return rows.length > 0 ? rows[0] : null;
   },
 
-  // === 🔹 Hàm mới: Cập nhật thông tin KH được phép sửa ===
-  async updateByMaTK(maTK, { HoTen, SoDienThoai, GioiTinh }) {
+  // 🔹 Lấy thông tin KH theo MaKhachHang
+  async findById(maKhachHang) {
+    const db = await dbPromise;
+    const [rows] = await db.execute(
+      'SELECT * FROM KhachHang WHERE MaKhachHang = ? LIMIT 1',
+      [maKhachHang]
+    );
+    return rows.length > 0 ? rows[0] : null;
+  },
+
+  // 🔹 Cập nhật thông tin KH (theo MaTaiKhoan)
+  async updateByMaTK(maTaiKhoan, { HoTen, SoDienThoai, GioiTinh, NgaySinh }) {
     const db = await dbPromise;
 
     const fields = [];
@@ -61,21 +61,24 @@ const KhachHang = {
       fields.push('GioiTinh = ?');
       values.push(GioiTinh);
     }
+    if (NgaySinh !== undefined) {
+      fields.push('NgaySinh = ?');
+      values.push(NgaySinh);
+    }
 
     if (fields.length === 0) return 0;
 
-    values.push(maTK);
+    values.push(maTaiKhoan);
 
     const sql = `
       UPDATE KhachHang
-      JOIN TaiKhoan ON KhachHang.MaKhachHang = TaiKhoan.MaKhachHang
       SET ${fields.join(', ')}
-      WHERE TaiKhoan.MaTaiKhoan = ?;
+      WHERE MaTaiKhoan = ?;
     `;
 
     const [result] = await db.execute(sql, values);
     return result.affectedRows;
-
   }
 };
+
 module.exports = KhachHang;

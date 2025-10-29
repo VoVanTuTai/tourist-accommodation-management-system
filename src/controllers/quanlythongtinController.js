@@ -39,7 +39,7 @@ module.exports.postCapNhatTaiKhoan = async function (req, res) {
     if (matKhauMoi && matKhauMoi.trim() !== '') {
       const salt = await bcrypt.genSalt(10);
       const hash = await bcrypt.hash(matKhauMoi.trim(), salt);
-      await TaiKhoan.updatePasswordByMaTK(maTk, hash);
+      await TaiKhoan.updatePasswordByMaTK(maTK, hash);
     }
 
     const profile = await KhachHang.findByMaTK(maTK);

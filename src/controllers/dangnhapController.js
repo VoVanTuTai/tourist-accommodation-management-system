@@ -78,7 +78,7 @@ exports.login = async (req, res) => {
     if (req.session.user.PhanQuyen === 'Admin') {
       return res.redirect('/admin/dashboard');
     } else if (req.session.user.PhanQuyen === 'NhaCungCap') {
-      return res.redirect('/nha-cung-cap/dashboard');
+      return res.redirect('/nhacungcap/dashboard');
     } else {
       return res.redirect('/');
     }
