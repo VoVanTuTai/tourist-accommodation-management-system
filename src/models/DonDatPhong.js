@@ -13,10 +13,10 @@ const DonDatPhong = {
           dp.TrangThai,
           dp.TongTien,
           COALESCE(GROUP_CONCAT(DISTINCT ncc.TenNCC SEPARATOR ', '), 'Chưa rõ') AS TenChoO
-        FROM dondatphong dp
+        FROM DonDatPhong dp
         LEFT JOIN chitietdondatphong ctdp ON dp.MaDon = ctdp.MaDon
-        LEFT JOIN phong p                ON ctdp.MaPhong = p.MaPhong
-        LEFT JOIN nhacungcap ncc         ON p.MaNhaCungCap = ncc.MaNCC
+        LEFT JOIN Phong p                ON ctdp.MaPhong = p.MaPhong
+        LEFT JOIN NhaCungCap ncc         ON p.MaNhaCungCap = ncc.MaNCC
         WHERE dp.MaKhachHang = ?
       `;
       const params = [maKhachHang];
@@ -62,12 +62,12 @@ const DonDatPhong = {
         ncc.TenNCC AS TenChoO,
         p.HinhAnh                 -- ✅ lấy ảnh nếu có
         
-      FROM dondatphong dp
-      JOIN khachhang kh ON dp.MaKhachHang = kh.MaKhachHang
+      FROM DonDatPhong dp
+      JOIN KhachHang kh ON dp.MaKhachHang = kh.MaKhachHang
       JOIN chitietdondatphong ctdp ON dp.MaDon = ctdp.MaDon
-      JOIN phong p ON ctdp.MaPhong = p.MaPhong
-      LEFT JOIN loaiphong lp ON p.MaLoai = lp.MaLoai
-      LEFT JOIN nhacungcap ncc ON p.MaNhaCungCap = ncc.MaNCC
+      JOIN Phong p ON ctdp.MaPhong = p.MaPhong
+      LEFT JOIN LoaiPhong lp ON p.MaLoai = lp.MaLoai
+      LEFT JOIN NhaCungCap ncc ON p.MaNhaCungCap = ncc.MaNCC
       WHERE dp.MaDon = ?
     `;
     const [rows] = await db.execute(sql, [maDon]);
@@ -94,12 +94,12 @@ const DonDatPhong = {
         p.Gia AS GiaApDung,
         lp.TenLoai AS LoaiPhong,
         ncc.TenNCC
-      FROM dondatphong dp
-      JOIN khachhang kh ON dp.MaKhachHang = kh.MaKhachHang
+      FROM DonDatPhong dp
+      JOIN KhachHang kh ON dp.MaKhachHang = kh.MaKhachHang
       JOIN chitietdondatphong ctdp ON dp.MaDon = ctdp.MaDon
-      JOIN phong p ON ctdp.MaPhong = p.MaPhong
-      LEFT JOIN loaiphong lp ON p.MaLoai = lp.MaLoai
-      LEFT JOIN nhacungcap ncc ON p.MaNhaCungCap = ncc.MaNCC
+      JOIN Phong p ON ctdp.MaPhong = p.MaPhong
+      LEFT JOIN LoaiPhong lp ON p.MaLoai = lp.MaLoai
+      LEFT JOIN NhaCungCap ncc ON p.MaNhaCungCap = ncc.MaNCC
       WHERE dp.MaDon = ?
       ORDER BY p.MaPhong ASC
     `;
@@ -120,9 +120,9 @@ const DonDatPhong = {
         lp.TenLoai AS LoaiPhong,
         ncc.TenNCC AS TenChoO
       FROM chitietdondatphong ctdp
-      JOIN phong p        ON ctdp.MaPhong = p.MaPhong
-      LEFT JOIN loaiphong lp  ON p.MaLoai = lp.MaLoai
-      LEFT JOIN nhacungcap ncc ON p.MaNhaCungCap = ncc.MaNCC
+      JOIN Phong p        ON ctdp.MaPhong = p.MaPhong
+      LEFT JOIN LoaiPhong lp  ON p.MaLoai = lp.MaLoai
+      LEFT JOIN NhaCungCap ncc ON p.MaNhaCungCap = ncc.MaNCC
       WHERE ctdp.MaDon = ?
       ORDER BY p.MaPhong ASC
     `;
@@ -142,13 +142,13 @@ const DonDatPhong = {
         COALESCE(GROUP_CONCAT(DISTINCT ncc.TenNCC ORDER BY ncc.TenNCC SEPARATOR ', '), 'Chưa rõ') AS TenNCC,
         COALESCE(GROUP_CONCAT(DISTINCT ncc.ThongTinThanhToan ORDER BY ncc.ThongTinThanhToan SEPARATOR ' | '), '') AS ThongTinThanhToan,
         COALESCE(GROUP_CONCAT(DISTINCT CONCAT_WS(', ', d.ChiTiet, x.TenXa, t.TenTinh) ORDER BY d.ChiTiet SEPARATOR ' | '), '') AS DiaChiNCC
-      FROM dondatphong dp
+      FROM DonDatPhong dp
       LEFT JOIN chitietdondatphong ctdp ON dp.MaDon = ctdp.MaDon
-      LEFT JOIN phong p                ON ctdp.MaPhong = p.MaPhong
-      LEFT JOIN nhacungcap ncc         ON p.MaNhaCungCap = ncc.MaNCC
-      LEFT JOIN diachi d               ON ncc.MaDiaChi = d.MaDiaChi
-      LEFT JOIN xa x                   ON d.MaXa = x.MaXa
-      LEFT JOIN tinh t                 ON x.MaTinh = t.MaTinh
+      LEFT JOIN Phong p                ON ctdp.MaPhong = p.MaPhong
+      LEFT JOIN NhaCungCap ncc         ON p.MaNhaCungCap = ncc.MaNCC
+      LEFT JOIN DiaChi d               ON ncc.MaDiaChi = d.MaDiaChi
+      LEFT JOIN Xa x                   ON d.MaXa = x.MaXa
+      LEFT JOIN Tinh t                 ON x.MaTinh = t.MaTinh
       WHERE dp.MaDon = ?
       GROUP BY dp.MaDon
       LIMIT 1
@@ -159,14 +159,14 @@ const DonDatPhong = {
 
   // 🔄 Cập nhật trạng thái đơn
   async updateTrangThai(maDon, trangThai) {
-    const sql = `UPDATE dondatphong SET TrangThai = ? WHERE MaDon = ?`;
+    const sql = `UPDATE DonDatPhong SET TrangThai = ? WHERE MaDon = ?`;
     const [result] = await db.execute(sql, [trangThai, maDon]);
     return result;
   },
 
   // 💰 Ghi thanh toán mới
   async insertThanhToan(maDon, soTien) {
-    const sql = `INSERT INTO thanhtoan (MaDon, NgayTT, SoTien) VALUES (?, NOW(), ?)`;
+    const sql = `INSERT INTO ThanhToan (MaDon, NgayTT, SoTien) VALUES (?, NOW(), ?)`;
     await db.execute(sql, [maDon, soTien]);
   },
 };
