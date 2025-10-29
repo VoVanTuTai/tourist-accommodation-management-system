@@ -11,6 +11,7 @@ const khachhangRoutes = require("./src/routes/khachhangRoutes");
 const timkiemRoutes = require("./src/routes/timkiemRoutes");
 const diachiRoutes = require('./src/routes/diachiRoutes');
 const loaiphongRoutes = require('./src/routes/loaiphongRoutes');
+
 const nhaCungCapRoutes = require('./src/routes/nhaCungCapRoutes');
 const app = express();
 
@@ -52,6 +53,8 @@ app.use((req, res, next) => {
   res.locals.session = req.session || {};
   next();
 });
+// ====== Middleware kiểm tra vai trò người dùng ======
+//app.use(checkRole);
 
 // ====== Định nghĩa routes ======
 app.use("/", homeRoutes);

@@ -17,15 +17,24 @@
               <% } %>
           </ul>
           <div class="user-menu">
-              <% if (!session.user) { %>
-                  <a href="/khachhang/dangky" class="btn">Đăng ký</a>
-                  <a href="/khachhang/dangnhap" class="btn">Đăng nhập</a>
-              <% } else { %>
-                  <span class="username">👤 <%= session.user.TaiKhoan %></span>
-                  <a href="/khachhang/quanlythongtin" class="btn">Tài khoản</a>
-                  <a href="/khachhang/dangxuat" class="btn btn-logout">Đăng xuất</a>
-              <% } %>
-          </div>
+  <% if (!session.user) { %>
+      <a href="/khachhang/dangky" class="btn">Đăng ký</a>
+      <a href="/khachhang/dangnhap" class="btn">Đăng nhập</a>
+  <% } else { %>
+      <span class="username">👤 <%= session.user.TaiKhoan %></span>
+
+      <% if (session.user.PhanQuyen === 'NhaCungCap') { %>
+          <a href="/nha-cung-cap/dashboard" class="btn">Quản lý chỗ ở</a>
+      <% } else if (session.user.PhanQuyen === 'Admin') { %>
+          <a href="/admin/dashboard" class="btn btn-warning">Trang quản trị</a>
+      <% } else { %>
+          <a href="/khachhang/quanlythongtin" class="btn">Tài khoản</a>
+      <% } %>
+
+      <a href="/khachhang/dangxuat" class="btn btn-logout">Đăng xuất</a>
+  <% } %>
+</div>
+
       </nav>
   </header>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'992aac131274ce59',t:'MTc2MTE1MzY5OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
