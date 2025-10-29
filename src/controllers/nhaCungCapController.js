@@ -1,7 +1,7 @@
 const { NhaCungCap, addNhaCungCap } = require("../models/NhaCungCap") // Model phòng
 const bcrypt = require("bcryptjs")
 const TaiKhoan = require("../models/taikhoan")
-
+const db = require("../../config/db");
 const {
     isValidFullname,
     isValidEmail,
@@ -161,95 +161,108 @@ exports.renderDangNhapNhaCungCap = (req, res) => {
 
 exports.loginNhaCungCap = async (req, res) => {
     try {
-        const { Email, Password, Remember } = req.body
-        const errors = {}
-
-        if (!Email || Email.trim() === "") {
-            errors.Email = "Vui lòng nhập email."
-        }else if (!isValidEmail(Email)) {
-            errors.Email = "Email không hợp lệ. Phải có ký tự @ và kết thúc với .com"
-        }
-        if (!Password || Password.trim() === "") {
-            errors.Password = "Vui lòng nhập mật khẩu."
-        }
-
-        if (Object.keys(errors).length > 0) {
-            return res.status(400).render("nhacungcap/dangnhap", {
-                title: "Đăng nhập nhà cung cấp",
-                js: jsLibraries,
-                errors,
-                formData: req.body,
-            })
-        }
-
-        const account = await TaiKhoan.findByTaiKhoan(Email)
-        if (!account) {
-            errors.Email = "Tài khoản Email không tồn tại"
-            return res.status(400).render("nhacungcap/dangnhap", {
-                title: "Đăng nhập nhà cung cấp",
-                js: jsLibraries,
-                errors,
-                formData: req.body,
-            })
-        }
-
-        const passwordMatch = await bcrypt.compare(Password, account.MatKhau)
-        if (!passwordMatch) {
-            errors.Password = "Mật khẩu không đúng"
-            return res.status(400).render("nhacungcap/dangnhap", {
-                title: "Đăng nhập nhà cung cấp",
-                js: jsLibraries,
-                errors,
-                formData: req.body,
-            })
-        }
-
-        // 4️⃣ Kiểm tra trạng thái tài khoản
-        if (account.TrangThai === "Khoa") {
-            errors.Global = "Tài khoản của bạn đã bị khóa"            
-        }
-        if (account.TrangThai === "ChoDuyet") {
-            errors.Global = "Tài khoản của bạn đang chờ duyệt"            
-        }
-        if (Object.keys(errors).length > 0) {
-            return res.status(400).render("nhacungcap/dangnhap", {
-                title: "Đăng nhập nhà cung cấp",
-                js: jsLibraries,
-                errors,
-                formData: req.body,
-            })
-        }
-
-        // 6️⃣ Xử lý “Ghi nhớ đăng nhập”
-        if (Remember) {
-            // cookie tồn tại 2 ngày
-            req.session.cookie.maxAge = 2 * 24 * 60 * 60 * 1000
-        } else {
-            // cookie hết khi tắt trình duyệt
-            req.session.cookie.expires = false
-        }
-
-        // 7️⃣ Tạo session đăng nhập
-        req.session.ncc = {
-            MaTaiKhoan: account.MaTaiKhoan,
-            TaiKhoan: account.TaiKhoan,
-            PhanQuyen: account.PhanQuyen,
-            TrangThai: account.TrangThai,
-            MaNCC: account.MaNCC,
-        }
-
-        // 8️⃣ Điều hướng về trang chủ
-        res.redirect("/nhacungcap/phong")
-    } catch (error) {
-        console.error("Xảy ra lỗi trong khi đăng ký nhà cung cấp:", err)
-        res.render("nhacungcap/dangky", {
-            title: "Đăng ký nhà cung cấp",
-            js: jsLibraries,
-            errors: {},
-            formData: req.body,
-        })
+      const { Email, Password, Remember } = req.body;
+      const errors = {};
+  
+      // 1️⃣ Kiểm tra dữ liệu nhập
+      if (!Email || Email.trim() === "") {
+        errors.Email = "Vui lòng nhập email.";
+      } else if (!isValidEmail(Email)) {
+        errors.Email = "Email không hợp lệ. Phải có ký tự @ và kết thúc với .com";
+      }
+      if (!Password || Password.trim() === "") {
+        errors.Password = "Vui lòng nhập mật khẩu.";
+      }
+  
+      if (Object.keys(errors).length > 0) {
+        return res.status(400).render("nhacungcap/dangnhap", {
+          title: "Đăng nhập nhà cung cấp",
+          js: jsLibraries,
+          errors,
+          formData: req.body,
+        });
+      }
+  
+      // 2️⃣ Truy vấn tài khoản và thông tin nhà cung cấp (JOIN)
+      const [rows] = await db.execute(
+        `SELECT 
+            tk.MaTaiKhoan, tk.TaiKhoan, tk.MatKhau, tk.PhanQuyen, tk.TrangThai,
+            ncc.MaNCC, ncc.TenNCC
+         FROM taikhoan tk
+         JOIN nhacungcap ncc ON tk.MaTaiKhoan = ncc.MaTaiKhoan
+         WHERE tk.TaiKhoan = ?`,
+        [Email]
+      );
+  
+      const account = rows[0];
+      if (!account) {
+        errors.Email = "Tài khoản Email không tồn tại";
+        return res.status(400).render("nhacungcap/dangnhap", {
+          title: "Đăng nhập nhà cung cấp",
+          js: jsLibraries,
+          errors,
+          formData: req.body,
+        });
+      }
+  
+      // 3️⃣ Kiểm tra mật khẩu
+      const passwordMatch = await bcrypt.compare(Password, account.MatKhau);
+      if (!passwordMatch) {
+        errors.Password = "Mật khẩu không đúng";
+        return res.status(400).render("nhacungcap/dangnhap", {
+          title: "Đăng nhập nhà cung cấp",
+          js: jsLibraries,
+          errors,
+          formData: req.body,
+        });
+      }
+  
+      // 4️⃣ Kiểm tra trạng thái tài khoản
+      if (account.TrangThai === "Khoa") {
+        errors.Global = "Tài khoản của bạn đã bị khóa";
+      } else if (account.TrangThai === "ChoDuyet") {
+        errors.Global = "Tài khoản của bạn đang chờ duyệt";
+      }
+      if (Object.keys(errors).length > 0) {
+        return res.status(400).render("nhacungcap/dangnhap", {
+          title: "Đăng nhập nhà cung cấp",
+          js: jsLibraries,
+          errors,
+          formData: req.body,
+        });
+      }
+  
+      // 5️⃣ Xử lý “Ghi nhớ đăng nhập”
+      if (Remember) {
+        req.session.cookie.maxAge = 2 * 24 * 60 * 60 * 1000; // 2 ngày
+      } else {
+        req.session.cookie.expires = false; // Hết khi tắt trình duyệt
+      }
+  
+      // 6️⃣ Tạo session đăng nhập (đã có MaNCC thực)
+      req.session.ncc = {
+        MaTaiKhoan: account.MaTaiKhoan,
+        TaiKhoan: account.TaiKhoan,
+        PhanQuyen: account.PhanQuyen,
+        TrangThai: account.TrangThai,
+        MaNCC: account.MaNCC, // ✅ Lấy từ bảng nhacungcap
+        TenNCC: account.TenNCC, // ✅ Tên NCC để hiển thị
+      };
+  
+      console.log("✅ NCC đăng nhập:", req.session.ncc);
+  
+      // 7️⃣ Chuyển hướng đến danh sách phòng
+      res.redirect("/nhacungcap/phong");
+    } catch (err) {
+      console.error("❌ Lỗi trong loginNhaCungCap:", err);
+      res.status(500).render("nhacungcap/dangnhap", {
+        title: "Đăng nhập nhà cung cấp",
+        js: jsLibraries,
+        errors: { Global: "Lỗi hệ thống, vui lòng thử lại sau." },
+        formData: req.body,
+      });
     }
-}
+  };
 
 
 // ===============================
