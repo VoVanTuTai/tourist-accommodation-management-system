@@ -33,7 +33,9 @@ exports.danhSachDonDatPhong = async (req, res) => {
 
     res.render("khachhang/danhsachdondatphong", {
       donDatPhongList: formatted,
-      trangThai
+      trangThai,
+      js: ["/js/khachhang/danhsachdondatphong"],
+      css: ["/css/danhsachdondatphong.css"],
     });
   } catch (err) {
     console.error("❌ Lỗi khi tải danh sách đơn:", err);
@@ -72,6 +74,8 @@ exports.chiTietDonDatPhong = async (req, res) => {
       don,
       daDanhGia: !!danhGia,
       danhGia: danhGia || null,
+      js: ["/js/khachhang/chitietdondatphong"],
+      css: ["/css/chitietdondatphong.css"],
     });
 
   } catch (err) {

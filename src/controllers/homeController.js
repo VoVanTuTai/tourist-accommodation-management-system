@@ -5,7 +5,9 @@ exports.getHomePage = async (req, res) => {
       res.render('home', { 
         layout: 'layout',
         title: 'Trang chủ',
-        topRooms
+        topRooms,
+        js: process.env.HOME_SCRIPTS,
+        css: process.env.HOME_STYLES
       });
     } catch (error) {
       console.error("Lỗi tải trang chủ:", error);

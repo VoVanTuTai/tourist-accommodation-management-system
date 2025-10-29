@@ -15,9 +15,7 @@ const path = require("path")
 const e = require("express")
 const { error } = require("console")
 const jsLibraries = [
-    "https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js",
     "https://cdn-script.com/ajax/libs/jquery/3.7.1/jquery.min.js",
-    "https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js",
     "/js/nhacungcap/dangky.js",
 ]
 
@@ -140,22 +138,21 @@ exports.registerNhaCungCap = async (req, res) => {
                 tinhs
             })
         }
-        // Tạo địa chỉ cho nhà cung cấp
-        const maDiaChi = await DiaChi.addDiaChi(DiaChiChiTiet, Xa)
-        data.MaDiaChi = maDiaChi
-        // Tạo tài khoản cho nhà cung cấp
-        const result = await addNhaCungCap(data)
-        const maNCC = result.insertId // Lấy MaNhaCungCap vừa tạo
         // Tạo tài khoản đăng nhập ở trạng thái Chờ Duyệt
         const hashedPassword = await bcrypt.hash(Password, 10)
-        await TaiKhoan.create({
+        const maTaiKhoan = await TaiKhoan.create({
             TaiKhoan: Email,
             MatKhau: hashedPassword,
             PhanQuyen: "NhaCungCap",
-            MaNCC: maNCC,
-            MaAdmin: null,
             TrangThai: "ChoDuyet",
         })
+        // Tạo địa chỉ cho nhà cung cấp
+        const maDiaChi = await DiaChi.addDiaChi(DiaChiChiTiet, Xa)
+        data.MaDiaChi = maDiaChi
+        data.MaTaiKhoan = maTaiKhoan
+        // Tạo tài khoản cho nhà cung cấp
+        const result = await addNhaCungCap(data)
+
         await db.query("COMMIT;");
         res.send(`
         <html>
@@ -217,8 +214,8 @@ exports.loginNhaCungCap = async (req, res) => {
         `SELECT 
             tk.MaTaiKhoan, tk.TaiKhoan, tk.MatKhau, tk.PhanQuyen, tk.TrangThai,
             ncc.MaNCC, ncc.TenNCC
-         FROM taikhoan tk
-         JOIN nhacungcap ncc ON tk.MaTaiKhoan = ncc.MaTaiKhoan
+         FROM TaiKhoan tk
+         JOIN NhaCungCap ncc ON tk.MaTaiKhoan = ncc.MaTaiKhoan
          WHERE tk.TaiKhoan = ?`,
         [Email]
       );
@@ -269,7 +266,7 @@ exports.loginNhaCungCap = async (req, res) => {
       }
   
       // 6️⃣ Tạo session đăng nhập (đã có MaNCC thực)
-      req.session.ncc = {
+      req.session.user = {
         MaTaiKhoan: account.MaTaiKhoan,
         TaiKhoan: account.TaiKhoan,
         PhanQuyen: account.PhanQuyen,
@@ -278,7 +275,7 @@ exports.loginNhaCungCap = async (req, res) => {
         TenNCC: account.TenNCC, // ✅ Tên NCC để hiển thị
       };
   
-      console.log("✅ NCC đăng nhập:", req.session.ncc);
+      console.log("✅ NCC đăng nhập:", req.session.user);
   
       // 7️⃣ Chuyển hướng đến danh sách phòng
       res.redirect("/nhacungcap/phong");

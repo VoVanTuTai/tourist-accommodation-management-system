@@ -30,7 +30,7 @@ app.use(expressLayouts);
 ===================================================== */
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "src", "public")));
+app.use(express.static(path.join(__dirname, "./src/public")));
 
 /* =====================================================
    ✅ CẤU HÌNH MYSQL + SESSION
@@ -48,7 +48,7 @@ app.use(
   session({
     key: "thieunu_session",
     secret: "thieunu_secret_key",
-    store: sessionStore,
+    // store: sessionStore,
     resave: false,
     saveUninitialized: false,
     cookie: { maxAge: 1000 * 60 * 60 * 2 }, // 2 tiếng
@@ -67,16 +67,18 @@ app.use((req, res, next) => {
    ✅ GIẢ LẬP NHÀ CUNG CẤP (TẠM THỜI ĐỂ TEST)
    ⚠️ Đặt TRƯỚC khi dùng route /nhacungcap
 ===================================================== */
-app.use((req, res, next) => {
-  if (!req.session.ncc) {
-    req.session.ncc = {
-      MaNCC: 1,
-      TenNCC: "Khách sạn Hoàng Gia",
-      Email: "hoanggia@example.com",
-    };
-  }
-  next();
-});
+// app.use((req, res, next) => {
+//   if (!req.session.user) {
+//     req.session.user = {
+//       MaNCC: 1,
+//       TenNCC: "Khách sạn Hoàng Gia",
+//       Email: "hoanggia@example.com",
+//       PhanQuyen: "KhachHang",
+//       MaKhachHang: 1
+//     };
+//   }
+//   next();
+// });
 
 /* =====================================================
    ✅ ĐỊNH NGHĨA ROUTES

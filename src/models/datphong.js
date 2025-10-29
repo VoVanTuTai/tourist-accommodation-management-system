@@ -5,11 +5,11 @@ exports.getRoomById = async (maPhong) => {
   const sql = `
     SELECT p.MaPhong, p.TenPhong, p.Gia, p.SucChua, p.TinhTrang, p.HinhAnh,
            lp.TenLoai, d.ChiTiet AS DiaChiChiTiet, x.TenXa, t.TenTinh
-    FROM phong p
-    LEFT JOIN loaiphong lp ON p.MaLoai = lp.MaLoai
-    LEFT JOIN diachi d ON p.MaDiaChi = d.MaDiaChi
-    LEFT JOIN xa x ON d.MaXa = x.MaXa
-    LEFT JOIN tinh t ON x.MaTinh = t.MaTinh
+    FROM Phong p
+    LEFT JOIN LoaiPhong lp ON p.MaLoai = lp.MaLoai
+    LEFT JOIN DiaChi d ON p.MaDiaChi = d.MaDiaChi
+    LEFT JOIN Xa x ON d.MaXa = x.MaXa
+    LEFT JOIN Tinh t ON x.MaTinh = t.MaTinh
     WHERE p.MaPhong = ?`;
   const [rows] = await db.execute(sql, [maPhong]);
   return rows[0];
@@ -18,7 +18,7 @@ exports.getRoomById = async (maPhong) => {
 // ===== Tạo đơn đặt phòng =====
 exports.createOrder = async (payload) => {
   const sql = `
-    INSERT INTO dondatphong
+    INSERT INTO DonDatPhong
     (MaKhachHang, MaPhong, NgayDat, NgayNhan, NgayTra, TrangThai, TongTien,
      Dat_HoTen, Dat_SDT, Dat_CCCD, Dat_NgaySinh, Dat_GioiTinh,
      Nhan_HoTen, Nhan_SDT, Nhan_CCCD, Nhan_NgaySinh, Nhan_GioiTinh)

@@ -14,7 +14,9 @@ exports.timKiemPhong = async (req, res) => {
       return res.render('khachhang/danhsachphong', {
         phongList: [],
         message: 'Khoảng giá không hợp lệ!',
-        query: req.query
+        query: req.query,
+        js: process.env.HOME_SCRIPTS,
+        css: process.env.HOME_STYLES
       });
     }
 
@@ -57,7 +59,9 @@ exports.timKiemPhong = async (req, res) => {
       return res.render('khachhang/danhsachphong', {
         phongList: [],
         message: 'Không tìm thấy phòng phù hợp.',
-        query: req.query
+        query: req.query,
+        js: process.env.HOME_SCRIPTS,
+        css: process.env.HOME_STYLES
       });
     }
 
@@ -68,7 +72,9 @@ exports.timKiemPhong = async (req, res) => {
     res.render('khachhang/danhsachphong', {
       phongList: rows,
       message: null,
-      query: req.query
+      query: req.query,
+      js: process.env.HOME_SCRIPTS,
+      css: process.env.HOME_STYLES
     });
 
   } catch (err) {
@@ -76,7 +82,9 @@ exports.timKiemPhong = async (req, res) => {
     res.status(500).render('khachhang/danhsachphong', {
       phongList: [],
       message: 'Lỗi hệ thống khi tìm kiếm phòng.',
-      query: req.query
+      query: req.query,
+      js: process.env.HOME_SCRIPTS,
+      css: process.env.HOME_STYLES
     });
   }
 };
