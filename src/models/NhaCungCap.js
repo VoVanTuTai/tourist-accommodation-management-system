@@ -63,15 +63,16 @@ const NhaCungCap = {
 // Thêm nha cung cap
 const addNhaCungCap = async(data, callback) => {
   const sql = `
-    INSERT INTO NhaCungCap (TenNCC, LoaiNganHang, ThongTinThanhToan, LoaiHinh, GiayPhepKD)
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO NhaCungCap (TenNCC, LoaiNganHang, ThongTinThanhToan, LoaiHinh, GiayPhepKD, MaDiaChi)
+    VALUES (?, ?, ?, ?, ?, ?)
   `;
   const values = [
     data.TenNCC,
     data.LoaiNganHang,
     data.ThongTinThanhToan,
     data.LoaiHinh,
-    data.GiayPhepKD
+    data.GiayPhepKD,
+    data.MaDiaChi,
   ];
   const [result] = await dbPromise.execute(sql, values);
   return result;

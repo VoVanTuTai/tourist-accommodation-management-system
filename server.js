@@ -71,7 +71,6 @@ app.use((req, res, next) => {
 app.use("/timkiem", timkiemRoutes);
 app.use('/api', diachiRoutes);
 app.use('/api/loaiphong', loaiphongRoutes);
-app.use("/nhacungcap", nhaCungCapRoutes);
 // ====== Khởi động server ======
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>

@@ -1,157 +1,196 @@
 <% const f = formData || {}; %>
-<div class="wrap-register" style="max-width: 700px; margin: 0 auto; padding: 50px 0;">
-    <div class="partner-register-container py-3 px-4 border rounded-3">
-        <h3 class="modal-title text-uppercase text-center">Thông Tin Đăng Ký</h3>
-        <form
-            action="/nhacungcap/dangky" method="POST"
-            id="partner-register-form" class="py-3 px-3"
-            enctype="multipart/form-data">
-            <div class="row mb-3">
-                <div class="col-3">
-                    <label for="TenNCC" class="form-label">Tên NCC</label>
+<div class="partner-register-container bg-white">
+    <div class="wrap-register"
+        style="max-width: 700px; margin: 0 auto; padding: 50px 0;">
+        <div class="partner-register-container py-3 px-4 border rounded-3"
+            style="box-shadow: 0px 15px 14px 0px #0000004a;">
+            <h2 class="modal-title text-uppercase text-center"
+                style="font-size: 32px;">Thông Tin Đăng Ký</h2>
+            <form
+                action="/nhacungcap/dangky" method="POST"
+                id="partner-register-form" class="py-3 px-3"
+                enctype="multipart/form-data">
+                <div class="row mb-3">
+                    <div class="col-3">
+                        <label for="TenNCC" class="form-label">Tên NCC</label>
+                    </div>
+                    <div class="col-9">
+                        <input type="text" class="form-control" name="TenNCC" id="TenNCC" value="<%= f.TenNCC || '' %>" />
+                        <span class="text-danger d-block text-error-TenNCC">
+                            <% if (errors) { %>
+                                <%= errors.TenNCC %>
+                            <% } %>
+                        </span>
+                    </div>
                 </div>
-                <div class="col-9">
-                    <input type="text" class="form-control" name="TenNCC" id="TenNCC" value="<%= f.TenNCC || '' %>" />
-                    <span class="text-danger d-block text-error-TenNCC">
-                        <% if (errors) { %>
-                            <%= errors.TenNCC %>
-                        <% } %>
-                    </span>
-                </div>
-            </div>
 
-            <div class="row mb-3">
-                <div class="col-3">
-                    <label for="Email" class="form-label">Email</label>
+                <div class="row mb-3">
+                    <div class="col-3">
+                        <label for="Email" class="form-label">Email</label>
+                    </div>
+                    <div class="col-9">
+                        <input type="text" class="form-control" name="Email" id="Email" value="<%= f.Email || '' %>" />
+                        <span class="text-danger d-block text-error-email">
+                            <% if (errors) { %>
+                                <%= errors.Email %>
+                            <% } %>
+                        </span>
+                    </div>
                 </div>
-                <div class="col-9">
-                    <input type="text" class="form-control" name="Email" id="Email" value="<%= f.Email || '' %>" />
-                    <span class="text-danger d-block text-error-email">
-                        <% if (errors) { %>
-                            <%= errors.Email %>
-                        <% } %>
-                    </span>
-                </div>
-            </div>
 
-            <div class="row mb-3">
-                <div class="col-3">
-                    <label for="Phone" class="form-label">SDT</label>
+                <div class="row mb-3">
+                    <div class="col-3">
+                        <label for="Phone" class="form-label">SDT</label>
+                    </div>
+                    <div class="col-9">
+                        <input type="text" class="form-control" name="Phone" id="Phone" value="<%= f.Phone || '' %>" />
+                        <span class="text-danger d-block text-error-phone">
+                            <% if (errors) { %>
+                                <%= errors.Phone %>
+                            <% } %>
+                        </span>
+                    </div>
                 </div>
-                <div class="col-9">
-                    <input type="text" class="form-control" name="Phone" id="Phone" value="<%= f.Phone || '' %>" />
-                    <span class="text-danger d-block text-error-phone">
-                        <% if (errors) { %>
-                            <%= errors.Phone %>
-                        <% } %>
-                    </span>
-                </div>
-            </div>
 
-            <div class="row mb-3">
-                <div class="col-3">
-                    <label for="ThongTinThanhToan" class="form-label">Thông Tin Thanh Toán</label>
+                <div class="row mb-3">
+                    <div class="col-3">
+                        <label for="DiaChi" class="form-label">Địa chỉ</label>
+                    </div>
+                    <div class="col-9">
+                        <select class="form-select" name="Tinh" id="Tinh">
+                            <option value="">Select one</option>
+                            <% tinhs.forEach(t => { %>
+                                <option value="<%= t.MaTinh %>"><%= t.TenTinh %></option>
+                            <% }) %>
+                        </select>
+                        <span class="text-danger d-block text-error-Tinh">
+                            <% if (errors) { %>
+                                <%= errors.Tinh %>
+                            <% } %>
+                        </span>
+                        <select class="form-select mt-3" name="Xa" id="Xa" disabled>
+                            <option value="">Select one</option>
+                        </select>
+                        <span class="text-danger d-block text-error-Xa">
+                            <% if (errors) { %>
+                                <%= errors.Xa %>
+                            <% } %>
+                        </span>
+                        <input type="text" class="form-control mt-3" name="DiaChiChiTiet" id="DiaChiChiTiet" 
+                            placeholder="e.g: 12 Nguyen Van Bảo" value="<%= f.DiaChiChiTiet || '' %>"/>
+                        <span class="text-danger d-block text-error-DiaChiChiTiet">
+                            <% if (errors) { %>
+                                <%= errors.DiaChiChiTiet %>
+                            <% } %>
+                        </span>
+                    </div>
                 </div>
-                <div class="col-9">
-                    <% const banks = {"VCB": "Vietcombank", "VTB": "VietinBank", "TCB": "Techcombank", "MBB": "MBBank"}; %>
-                    <select class="form-select mb-3" name="LoaiNganHang" id="LoaiNganHang">
-                        <option value="">Select one</option>
-                        <% Object.entries(banks).forEach(([key, value]) => { %>
-                            <option value="<%= key %>" <%= f?.LoaiNganHang === key ? 'selected' : '' %>>
-                                <%= value %>
-                            </option>
-                        <% }) %>
-                    </select>
-                    <span class="text-danger d-block text-error-LoaiNganHang">
-                        <% if (errors) { %>
-                            <%= errors.LoaiNganHang %>
-                        <% } %>
-                    </span>
-                    <input type="text" class="form-control" name="ThongTinThanhToan" id="ThongTinThanhToan" 
-                        placeholder="e.g: 123456789" value="<%= f.ThongTinThanhToan || '' %>"/>
-                    <span class="text-danger d-block text-error-ThongTinThanhToan">
-                        <% if (errors) { %>
-                            <%= errors.ThongTinThanhToan %>
-                        <% } %>
-                    </span>
-                </div>
-            </div>
 
-            <div class="row mb-3">
-                <div class="col-3">
-                    <label for="LoaiHinh" class="form-label">Loại Hình</label>
+                <div class="row mb-3">
+                    <div class="col-3">
+                        <label for="ThongTinThanhToan" class="form-label">Thông Tin Thanh Toán</label>
+                    </div>
+                    <div class="col-9">
+                        <% const banks = {"VCB": "Vietcombank", "VTB": "VietinBank", "TCB": "Techcombank", "MBB": "MBBank"}; %>
+                        <select class="form-select mb-3" name="LoaiNganHang" id="LoaiNganHang">
+                            <option value="">Select one</option>
+                            <% Object.entries(banks).forEach(([key, value]) => { %>
+                                <option value="<%= key %>" <%= f?.LoaiNganHang === key ? 'selected' : '' %>>
+                                    <%= value %>
+                                </option>
+                            <% }) %>
+                        </select>
+                        <span class="text-danger d-block text-error-LoaiNganHang">
+                            <% if (errors) { %>
+                                <%= errors.LoaiNganHang %>
+                            <% } %>
+                        </span>
+                        <input type="text" class="form-control" name="ThongTinThanhToan" id="ThongTinThanhToan" 
+                            placeholder="e.g: 123456789" value="<%= f.ThongTinThanhToan || '' %>"/>
+                        <span class="text-danger d-block text-error-ThongTinThanhToan">
+                            <% if (errors) { %>
+                                <%= errors.ThongTinThanhToan %>
+                            <% } %>
+                        </span>
+                    </div>
                 </div>
-                <div class="col-9">
-                    <% const types = {"NhaNghi": "Nhà Nghỉ", "Homestay": "Homestay", "Hotel": "Khách Sạn", "Villa": "Villa"}; %>
-                    <select
-                        class="form-select form-select-md"
-                        name="LoaiHinh"
-                        id="LoaiHinh"
-                    >
-                        <option value="" selected>Select one</option>
-                        <% Object.entries(types).forEach(([key, value]) => { %>
-                            <option value="<%= key %>" <%= f?.LoaiHinh === key ? 'selected' : '' %>>
-                                <%= value %>
-                            </option>
-                        <% }) %>
-                    </select>
-                    <span class="text-danger d-block text-error-LoaiHinh">
-                        <% if (errors) { %>
-                            <%= errors.LoaiHinh %>
-                        <% } %>
-                    </span>
-                </div>
-            </div>
 
-            <div class="row mb-3">
-                <div class="col-3">
-                    <label for="GiayPhepKD" class="form-label">Giấy Phép KD</label>
+                <div class="row mb-3">
+                    <div class="col-3">
+                        <label for="LoaiHinh" class="form-label">Loại Hình</label>
+                    </div>
+                    <div class="col-9">
+                        <% const types = {"NhaNghi": "Nhà Nghỉ", "Homestay": "Homestay", "Hotel": "Khách Sạn", "Villa": "Villa"}; %>
+                        <select
+                            class="form-select form-select-md"
+                            name="LoaiHinh"
+                            id="LoaiHinh"
+                        >
+                            <option value="" selected>Select one</option>
+                            <% Object.entries(types).forEach(([key, value]) => { %>
+                                <option value="<%= key %>" <%= f?.LoaiHinh === key ? 'selected' : '' %>>
+                                    <%= value %>
+                                </option>
+                            <% }) %>
+                        </select>
+                        <span class="text-danger d-block text-error-LoaiHinh">
+                            <% if (errors) { %>
+                                <%= errors.LoaiHinh %>
+                            <% } %>
+                        </span>
+                    </div>
                 </div>
-                <div class="col-9">
-                    <input type="file" class="form-control" name="GiayPhepKD" id="GiayPhepKD" />
-                    <span class="text-danger d-block text-error-GiayPhepKD">
-                        <% if (errors) { %>
-                            <%= errors.GiayPhepKD %>
-                        <% } %>
-                    </span>
-                </div>
-            </div>
 
-            <div class="row mb-3">
-                <div class="col-3">
-                    <label for="Password" class="form-label">Password</label>
+                <div class="row mb-3">
+                    <div class="col-3">
+                        <label for="GiayPhepKD" class="form-label">Giấy Phép KD</label>
+                    </div>
+                    <div class="col-9">
+                        <input type="file" class="form-control" name="GiayPhepKD" id="GiayPhepKD" />
+                        <span class="text-danger d-block text-error-GiayPhepKD">
+                            <% if (errors) { %>
+                                <%= errors.GiayPhepKD %>
+                            <% } %>
+                        </span>
+                    </div>
                 </div>
-                <div class="col-9">
-                    <input type="password" class="form-control" name="Password" id="Password" />
-                    <span class="text-danger d-block text-error-Password">
-                        <% if (errors) { %>
-                            <%= errors.Password %>
-                        <% } %>
-                    </span>
-                </div>
-            </div>
 
-            <div class="row mb-3">
-                <div class="col-3">
-                    <label for="ConfirmPassword" class="form-label">Confirm Password</label>
+                <div class="row mb-3">
+                    <div class="col-3">
+                        <label for="Password" class="form-label">Password</label>
+                    </div>
+                    <div class="col-9">
+                        <input type="password" class="form-control" name="Password" id="Password" value="Abcd@123" />
+                        <span class="text-danger d-block text-error-Password">
+                            <% if (errors) { %>
+                                <%= errors.Password %>
+                            <% } %>
+                        </span>
+                    </div>
                 </div>
-                <div class="col-9">
-                    <input type="password" class="form-control" name="ConfirmPassword" id="ConfirmPassword" />
-                    <span class="text-danger d-block text-error-ConfirmPassword">
-                        <% if (errors) { %>
-                            <%= errors.ConfirmPassword %>
-                        <% } %>
-                    </span>
+
+                <div class="row mb-3">
+                    <div class="col-3">
+                        <label for="ConfirmPassword" class="form-label">Confirm Password</label>
+                    </div>
+                    <div class="col-9">
+                        <input type="password" class="form-control" name="ConfirmPassword" id="ConfirmPassword" value="Abcd@123" />
+                        <span class="text-danger d-block text-error-ConfirmPassword">
+                            <% if (errors) { %>
+                                <%= errors.ConfirmPassword %>
+                            <% } %>
+                        </span>
+                    </div>
                 </div>
-            </div>
-            <div class="d-flex justify-content-center gap-2">
-                <button
-                    type="submit"
-                    class="btn btn-primary btn-register-partner"
-                    id="btn-register-partner">Đăng Ký</button>
-                <a href="/" class="btn btn-danger btn-register-partner">Huỷ</a>
-            </div>
-        </form>
+                <div class="d-flex justify-content-center gap-2">
+                    <button
+                        type="submit"
+                        class="btn btn-primary btn-register-partner"
+                        id="btn-register-partner">Đăng Ký</button>
+                    <a href="/" class="btn btn-danger btn-register-partner">Huỷ</a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 

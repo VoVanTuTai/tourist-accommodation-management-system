@@ -22,12 +22,12 @@ exports.timKiemPhong = async (req, res) => {
       SELECT 
         p.MaPhong, p.TenPhong, p.MaLoai, p.Gia, p.HinhAnh, p.SucChua, 
         p.TinhTrang, p.DanhGia, 
-        lp.TenLoai, xa.TenXa, t.TenTinh
-      FROM phong p
-      JOIN loaiphong lp ON p.MaLoai = lp.MaLoai
-      JOIN diachi d ON p.MaDiaChi = d.MaDiaChi
-      JOIN xa ON d.MaXa = xa.MaXa
-      JOIN tinh t ON xa.MaTinh = t.MaTinh
+        lp.TenLoai, Xa.TenXa, t.TenTinh
+      FROM Phong p
+      JOIN LoaiPhong lp ON p.MaLoai = lp.MaLoai
+      JOIN DiaChi d ON p.MaDiaChi = d.MaDiaChi
+      JOIN Xa ON d.MaXa = Xa.MaXa
+      JOIN Tinh t ON Xa.MaTinh = t.MaTinh
       WHERE p.TinhTrang = 1
     `;
     const params = [];
@@ -41,7 +41,7 @@ exports.timKiemPhong = async (req, res) => {
       params.push(maTinh);
     }
     if (maXa && maXa !== '') {
-      query += ` AND xa.MaXa = ?`;
+      query += ` AND Xa.MaXa = ?`;
       params.push(maXa);
     }
     if (giaMin || giaMax) {

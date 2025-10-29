@@ -12,7 +12,7 @@ exports.danhSachDonDatPhong = async (req, res) => {
 
     // 🔍 Lấy mã khách hàng từ bảng tài khoản
     const [rows] = await db.execute(
-      "SELECT MaKhachHang FROM taikhoan WHERE MaTaiKhoan = ?",
+      "SELECT MaKhachHang FROM TaiKhoan WHERE MaTaiKhoan = ?",
       [req.session.user.MaTaiKhoan]
     );
     if (!rows.length) return res.redirect("/khachhang/dangnhap");
@@ -133,7 +133,7 @@ exports.renderDanhGia = async (req, res) => {
 
     // 🔍 Lấy mã khách hàng thật
     const [rows] = await db.execute(
-      "SELECT MaKhachHang FROM taikhoan WHERE MaTaiKhoan = ?",
+      "SELECT MaKhachHang FROM TaiKhoan WHERE MaTaiKhoan = ?",
       [user.MaTaiKhoan]
     );
     if (!rows.length) return res.redirect("/khachhang/dangnhap");
@@ -143,7 +143,7 @@ exports.renderDanhGia = async (req, res) => {
     // 🧾 Kiểm tra KH có từng đặt phòng này chưa
     const [hasBooked] = await db.execute(
       `SELECT dp.MaDon 
-       FROM dondatphong dp
+       FROM DonDatPhong dp
        JOIN chitietdondatphong ctdp ON dp.MaDon = ctdp.MaDon
        WHERE dp.MaKhachHang = ? AND ctdp.MaPhong = ?
        LIMIT 1`,
