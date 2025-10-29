@@ -210,25 +210,26 @@ CREATE TABLE `khachhang` (
   `Email` varchar(100) NOT NULL,
   `SoDienThoai` varchar(15) NOT NULL,
   `NgaySinh` date NOT NULL,
-  `GioiTinh` varchar(10) NOT NULL
+  `GioiTinh` varchar(10) NOT NULL,
+  `TrangThai` enum('Hoạt động bình thường','Đã khóa') NOT NULL DEFAULT 'Hoạt động bình thường'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `khachhang`
 --
 
-INSERT INTO `khachhang` (`MaKhachHang`, `HoTen`, `Email`, `SoDienThoai`, `NgaySinh`, `GioiTinh`) VALUES
-(1, 'Nguyễn Văn A', 'kh1@example.com', '0901000001', '1995-01-15', 'Nam'),
-(2, 'Trần Thị B', 'kh2@example.com', '0901000002', '1996-02-20', 'Nữ'),
-(3, 'Lê Văn C', 'kh3@example.com', '0901000003', '1994-03-10', 'Nam'),
-(4, 'Phạm Thị D', 'kh4@example.com', '0901000004', '1993-04-22', 'Nữ'),
-(5, 'Hoàng Văn E', 'kh5@example.com', '0901000005', '1992-05-05', 'Nam'),
-(6, 'Đỗ Thị F', 'kh6@example.com', '0901000006', '1997-06-18', 'Nữ'),
-(7, 'Vũ Văn G', 'kh7@example.com', '0901000007', '1991-07-30', 'Nam'),
-(8, 'Bùi Thị H', 'kh8@example.com', '0901000008', '1998-08-12', 'Nữ'),
-(9, 'Phan Văn I', 'kh9@example.com', '0901000009', '1990-09-25', 'Nam'),
-(10, 'Đặng Thị K', 'kh10@example.com', '0901000010', '1999-10-08', 'Nữ'),
-(11, 'Tuyền', 'abc123@gmail.com', '0123456780', '2025-10-01', 'Nam');
+INSERT INTO `khachhang` (`MaKhachHang`, `HoTen`, `Email`, `SoDienThoai`, `NgaySinh`, `GioiTinh`, `TrangThai`) VALUES
+(1, 'Nguyễn Văn A', 'kh1@example.com', '0901000001', '1995-01-15', 'Nam', 'Hoạt động bình thường'),
+(2, 'Trần Thị B', 'kh2@example.com', '0901000002', '1996-02-20', 'Nữ', 'Hoạt động bình thường'),
+(3, 'Lê Văn C', 'kh3@example.com', '0901000003', '1994-03-10', 'Nam', 'Hoạt động bình thường'),
+(4, 'Phạm Thị D', 'kh4@example.com', '0901000004', '1993-04-22', 'Nữ', 'Hoạt động bình thường'),
+(5, 'Hoàng Văn E', 'kh5@example.com', '0901000005', '1992-05-05', 'Nam', 'Hoạt động bình thường'),
+(6, 'Đỗ Thị F', 'kh6@example.com', '0901000006', '1997-06-18', 'Nữ', 'Hoạt động bình thường'),
+(7, 'Vũ Văn G', 'kh7@example.com', '0901000007', '1991-07-30', 'Nam', 'Hoạt động bình thường'),
+(8, 'Bùi Thị H', 'kh8@example.com', '0901000008', '1998-08-12', 'Nữ', 'Hoạt động bình thường'),
+(9, 'Phan Văn I', 'kh9@example.com', '0901000009', '1990-09-25', 'Nam', 'Hoạt động bình thường'),
+(10, 'Đặng Thị K', 'kh10@example.com', '0901000010', '1999-10-08', 'Nữ', 'Hoạt động bình thường'),
+(11, 'Tuyền', 'abc123@gmail.com', '0123456780', '2025-10-01', 'Nam', 'Hoạt động bình thường');
 
 -- --------------------------------------------------------
 
@@ -264,12 +265,13 @@ INSERT INTO `loaiphong` (`MaLoai`, `TenLoai`, `MoTa`) VALUES
 -- Cấu trúc bảng cho bảng `nhacungcap`
 --
 
-CREATE TABLE `nhacungcap` (
+CREATE TABLE `NhaCungCap` (
   `MaNCC` int(11) NOT NULL,
   `TenNCC` varchar(200) NOT NULL,
   `ThongTinThanhToan` varchar(200) DEFAULT NULL,
   `LoaiHinh` varchar(50) DEFAULT NULL,
   `GiayPhepKD` varchar(100) DEFAULT NULL,
+  `TrangThai` enum('Chờ Duyệt','Đang hoạt động','Đã khóa') NOT NULL,
   `MaDiaChi` varchar(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -277,17 +279,17 @@ CREATE TABLE `nhacungcap` (
 -- Đang đổ dữ liệu cho bảng `nhacungcap`
 --
 
-INSERT INTO `nhacungcap` (`MaNCC`, `TenNCC`, `ThongTinThanhToan`, `LoaiHinh`, `GiayPhepKD`, `MaDiaChi`) VALUES
-(1, 'Khách sạn Hoàng Gia', 'Vietcombank - 0123456789', 'Khách sạn', 'GP01', 'DC001'),
-(2, 'Resort Biển Xanh', 'Techcombank - 0234567890', 'Resort', 'GP02', 'DC002'),
-(3, 'Hotel Central', 'ACB - 0345678901', 'Khách sạn', 'GP03', 'DC003'),
-(4, 'Homestay Hòa Bình', 'MB Bank - 0456789012', 'Homestay', 'GP04', 'DC004'),
-(5, 'Villa Đại Dương', 'Agribank - 0567890123', 'Villa', 'GP05', 'DC005'),
-(6, 'Hotel Dĩ An', 'BIDV - 0678901234', 'Khách sạn', 'GP06', 'DC006'),
-(7, 'Resort Nha Trang Bay', 'VPBank - 0789012345', 'Resort', 'GP07', 'DC007'),
-(8, 'Sunrise Hotel', 'VietinBank - 0890123456', 'Khách sạn', 'GP08', 'DC008'),
-(9, 'Highland Retreat', 'Sacombank - 0901234567', 'Resort', 'GP09', 'DC009'),
-(10, 'Lâm Đồng Villa', 'ACB - 0912345678', 'Villa', 'GP10', 'DC010');
+INSERT INTO `NhaCungCap` (`MaNCC`, `TenNCC`, `ThongTinThanhToan`, `LoaiHinh`, `GiayPhepKD`, `TrangThai`, `MaDiaChi`) VALUES
+(1, 'Khách sạn Hoàng Gia', 'Vietcombank - 0123456789', 'Khách sạn', 'GP01', 'Đang hoạt động', 'DC001'),
+(2, 'Resort Biển Xanh', 'Techcombank - 0234567890', 'Resort', 'GP02', 'Đã khóa', 'DC002'),
+(3, 'Hotel Central', 'ACB - 0345678901', 'Khách sạn', 'GP03', 'Đã khóa', 'DC003'),
+(4, 'Homestay Hòa Bình', 'MB Bank - 0456789012', 'Homestay', 'GP04', 'Đang hoạt động', 'DC004'),
+(5, 'Villa Đại Dương', 'Agribank - 0567890123', 'Villa', 'GP05', 'Đang hoạt động', 'DC005'),
+(6, 'Hotel Dĩ An', 'BIDV - 0678901234', 'Khách sạn', 'GP06', 'Đã khóa', 'DC006'),
+(7, 'Resort Nha Trang Bay', 'VPBank - 0789012345', 'Resort', 'GP07', 'Chờ Duyệt', 'DC007'),
+(8, 'Sunrise Hotel', 'VietinBank - 0890123456', 'Khách sạn', 'GP08', 'Chờ Duyệt', 'DC008'),
+(9, 'Highland Retreat', 'Sacombank - 0901234567', 'Resort', 'GP09', 'Đang hoạt động', 'DC009'),
+(10, 'Lâm Đồng Villa', 'ACB - 0912345678', 'Villa', 'GP10', 'Đang hoạt động', 'DC010');
 
 -- --------------------------------------------------------
 
@@ -556,7 +558,7 @@ ALTER TABLE `loaiphong`
 --
 -- Chỉ mục cho bảng `nhacungcap`
 --
-ALTER TABLE `nhacungcap`
+ALTER TABLE `NhaCungCap`
   ADD PRIMARY KEY (`MaNCC`),
   ADD KEY `fk_ncc_diachi` (`MaDiaChi`);
 
@@ -653,9 +655,9 @@ ALTER TABLE `loaiphong`
   MODIFY `MaLoai` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT cho bảng `nhacungcap`
+-- AUTO_INCREMENT cho bảng `NhaCungCap`
 --
-ALTER TABLE `nhacungcap`
+ALTER TABLE `NhaCungCap`
   MODIFY `MaNCC` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
@@ -707,9 +709,9 @@ ALTER TABLE `dondatphong`
   ADD CONSTRAINT `fk_dondat_kh` FOREIGN KEY (`MaKhachHang`) REFERENCES `khachhang` (`MaKhachHang`) ON UPDATE CASCADE;
 
 --
--- Các ràng buộc cho bảng `nhacungcap`
+-- Các ràng buộc cho bảng `NhaCungCap`
 --
-ALTER TABLE `nhacungcap`
+ALTER TABLE `NhaCungCap`
   ADD CONSTRAINT `fk_ncc_diachi` FOREIGN KEY (`MaDiaChi`) REFERENCES `diachi` (`MaDiaChi`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
@@ -717,7 +719,7 @@ ALTER TABLE `nhacungcap`
 --
 ALTER TABLE `phanhoi`
   ADD CONSTRAINT `fk_phanhoi_danhgia` FOREIGN KEY (`MaDanhGia`) REFERENCES `danhgia` (`MaDanhGia`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_phanhoi_ncc` FOREIGN KEY (`MaNhaCungCap`) REFERENCES `nhacungcap` (`MaNCC`) ON DELETE SET NULL ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_phanhoi_ncc` FOREIGN KEY (`MaNhaCungCap`) REFERENCES `NhaCungCap` (`MaNCC`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `phong`
@@ -725,7 +727,7 @@ ALTER TABLE `phanhoi`
 ALTER TABLE `phong`
   ADD CONSTRAINT `fk_phong_diachi` FOREIGN KEY (`MaDiaChi`) REFERENCES `diachi` (`MaDiaChi`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_phong_loai` FOREIGN KEY (`MaLoai`) REFERENCES `loaiphong` (`MaLoai`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_phong_ncc` FOREIGN KEY (`MaNhaCungCap`) REFERENCES `nhacungcap` (`MaNCC`) ON DELETE SET NULL ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_phong_ncc` FOREIGN KEY (`MaNhaCungCap`) REFERENCES `NhaCungCap` (`MaNCC`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `taikhoan`
@@ -745,6 +747,23 @@ ALTER TABLE `thanhtoan`
 --
 ALTER TABLE `xa`
   ADD CONSTRAINT `fk_xa_tinh` FOREIGN KEY (`MaTinh`) REFERENCES `tinh` (`MaTinh`) ON UPDATE CASCADE;
+
+-- Thêm column MaNhaCungCap vao Table TaiKhoan
+alter table TaiKhoan 
+add column MaNhaCungCap int(11) DEFAULT NULL;
+
+-- Thêm foreign key
+alter table TaiKhoan 
+ADD CONSTRAINT `fk_taikhoan_nhacungcap` FOREIGN KEY (`MaNhaCungCap`) REFERENCES `NhaCungCap` (`MaNCC`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+
+-- Thêm TrangThai ChoDuyet vao column TrangThai table TaiKhoan
+alter table TaiKhoan 
+MODIFY COLUMN TrangThai ENUM('ChoDuyet', 'HoatDong', 'Khoa') default 'HoatDong';
+
+-- Thêm column LoaiNganHang vào Table NhaCungCap
+ALTER TABLE NhaCungCap ADD COLUMN LoaiNganHang VARCHAR(255);
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

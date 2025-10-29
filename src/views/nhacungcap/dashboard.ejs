@@ -1,0 +1,77 @@
+<h2>📊 Bảng điều khiển Nhà cung cấp: <%= ncc.TenNCC %></h2>
+
+<div style="display: flex; gap: 20px; margin: 20px 0;">
+  <div style="background: #e3f2fd; padding: 15px; border-radius: 10px;">
+    <h3>🏠 Tổng số phòng</h3>
+    <p style="font-size: 20px;"><%= tongPhong %></p>
+  </div>
+
+  <div style="background: #d1ffd1; padding: 15px; border-radius: 10px;">
+    <h3>🟢 Còn trống</h3>
+    <p style="font-size: 20px;"><%= conTrong %></p>
+  </div>
+
+  <div style="background: #ffe4e4; padding: 15px; border-radius: 10px;">
+    <h3>🔴 Đã đặt</h3>
+    <p style="font-size: 20px;"><%= daDat %></p>
+  </div>
+
+  <div style="background: #fff3cd; padding: 15px; border-radius: 10px;">
+    <h3>🟠 Bảo trì</h3>
+    <p style="font-size: 20px;"><%= baoTri %></p>
+  </div>
+</div>
+
+<hr>
+
+<div style="display: flex; gap: 40px;">
+  <div>
+    <h3>💰 Tổng doanh thu</h3>
+    <p style="font-size: 22px; color: green;">
+      <%= tongDoanhThu.toLocaleString() %>₫
+    </p>
+  </div>
+
+  <div>
+    <h3>⭐ Điểm đánh giá trung bình</h3>
+    <p style="font-size: 22px; color: orange;"><%= diemTB %> / 5</p>
+  </div>
+</div>
+
+<hr>
+
+<h3>🧾 Đơn đặt phòng gần đây</h3>
+<table border="1" cellspacing="0" cellpadding="8">
+  <thead>
+    <tr>
+      <th>Mã đơn</th>
+      <th>Ngày đặt</th>
+      <th>Trạng thái</th>
+      <th>Tổng tiền</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if (donGanDay.length === 0) { %>
+      <tr><td colspan="4">Chưa có đơn nào</td></tr>
+    <% } else { %>
+      <% donGanDay.forEach(d => { %>
+        <tr>
+          <td><%= d.MaDon %></td>
+          <td><%= new Date(d.NgayDat).toLocaleDateString() %></td>
+          <td><%= d.TrangThai %></td>
+          <td><%= d.TongTien ? d.TongTien.toLocaleString() + "₫" : "—" %></td>
+        </tr>
+      <% }) %>
+    <% } %>
+  </tbody>
+</table>
+
+<hr>
+
+<h3>⚙️ Chức năng nhanh</h3>
+<ul>
+  <li><a href="/phong">📋 Quản lý phòng</a></li>
+  <li><a href="/phong/add">➕ Thêm phòng mới</a></li>
+  <li><a href="/phong/status">🔄 Cập nhật trạng thái phòng</a></li>
+  <li><a href="/ncc/thongtin">🧍 Cập nhật thông tin cá nhân</a></li>
+</ul>

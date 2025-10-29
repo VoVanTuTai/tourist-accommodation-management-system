@@ -1,0 +1,96 @@
+<h2>🏨 Danh sách phòng của <%= ncc.TenNCC %></h2>
+
+<!-- Thanh hành động đầu trang -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+  <!-- Bộ lọc tình trạng -->
+  <form method="GET" action="/nhacungcap/phong" style="margin: 0;">
+    <label for="filter"><strong>Lọc theo tình trạng:</strong></label>
+    <select name="filter" id="filter" onchange="this.form.submit()">
+      <option value="all" <%= currentFilter === 'all' ? 'selected' : '' %>>Tất cả</option>
+      <option value="1" <%= currentFilter === '1' ? 'selected' : '' %>>🟢 Còn trống</option>
+      <option value="0" <%= currentFilter === '0' ? 'selected' : '' %>>🔴 Đã đặt</option>
+      <option value="2" <%= currentFilter === '2' ? 'selected' : '' %>>🟠 Bảo trì</option>
+    </select>
+  </form>
+
+  <!-- Nút thêm phòng -->
+  <a href="/nhacungcap/phong/them" 
+     style="background: #28a745; color: white; padding: 8px 14px; border-radius: 6px; text-decoration: none; font-weight: 500;">
+    ➕ Thêm phòng
+  </a>
+</div>
+
+<!-- Bảng danh sách -->
+<table border="1" cellspacing="0" cellpadding="8" style="width: 100%; border-collapse: collapse; text-align: center;">
+  <thead style="background-color: #f2f2f2;">
+    <tr>
+      <th>Mã phòng</th>
+      <th>Tên phòng</th>
+      <th>Loại phòng</th>
+      <th>Giá (VNĐ)</th>
+      <th>Sức chứa</th>
+      <th>Tình trạng</th>
+      <th>Địa chỉ</th>
+      <th>Hình ảnh</th>
+      <th>Hành động</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if (rooms.length === 0) { %>
+      <tr>
+        <td colspan="9" style="text-align:center;">Không có phòng nào</td>
+      </tr>
+    <% } else { %>
+      <% rooms.forEach(p => { %>
+        <tr>
+          <td><%= p.MaPhong %></td>
+          <td><%= p.TenPhong %></td>
+          <td><%= p.TenLoai %></td>
+          <td><%= Number(p.Gia).toLocaleString() %></td>
+          <td><%= p.SucChua %></td>
+
+          <td>
+            <% if (p.TinhTrang === 1) { %> 🟢 Còn trống
+            <% } else if (p.TinhTrang === 0) { %> 🔴 Đã đặt
+            <% } else { %> 🟠 Bảo trì <% } %>
+          </td>
+
+          <td>
+            <% if (p.ChiTiet && p.TenXa && p.TenTinh) { %>
+              <%= p.ChiTiet %>, <%= p.TenXa %>, <%= p.TenTinh %>
+            <% } else { %>
+              <span style="color:#888;">—</span>
+            <% } %>
+          </td>
+
+          <td>
+            <% if (p.HinhAnh) { %>
+              <img src="/images/<%= p.HinhAnh %>" width="80" style="border-radius:5px;">
+            <% } else { %>
+              —
+            <% } %>
+          </td>
+
+          <td>
+            <!-- 👁️ Nút xem chi tiết -->
+            <a href="/nhacungcap/phong/chitiet/<%= p.MaPhong %>">👁️ Xem</a>
+
+            <% if (p.TinhTrang === 0) { %>
+              <!-- 🔴 ĐÃ ĐẶT: Không thể thao tác -->
+              | <span style="color: gray;">🚫 Không thể thao tác</span>
+
+            <% } else if (p.TinhTrang === 1) { %>
+              <!-- 🟢 CÒN TRỐNG: chỉ có nút cập nhật -->
+              | <a href="/nhacungcap/phong/trangthai/<%= p.MaPhong %>">🔄 Cập nhật trạng thái</a>
+
+            <% } else if (p.TinhTrang === 2) { %>
+              <!-- 🟠 BẢO TRÌ: có cả 2 nút -->
+              | <a href="/nhacungcap/phong/suaphong/<%= p.MaPhong %>">✏️ Sửa</a>
+              | <a href="/nhacungcap/phong/trangthai/<%= p.MaPhong %>">🔄 Cập nhật</a>
+            <% } %>
+          </td>
+        </tr>
+      <% }) %>
+    <% } %>
+  </tbody>
+</table>

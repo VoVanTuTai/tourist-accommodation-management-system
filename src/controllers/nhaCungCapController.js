@@ -1,0 +1,263 @@
+const { NhaCungCap, addNhaCungCap } = require("../models/NhaCungCap") // Model phòng
+const bcrypt = require("bcryptjs")
+const TaiKhoan = require("../models/taikhoan")
+
+const {
+    isValidFullname,
+    isValidEmail,
+    isValidVietnamPhone,
+    isValidPassword,
+} = require("../middlewares/validate")
+const fs = require("fs")
+const path = require("path")
+const e = require("express")
+const { error } = require("console")
+const jsLibraries = [
+    "https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js",
+    "https://cdn-script.com/ajax/libs/jquery/3.7.1/jquery.min.js",
+    "https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js",
+    "/js/nhacungcap/dangky.js",
+]
+
+exports.renderDangKyNhaCungCap = (req, res) => {
+    res.render("nhacungcap/dangky", {
+        title: "Đăng ký nhà cung cấp",
+        js: jsLibraries, // Gán JS riêng cho view đăng ký nhà cung cấp,
+        errors: {},
+        formData: {},
+    })
+}
+
+exports.registerNhaCungCap = async (req, res) => {
+    try {
+        const {
+            TenNCC,
+            Email,
+            Phone,
+            LoaiNganHang,
+            ThongTinThanhToan,
+            LoaiHinh,
+            Password,
+            ConfirmPassword,
+        } = req.body
+        const errors = {}
+
+        if (!isValidFullname(TenNCC)) {
+            errors.TenNCC =
+                "Tên nhà cung cấp không hợp lệ. Ít nhất 5 ký tự, không toàn số, không ký tự đặc biệt."
+        }
+        if (!isValidEmail(Email)) {
+            errors.Email =
+                "Email không hợp lệ. Phải có ký tự @ và kết thúc với .com"
+        }
+        if (!isValidVietnamPhone(Phone)) {
+            errors.Phone =
+                "Số điện thoại không hợp lệ. Phải là số điện thoại Việt Nam bắt đầu bằng 09, 03 hoặc 08 và có 10 chữ số."
+        }
+        if (!isValidPassword(Password)) {
+            errors.Password =
+                "Mật khẩu không hợp lệ. Ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt."
+        }
+        if (Password !== ConfirmPassword) {
+            errors.ConfirmPassword = "Mật khẩu xác nhận không khớp."
+        }
+        if (!LoaiNganHang || LoaiNganHang.trim() === "") {
+            errors.LoaiNganHang = "Vui lòng chọn loại ngân hàng."
+        }
+        if (!LoaiHinh || LoaiHinh.trim() === "") {
+            errors.LoaiHinh = "Vui lòng chọn loại hình nhà cung cấp."
+        }
+        if (ThongTinThanhToan.length < 5 || ThongTinThanhToan.length > 15) {
+            errors.ThongTinThanhToan =
+                "Thông tin thanh toán không hợp lệ. Ít nhất 5 chữ số và tối đa 15."
+        }
+        // Nếu có file upload, lấy tên file, còn không thì dùng giá trị rỗng
+        const giayPhepKD = req.file ? req.file.originalname : ""
+
+        if (!giayPhepKD) {
+            errors.giayPhepKD = "Vui lòng tải giấy phép kinh doanh."
+        }
+
+        if (Object.keys(errors).length > 0) {
+            // // Nếu có lỗi, xóa file đã tải lên (nếu có)
+            if (req.file) {
+                fs.unlink(req.file.path, err => {
+                    if (err) console.error("Lỗi xóa file ảnh:", err)
+                })
+            }
+            return res.status(400).render("nhacungcap/dangky", {
+                title: "Đăng ký nhà cung cấp",
+                js: jsLibraries,
+                errors,
+                formData: req.body,
+            })
+        }
+
+        const data = {
+            TenNCC: TenNCC,
+            LoaiNganHang: LoaiNganHang,
+            ThongTinThanhToan: ThongTinThanhToan,
+            LoaiHinh: LoaiHinh,
+            GiayPhepKD: giayPhepKD, // ✅ lưu tên file ảnh
+        }
+        // Kiểm tra tồn tại tài khoản đăng ký nhà cung cấp
+        const isEmailRegistered = await TaiKhoan.findByTaiKhoan(Email)
+        if (isEmailRegistered) {
+            errors.Email = "Email đã đăng ký."
+            // // Nếu có lỗi, xóa file đã tải lên (nếu có)
+            if (req.file) {
+                fs.unlink(req.file.path, err => {
+                    if (err) console.error("Lỗi xóa file ảnh:", err)
+                })
+            }
+            return res.status(400).render("nhacungcap/dangky", {
+                title: "Đăng ký nhà cung cấp",
+                js: jsLibraries,
+                errors,
+                formData: req.body,
+            })
+        }
+        // Tạo tài khoản cho nhà cung cấp
+        const result = await addNhaCungCap(data)
+        const maNCC = result.insertId // Lấy MaNhaCungCap vừa tạo
+        // Tạo tài khoản đăng nhập ở trạng thái Chờ Duyệt
+        const hashedPassword = await bcrypt.hash(Password, 10)
+        await TaiKhoan.create({
+            TaiKhoan: Email,
+            MatKhau: hashedPassword,
+            PhanQuyen: "NhaCungCap",
+            MaNCC: maNCC,
+            MaAdmin: null,
+            TrangThai: "ChoDuyet",
+        })
+        res.send(`
+        <html>
+            <body style="font-family: sans-serif; text-align:center; margin-top:100px;">
+            <h2 style="color: green;">Đăng ký thành công!</h2>
+            <p>Chờ xác nhận tài khoản...</p>
+            <p><a href="/">Trở về trang chủ</a></p>
+            </body>
+        </html>
+    `)
+    } catch (error) {
+        console.error("Xảy ra lỗi trong khi đăng ký nhà cung cấp:", error)
+        res.render("nhacungcap/dangky", {
+            title: "Đăng ký nhà cung cấp",
+            js: jsLibraries,
+            errors: {},
+            formData: req.body,
+        })
+    }
+}
+// Xử lý đăng nhập
+exports.renderDangNhapNhaCungCap = (req, res) => {
+    res.render("nhacungcap/dangnhap", {
+        title: "Đăng nhập nhà cung cấp",
+        js: jsLibraries,
+        errors: null,
+        formData: req.body,
+    })
+}
+
+exports.loginNhaCungCap = async (req, res) => {
+    try {
+        const { Email, Password, Remember } = req.body
+        const errors = {}
+
+        if (!Email || Email.trim() === "") {
+            errors.Email = "Vui lòng nhập email."
+        }else if (!isValidEmail(Email)) {
+            errors.Email = "Email không hợp lệ. Phải có ký tự @ và kết thúc với .com"
+        }
+        if (!Password || Password.trim() === "") {
+            errors.Password = "Vui lòng nhập mật khẩu."
+        }
+
+        if (Object.keys(errors).length > 0) {
+            return res.status(400).render("nhacungcap/dangnhap", {
+                title: "Đăng nhập nhà cung cấp",
+                js: jsLibraries,
+                errors,
+                formData: req.body,
+            })
+        }
+
+        const account = await TaiKhoan.findByTaiKhoan(Email)
+        if (!account) {
+            errors.Email = "Tài khoản Email không tồn tại"
+            return res.status(400).render("nhacungcap/dangnhap", {
+                title: "Đăng nhập nhà cung cấp",
+                js: jsLibraries,
+                errors,
+                formData: req.body,
+            })
+        }
+
+        const passwordMatch = await bcrypt.compare(Password, account.MatKhau)
+        if (!passwordMatch) {
+            errors.Password = "Mật khẩu không đúng"
+            return res.status(400).render("nhacungcap/dangnhap", {
+                title: "Đăng nhập nhà cung cấp",
+                js: jsLibraries,
+                errors,
+                formData: req.body,
+            })
+        }
+
+        // 4️⃣ Kiểm tra trạng thái tài khoản
+        if (account.TrangThai === "Khoa") {
+            errors.Global = "Tài khoản của bạn đã bị khóa"            
+        }
+        if (account.TrangThai === "ChoDuyet") {
+            errors.Global = "Tài khoản của bạn đang chờ duyệt"            
+        }
+        if (Object.keys(errors).length > 0) {
+            return res.status(400).render("nhacungcap/dangnhap", {
+                title: "Đăng nhập nhà cung cấp",
+                js: jsLibraries,
+                errors,
+                formData: req.body,
+            })
+        }
+
+        // 6️⃣ Xử lý “Ghi nhớ đăng nhập”
+        if (Remember) {
+            // cookie tồn tại 2 ngày
+            req.session.cookie.maxAge = 2 * 24 * 60 * 60 * 1000
+        } else {
+            // cookie hết khi tắt trình duyệt
+            req.session.cookie.expires = false
+        }
+
+        // 7️⃣ Tạo session đăng nhập
+        req.session.ncc = {
+            MaTaiKhoan: account.MaTaiKhoan,
+            TaiKhoan: account.TaiKhoan,
+            PhanQuyen: account.PhanQuyen,
+            TrangThai: account.TrangThai,
+            MaNCC: account.MaNCC,
+        }
+
+        // 8️⃣ Điều hướng về trang chủ
+        res.redirect("/nhacungcap/phong")
+    } catch (error) {
+        console.error("Xảy ra lỗi trong khi đăng ký nhà cung cấp:", err)
+        res.render("nhacungcap/dangky", {
+            title: "Đăng ký nhà cung cấp",
+            js: jsLibraries,
+            errors: {},
+            formData: req.body,
+        })
+    }
+}
+
+
+// ===============================
+// 🔹 Đăng xuất
+// ===============================
+exports.logoutNhaCungCap = (req, res) => {
+  req.session.destroy(() => {
+    res.clearCookie('connect.sid');
+    res.redirect('/');
+  });
+};

@@ -22,15 +22,5 @@ const upload = multer({ storage: storage });
 // Danh sách
 router.get("/", phongController.renderPhongList);
 
-// Thêm phòng
-router.get("/add", phongController.renderAddPhong);
-router.post("/add", upload.single("HinhAnh"), phongController.handleAddPhong);
 
-// Sửa phòng
-router.get("/edit/:id", phongController.renderEditPhong);
-router.post("/edit", upload.single("HinhAnh"), phongController.handleEditPhong); // ✅ thêm upload
-
-// Thay đổi trạng thái
-router.get("/status/:id", phongController.renderUpdateStatus);
-router.post("/status", phongController.handleUpdateStatus);
 module.exports = router;
