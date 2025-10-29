@@ -59,13 +59,13 @@
                     <a href="/khachhang/dangnhap" class="btn btn-primary">Đăng nhập</a>
                     <% } else { %>
                     <% if (session.user.PhanQuyen === 'NhaCungCap') { %>
-                    <a href="/nha-cung-cap/dashboard" class="btn">Quản lý chỗ ở</a>
+                    <a href="/nhacungcap/dashboard" class="btn">Quản lý chỗ ở</a>
                     <% } else if (session.user.PhanQuyen === 'Admin') { %>
                     <a href="/admin/dashboard" class="btn btn-warning"
                         >Trang quản trị</a
                     >
                     <% } else { %>
-                    <a href="/khachhang/thongtintaikhoan" class="username"
+                    <a href="/khachhang/quanlythongtin" class="username"
                         >👤 <%= session.user.TaiKhoan %></a
                     >
                     <% } %>

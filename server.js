@@ -48,7 +48,7 @@ app.use(
   session({
     key: "thieunu_session",
     secret: "thieunu_secret_key",
-    // store: sessionStore,
+    store: sessionStore,
     resave: false,
     saveUninitialized: false,
     cookie: { maxAge: 1000 * 60 * 60 * 2 }, // 2 tiếng
