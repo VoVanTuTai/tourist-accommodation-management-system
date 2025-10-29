@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Quản lý khách hàng</title>
+  <style>/* === Bảng & tìm kiếm === */
+  
+body { font-family: "Segoe UI", sans-serif; background: #f8f9fa; margin: 0; color: #222; }
+header { background: #0d6efd; color: #fff; padding: 14px 18px; text-align: center;}
+.container { width: min(1100px, 94%); margin: 18px auto; }
+
+.search-form { 
+    display: flex; 
+    gap: 4px; 
+    margin-bottom: 5px; 
+    align-items: center; 
+}
+.search-form input { 
+    flex: 1; 
+    font-size: 0.8em; 
+    line-height: 1.1; 
+    padding: 2px 5px; 
+    border: 1px solid #ccc; 
+    border-radius: 3px; 
+    max-width: 200px; 
+}
+.search-form button { 
+    background: #0d6efd; 
+    color: #fff; 
+    border: none; 
+    font-size: 0.8em; 
+    line-height: 1.1; 
+    padding: 2px 8px; 
+    border-radius: 3px; 
+    cursor: pointer; 
+}
+.search-form button:hover { 
+    opacity: 0.9; 
+}
+
+.admin-table { width: 100%; border-collapse: collapse; }
+.admin-table th, .admin-table td { border: 1px solid #dee2e6; padding: 8px 10px; text-align: center; }
+.admin-table tr:hover { background: #eef2ff; cursor: pointer; }
+
+/* === Trạng thái === */
+.status { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 6px; font-weight: 600; }
+.status-HoatDong { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.status-Khoa { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+.btn-view { background: #0d6efd; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
+.btn-view:hover { opacity: 0.9; }
+
+/* === Modal popup === */
+.modal {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: none; justify-content: center; align-items: center;
+  z-index: 999;
+}
+.modal.show { display: flex; animation: fadeIn 0.3s ease-in-out; }
+@keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 600px;
+  position: relative;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+  animation: slideUp 0.3s ease;
+}
+@keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 22px;
+  cursor: pointer;
+  color: #555;
+}
+.close:hover { color: red; }
+
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 20px; margin-top: 10px; }
+.actions { margin-top: 15px; display: flex; gap: 10px; justify-content: center; }
+
+button { border: none; border-radius: 6px; padding: 8px 12px; color: #fff; cursor: pointer; }
+button[value="Khoa"] { background: #dc3545; }
+button[value="HoatDong"] { background: #28a745; }
+button:hover { opacity: 0.9; }
+</style>
+
+  <script>
+    async function selectCustomer(maKhachHang) {
+      const res = await fetch(`/admin/customers/detail/${maKhachHang}`);
+      const data = await res.json();
+      if (!data.success) return alert("Không tìm thấy khách hàng!");
+
+      const c = data.customer;
+      const modal = document.getElementById("modal");
+      modal.classList.add("show");
+
+      // Đổ dữ liệu vào modal
+      document.getElementById("MaKhachHang").value = c.MaKhachHang;
+      document.getElementById("TenKH").textContent = c.HoTen;
+      document.getElementById("Email").textContent = c.Email;
+      document.getElementById("SDT").textContent = c.SoDienThoai;
+      document.getElementById("GioiTinh").textContent = c.GioiTinh || "";
+      document.getElementById("NgaySinh").textContent = c.NgaySinh || "";
+      document.getElementById("TrangThai").textContent = c.TrangThaiHienThi;
+
+      // Hiển thị đúng nút thao tác
+      const btnKhoa = document.getElementById("btnKhoa");
+      const btnMoKhoa = document.getElementById("btnMoKhoa");
+      if (c.TrangThai === "Khoa") {
+        btnKhoa.style.display = "none";
+        btnMoKhoa.style.display = "inline-block";
+      } else {
+        btnKhoa.style.display = "inline-block";
+        btnMoKhoa.style.display = "none";
+      }
+    }
+
+    function closeModal() {
+      document.getElementById("modal").classList.remove("show");
+    }
+  </script>
+</head>
+
+<body>
+  <header><h2>Quản lý khách hàng</h2></header>
+   <br>
+
+  <!-- Hàng 2: Form tìm kiếm -->
+  <form method="GET" action="/admin/customers" class="search-form">
+    <input type="text" name="keyword" value="<%= keyword || '' %>" placeholder="Nhập mã hoặc tên khách hàng...">
+    <button type="submit">Tìm</button>
+  </form>
+  <h2 class="page-title" style="text-align: center;">Danh sách khách hàng</h2>
+
+  <main class="container">
+  <!-- Hàng 1: Tiêu đề -->
+    
+    <br>
+    <!-- Danh sách khách hàng -->
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Mã KH</th>
+          <th>Họ tên</th>
+          <th>Email</th>
+          <th>SĐT</th>
+          <th>Trạng thái</th>
+          <th>Chi tiết</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (customers && customers.length > 0) { %>
+          <% customers.forEach(c => { %>
+            <tr>
+              <td><%= c.MaKhachHang %></td>
+              <td><%= c.HoTen %></td>
+              <td><%= c.Email %></td>
+              <td><%= c.SoDienThoai || '' %></td>
+              <td>
+                <% let cls = c.TrangThai === 'Khoa' ? 'status-Khoa' : 'status-HoatDong';
+                   let icon = c.TrangThai === 'Khoa' ? '🔒' : '✅'; %>
+                <span class="status <%= cls %>">
+                  <span class="icon"><%= icon %></span>
+                  <%= c.TrangThaiHienThi %>
+                </span>
+              </td>
+              <td><button type="button" class="btn-view" onclick="selectCustomer('<%= c.MaKhachHang %>')">Xem</button></td>
+            </tr>
+          <% }) %>
+        <% } else { %>
+          <tr><td colspan="6">Không tìm thấy khách hàng nào phù hợp</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </main>
+
+  <!-- Modal hiển thị chi tiết khách hàng -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">×</span>
+      <h2>Thông tin chi tiết khách hàng</h2>
+
+      <form method="POST" action="/admin/customers/update">
+        <input type="hidden" name="MaKhachHang" id="MaKhachHang">
+
+        <div class="grid">
+          <div><strong>Họ tên:</strong> <span id="TenKH"></span></div>
+          <div><strong>Email:</strong> <span id="Email"></span></div>
+          <div><strong>SĐT:</strong> <span id="SDT"></span></div>
+          <div><strong>Giới tính:</strong> <span id="GioiTinh"></span></div>
+          <div><strong>Ngày sinh:</strong> <span id="NgaySinh"></span></div>
+          <div><strong>Trạng thái:</strong> <span id="TrangThai"></span></div>
+        </div>
+
+        <div class="actions">
+          <button type="submit" name="TrangThai" value="Khoa" id="btnKhoa">Khóa</button>
+          <button type="submit" name="TrangThai" value="HoatDong" id="btnMoKhoa" style="display:none;">Mở khóa</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer><p>© 2025 Tourist Accommodation Management System</p></footer>
+</body>
+</html>

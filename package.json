@@ -11,11 +11,13 @@
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^3.0.2",
+    "chartjs-node-canvas": "^5.0.0",
     "date": "^2.0.6",
     "date-fn": "^0.0.2",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
+    "exceljs": "^4.4.0",
     "express": "^5.1.0",
     "express-ejs-layouts": "^2.5.1",
     "express-mysql-session": "^2.1.8",
@@ -23,6 +25,8 @@
     "express-validator": "^7.2.1",
     "multer": "^2.0.2",
     "mysql2": "^2.3.3",
+    "nodemailer": "^7.0.10",
+    "pdfmake": "^0.2.20",
     "sequelize": "^6.37.7"
   }
 }

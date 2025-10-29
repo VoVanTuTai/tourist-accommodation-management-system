@@ -3,6 +3,7 @@ const path = require("path");
 const expressLayouts = require("express-ejs-layouts");
 const session = require("express-session");
 const MySQLStore = require("express-mysql-session")(session);
+const adminRoutes = require('./src/routes/adminRoutes')
 
 const app = express();
 
@@ -93,6 +94,9 @@ app.use("/khachhang", datPhongRoutes);
 
 // 🧱 Route nhà cung cấp
 app.use("/nhacungcap", nhaCungCapRoutes);
+
+// 🛠️ Route admin
+app.use('/admin', adminRoutes);
 
 /* =====================================================
    ✅ KHỞI ĐỘNG SERVER
