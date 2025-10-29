@@ -33,9 +33,9 @@
                 <strong>Giá:</strong> <%= phong.Gia.toLocaleString() %> ₫ / đêm<br>
                 <strong>Đánh giá:</strong> ⭐ <%= phong.DanhGia ? phong.DanhGia.toFixed(1) : 'Chưa có' %>
               </p>
-              <div class="mt-auto">
-                <a href="/phong/<%= phong.MaPhong %>" class="btn btn-outline-primary w-100">Xem chi tiết</a>
-              </div>
+              <a href="/phong/chi-tiet/<%= phong.MaPhong %>" class="btn w-100 **custom-gradient-btn**">
+                Xem chi tiết
+            </a>
             </div>
           </div>
         </div>
