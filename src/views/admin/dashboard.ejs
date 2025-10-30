@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - Quản trị hệ thống</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+   /* Reset nhỏ để tính kích thước ổn định */
+* { box-sizing: border-box; }
+
+body { font-family: "Segoe UI", sans-serif; margin: 0; background: #f4f6f9; color: #333; }
+header { background: #0d6efd; color: #fff; text-align: center; padding: 15px 0; font-size: 1.3em; }
+.container { width: 90%; max-width: 1200px; margin: 30px auto; display: grid; grid-template-rows: auto auto auto; row-gap: 24px; }
+
+/* ==== HÀNG 1: THỐNG KÊ NHANH ==== */
+.top-stats {
+  display: flex; flex-wrap: wrap; gap: 20px;
+}
+.stat-card {
+  flex: 1 1 260px;        /* không co nhỏ hơn 260px để khỏi vỡ hàng */
+  min-width: 260px;
+  background: #fff; border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 20px; text-align: center; transition: transform .2s ease;
+}
+.stat-card:hover { transform: translateY(-3px); }
+.stat-card h3 { margin: 0; color: #0d6efd; }
+.stat-card p { font-size: 1.8em; font-weight: bold; margin: 10px 0 0; }
+
+/* ==== HÀNG 1.5: NÚT XUẤT – đặt riêng một dòng ==== */
+.export-actions {
+  display: flex; justify-content: flex-end; /* đẩy nút sang phải */
+}
+.btn-export {
+  background: #198754; color: #fff; border: none; padding: 10px 18px;
+  border-radius: 8px; cursor: pointer; font-weight: 600;
+  box-shadow: 0 2px 6px rgba(25,135,84,.25);
+}
+.btn-export:hover { background: #157347; }
+
+/* ==== HÀNG 2: BIỂU ĐỒ ==== */
+.charts {
+  display: flex; flex-wrap: wrap; gap: 20px;
+}
+.chart-box {
+  flex: 1 1 520px;    /* mỗi chart tối thiểu 520px để không quá hẹp */
+  min-width: 420px;
+  background: #fff; border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 20px;
+}
+.chart-box canvas { width: 100% !important; max-height: 360px; }
+
+/* ==== HÀNG 3: BẢNG THỐNG KÊ ==== */
+.tables {
+  display: flex; flex-wrap: wrap; gap: 20px;
+}
+.table-box {
+  flex: 1 1 520px; min-width: 420px;
+  background: #fff; border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 20px;
+}
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+table th, table td { border: 1px solid #dee2e6; padding: 8px 10px; text-align: center; }
+table th { background: #0d6efd; color: #fff; }
+
+footer { text-align: center; padding: 15px; background: #0d6efd; color: #fff; margin-top: 40px; }
+
+/* Mobile tweaks */
+@media (max-width: 900px) {
+  .chart-box, .table-box, .stat-card { min-width: 100%; flex-basis: 100%; }
+}
+
+    .nav-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+
+    .nav-buttons a {
+      text-decoration: none;
+      background: #0d6efd;
+      color: white;
+      padding: 16px 28px;
+      border-radius: 10px;
+      font-weight: 600;
+      transition: all 0.25s ease;
+      box-shadow: 0 3px 8px rgba(13,110,253,0.25);
+    }
+
+    .nav-buttons a:hover {
+      background: #0b5ed7;
+      transform: translateY(-2px);
+    }
+    
+  </style>
+</head>
+<body>
+  <header>📊 Bảng điều khiển quản trị hệ thống</header>
+
+  <div class="container">
+    <!-- Điều hướng -->
+    <div class="nav-buttons">
+      <a href="/admin/customers">👤 Quản lý khách hàng</a>
+      <a href="/admin/providers">🏢 Quản lý nhà cung cấp</a>
+    </div>
+    <!-- === HÀNG 1: THỐNG KÊ NHANH === -->
+    <div class="top-stats">
+      <div class="stat-card">
+        <h3>Khách hàng đang hoạt động</h3>
+        <p><%= customerStats.active || 0 %></p>
+      </div>
+      <div class="stat-card">
+        <h3>Nhà cung cấp đang hoạt động</h3>
+        <p><%= providerStats.active || 0 %></p>
+      </div>
+      <div class="stat-card">
+        <h3>Tổng số tài khoản</h3>
+        <p><%= (customerStats.total || 0) + (providerStats.total || 0) %></p>
+      </div>
+    </div>
+
+    <!-- === NÚT XUẤT === -->
+    <div class="export-actions">
+      <form action="/admin/dashboard/export" method="GET" style="display:inline;">
+        <button type="submit" class="btn-export">📄 Xuất báo cáo PDF</button>
+      </form>
+      <form action="/admin/dashboard/export-excel" method="GET" style="display:inline;">
+        <button type="submit" class="btn-export" style="background:#1177ff;">📊 Xuất Excel</button>
+      </form>
+    </div>
+
+    <!-- === HÀNG 2: BIỂU ĐỒ === -->
+    <div class="charts">
+      <div class="chart-box">
+        <h3>Thống kê khách hàng</h3>
+        <canvas id="chartCustomer"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>Thống kê nhà cung cấp</h3>
+        <canvas id="chartProvider"></canvas>
+      </div>
+    </div>
+
+    <!-- === HÀNG 3: BẢNG THỐNG KÊ === -->
+    <div class="tables">
+      <div class="table-box">
+        <h3>Bảng thống kê khách hàng</h3>
+        <table>
+          <tr><th>Loại</th><th>Số lượng</th></tr>
+          <tr><td>Tổng số khách hàng</td><td><%= customerStats.total || 0 %></td></tr>
+          <tr><td>Đang hoạt động</td><td><%= customerStats.active || 0 %></td></tr>
+          <tr><td>Đã khóa</td><td><%= customerStats.locked || 0 %></td></tr>
+        </table>
+      </div>
+
+      <div class="table-box">
+        <h3>Bảng thống kê nhà cung cấp</h3>
+        <table>
+          <tr><th>Loại</th><th>Số lượng</th></tr>
+          <tr><td>Tổng số nhà cung cấp</td><td><%= providerStats.total || 0 %></td></tr>
+          <tr><td>Đang hoạt động</td><td><%= providerStats.active || 0 %></td></tr>
+          <tr><td>Đã khóa</td><td><%= providerStats.locked || 0 %></td></tr>
+          <tr><td>Chờ duyệt</td><td><%= providerStats.pending || 0 %></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer>© 2025 Tourist Accommodation Management System</footer>
+
+  <script>
+    const providerStats = <%- JSON.stringify(providerStats || { active: 0, locked: 0, pending: 0 }) %>;
+    const customerStats = <%- JSON.stringify(customerStats || { active: 0, locked: 0 }) %>;
+
+    // Biểu đồ khách hàng
+    new Chart(document.getElementById("chartCustomer"), {
+      type: "doughnut",
+      data: {
+        labels: ["Đang hoạt động", "Đã khóa"],
+        datasets: [{
+          data: [customerStats.active, customerStats.locked],
+          backgroundColor: ["#28a745", "#dc3545"]
+        }]
+      },
+      options: { plugins: { legend: { position: "bottom" } } }
+    });
+
+    // Biểu đồ nhà cung cấp
+    new Chart(document.getElementById("chartProvider"), {
+      type: "bar",
+      data: {
+        labels: ["Đang hoạt động", "Đã khóa", "Chờ duyệt"],
+        datasets: [{
+          label: "Số lượng NCC",
+          data: [providerStats.active, providerStats.locked, providerStats.pending],
+          backgroundColor: ["#28a745", "#dc3545", "#ffc107"]
+        }]
+      },
+      options: {
+        scales: { y: { beginAtZero: true } },
+        plugins: { legend: { display: false } }
+      }
+    });
+  </script>
+</body>
+</html>

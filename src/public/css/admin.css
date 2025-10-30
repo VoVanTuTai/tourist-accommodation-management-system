@@ -1,0 +1,45 @@
+/* public/css/admin.css */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f7f9fb;
+  color: #333;
+}
+
+header {
+  background: #1a73e8;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.admin-menu {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  padding: 50px;
+}
+
+.admin-card {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  width: 280px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  text-decoration: none;
+  color: #333;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.admin-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+footer {
+  background: #1a73e8;
+  color: white;
+  text-align: center;
+  padding: 10px;
+}

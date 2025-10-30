@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Quản lý nhà cung cấp</title>
+  <link rel="stylesheet" href="/css/qlNCC.css">
+<style></style>
+
+  <script>
+    // ✅ Xác nhận trước khi thực hiện thao tác
+    function confirmAction(event, message) {
+      if (!confirm("Bạn có chắc chắn muốn " + message + " nhà cung cấp này không?")) {
+        event.preventDefault();
+      }
+    }
+
+    // ✅ Ẩn thông báo sau 3 giây
+    window.addEventListener("DOMContentLoaded", () => {
+      const msg = document.querySelector(".message.success");
+      if (msg) {
+        setTimeout(() => {
+          msg.style.opacity = "0";
+          setTimeout(() => msg.remove(), 500);
+        }, 3000);
+      }
+    });
+  </script>
+
+
+
+</head>
+
+<body>
+  <header>
+    <h1 class="page-title">Quản lý nhà cung cấp</h1>
+  </header>
+
+  <main>
+    <form method="GET" action="/admin/providers/filter" class="filter-form">
+      <label><b>Trạng thái:</b></label>
+      <select name="TrangThai">
+        <option value="ChoDuyet">Chờ duyệt</option>
+        <option value="HoatDong">Đang hoạt động</option>
+        <option value="Khoa">Đã khóa</option>
+      </select>
+      <button type="submit">Lọc</button>
+    </form>
+
+    <% if (successMessage) { %>
+      <p class="message success"><%= successMessage %></p>
+    <% } %>
+
+    <% if (providers && providers.length > 0) { %>
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Mã NCC</th>
+            <th>Tên NCC</th>
+            <th>Thông tin thanh toán</th>
+            <th>Loại hình</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% providers.forEach(p => { %>
+            <tr>
+              <td><%= p.MaNCC %></td>
+              <td><%= p.TenNCC %></td>
+              <td><%= p.ThongTinThanhToan %></td>
+              <td><%= p.LoaiHinh %></td>
+              <td>
+                <% 
+                  let statusClass = '';
+                  let statusText = '';
+                  let icon = '';
+                  switch (p.TrangThai) {
+                    case 'ChoDuyet':
+                      statusClass = 'status-ChoDuyet';
+                      statusText = 'Chờ duyệt';
+                      icon = '⏳';
+                      break;
+                    case 'HoatDong':
+                      statusClass = 'status-HoatDong';
+                      statusText = 'Đang hoạt động';
+                      icon = '✅';
+                      break;
+                    case 'Khoa':
+                      statusClass = 'status-Khoa';
+                      statusText = 'Đã khóa';
+                      icon = '🔒';
+                      break;
+                  }
+                %>
+                <span class="status <%= statusClass %>">
+                  <span class="icon"><%= icon %></span>
+                  <%= statusText %>
+                </span>
+              </td>
+
+              <td>
+                <form method="POST" action="/admin/providers/update">
+                  <input type="hidden" name="MaTaiKhoan" value="<%= p.MaTaiKhoan %>">
+
+                  <% if (p.TrangThai === 'ChoDuyet') { %>
+                    <button name="TrangThai" value="HoatDong"
+                            onclick="confirmAction(event, 'phê duyệt')">Phê duyệt</button>
+                    <button name="TrangThai" value="Khoa"
+                            onclick="confirmAction(event, 'từ chối')">Từ chối</button>
+
+                  <% } else if (p.TrangThai === 'HoatDong') { %>
+                    <button name="TrangThai" value="Khoa"
+                            onclick="confirmAction(event, 'khóa')">Khóa</button>
+
+                  <% } else if (p.TrangThai === 'Khoa') { %>
+                    <button name="TrangThai" value="HoatDong"
+                            onclick="confirmAction(event, 'mở khóa')">Mở khóa</button>
+                  <% } %>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else if (notFound) { %>
+      <p class="message error">Không có nhà cung cấp nào phù hợp!</p>
+    <% } %>
+  </main>
+
+  <footer>
+    <p>© 2025 Tourist Accommodation Management System</p>
+  </footer>
+</body>
+</html>
