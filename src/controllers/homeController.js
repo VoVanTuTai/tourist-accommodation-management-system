@@ -1,4 +1,5 @@
 const Phong = require('../models/phong');
+
 exports.getHomePage = async (req, res) => {
     try {
       const topRooms = await Phong.getTopBookedRooms();
@@ -6,8 +7,14 @@ exports.getHomePage = async (req, res) => {
         layout: 'layout',
         title: 'Trang chủ',
         topRooms,
-        js: process.env.HOME_SCRIPTS,
-        css: process.env.HOME_STYLES
+        js: [
+          "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js",
+          "/js/home/timkiem.js"
+        ],
+        css: [
+            "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css",
+            "/css/home.css"
+        ]
       });
     } catch (error) {
       console.error("Lỗi tải trang chủ:", error);
