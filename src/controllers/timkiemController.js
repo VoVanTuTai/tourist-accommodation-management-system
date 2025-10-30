@@ -15,8 +15,14 @@ exports.timKiemPhong = async (req, res) => {
         phongList: [],
         message: 'Khoảng giá không hợp lệ!',
         query: req.query,
-        js: process.env.HOME_SCRIPTS,
-        css: process.env.HOME_STYLES
+        js: [
+          "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js",
+          "/js/home/timkiem.js"
+        ],
+        css: [
+            "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css",
+            "/css/home.css"
+        ]
       });
     }
 
@@ -60,8 +66,14 @@ exports.timKiemPhong = async (req, res) => {
         phongList: [],
         message: 'Không tìm thấy phòng phù hợp.',
         query: req.query,
-        js: process.env.HOME_SCRIPTS,
-        css: process.env.HOME_STYLES
+        js: [
+          "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js",
+          "/js/home/timkiem.js"
+        ],
+        css: [
+            "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css",
+            "/css/home.css"
+        ]
       });
     }
 
@@ -73,8 +85,14 @@ exports.timKiemPhong = async (req, res) => {
       phongList: rows,
       message: null,
       query: req.query,
-      js: process.env.HOME_SCRIPTS,
-      css: process.env.HOME_STYLES
+      js: [
+        "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js",
+        "/js/home/timkiem.js"
+      ],
+      css: [
+          "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css",
+          "/css/home.css"
+      ]
     });
 
   } catch (err) {
@@ -83,8 +101,14 @@ exports.timKiemPhong = async (req, res) => {
       phongList: [],
       message: 'Lỗi hệ thống khi tìm kiếm phòng.',
       query: req.query,
-      js: process.env.HOME_SCRIPTS,
-      css: process.env.HOME_STYLES
+      js: [
+        "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js",
+        "/js/home/timkiem.js"
+      ],
+      css: [
+          "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css",
+          "/css/home.css"
+      ]
     });
   }
 };
