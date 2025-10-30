@@ -70,7 +70,7 @@
               <input type="file" name="HinhAnh" accept="image/*" class="form-control">
               <% if (danhGia?.HinhAnh) { %>
                 <div class="mt-2 text-center">
-                  <img src="/uploads/<%= danhGia.HinhAnh %>" class="img-thumbnail" style="max-width:160px;">
+                  <img src="/images/<%= danhGia.HinhAnh %>" class="img-thumbnail" style="max-width:160px;">
                 </div>
               <% } %>
             </div>
@@ -91,7 +91,7 @@
             </div>
             <p><strong>Nội dung:</strong> <%= danhGia.NoiDung %></p>
             <% if (danhGia.HinhAnh) { %>
-              <img src="/uploads/<%= danhGia.HinhAnh %>" class="img-thumbnail" style="max-width:300px;">
+              <img src="/images/<%= danhGia.HinhAnh %>" class="img-thumbnail" style="max-width:300px;">
             <% } %>
             <div class="mt-3">
               <a href="/khachhang/don-dat-phong/<%= don.MaDon %>/danhgia?edit=true" class="btn btn-warning">✏️ Sửa đánh giá</a>

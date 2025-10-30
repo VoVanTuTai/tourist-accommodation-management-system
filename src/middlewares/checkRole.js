@@ -4,7 +4,10 @@ module.exports = (req, res, next) => {
 
   // ✅ Nếu chưa đăng nhập
   if (!user) {
-    return res.redirect('/home');
+    return res.redirect('/home', {
+      js: process.env.HOME_SCRIPTS,
+      css: process.env.HOME_STYLES
+    });
   }
 
   const role = user.PhanQuyen;
@@ -14,21 +17,30 @@ module.exports = (req, res, next) => {
   // ✅ Nếu là khách hàng
   if (role === 'KhachHang') {
     if (baseUrl.startsWith('/nha-cung-cap') || baseUrl.startsWith('/admin')) {
-      return res.redirect('/home');
+      return res.redirect('/home', {
+      js: process.env.HOME_SCRIPTS,
+      css: process.env.HOME_STYLES
+    });
     }
   }
 
   // ✅ Nếu là nhà cung cấp
   if (role === 'NhaCungCap') {
     if (baseUrl.startsWith('/admin')) {
-      return res.redirect('/home');
+      return res.redirect('/home', {
+      js: process.env.HOME_SCRIPTS,
+      css: process.env.HOME_STYLES
+    });
     }
   }
 
   // ✅ Nếu là admin
   if (role === 'Admin') {
     if (baseUrl.startsWith('/nha-cung-cap')) {
-      return res.redirect('/home');
+      return res.redirect('/home', {
+      js: process.env.HOME_SCRIPTS,
+      css: process.env.HOME_STYLES
+    });
     }
   }
 

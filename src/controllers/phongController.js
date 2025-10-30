@@ -11,9 +11,9 @@ const path = require("path");
 
 exports.renderDanhSachPhongCuaNhaCungCap = async (req, res) => {
   try {
-    console.log("📘 NCC trong session:", req.session.ncc);
+    console.log("📘 NCC trong session:", req.session.user);
 
-    const ncc = req.session.ncc; // Lấy thông tin NCC đăng nhập
+    const ncc = req.session.user; // Lấy thông tin NCC đăng nhập
     if (!ncc) return res.status(401).send("Vui lòng đăng nhập");
 
     const filter = req.query.filter || "all"; // Lấy filter từ query (nếu có)
@@ -65,14 +65,18 @@ exports.renderPhongList = async (req, res) => {
     res.render("khachhang/danhsachphong", {
       phongList,
       message: null,
-      query: {}
+      query: {},
+      js: process.env.HOME_SCRIPTS,
+      css: process.env.HOME_STYLES
     });
   } catch (err) {
     console.error("❌ Lỗi renderPhongList:", err);
     res.render("khachhang/danhsachphong", {
       phongList: [],
       message: "Lỗi tải danh sách phòng.",
-      query: {}
+      query: {},
+      js: process.env.HOME_SCRIPTS,
+      css: process.env.HOME_STYLES
     });
   }
 };
@@ -82,7 +86,7 @@ exports.renderPhongList = async (req, res) => {
 ===================================================== */
 exports.renderThemPhong = async (req, res) => {
   try {
-    const ncc = req.session.ncc;
+    const ncc = req.session.user;
     if (!ncc) return res.status(401).send("Vui lòng đăng nhập");
 
     const loaiPhongs = await LoaiPhong.getAll();
@@ -101,7 +105,7 @@ exports.renderThemPhong = async (req, res) => {
 ===================================================== */
 exports.handleThemPhong = async (req, res) => {
   try {
-    const ncc = req.session.ncc;
+    const ncc = req.session.user;
     if (!ncc) return res.status(401).send("⚠️ Vui lòng đăng nhập trước khi thêm phòng.");
 
     const { TenPhong, MaLoai, Gia, SucChua, MaXa, ChiTietDiaChi, MoTa } = req.body;

@@ -244,7 +244,6 @@ CREATE TABLE `NhaCungCap` (
   `ThongTinThanhToan` varchar(200) DEFAULT NULL,
   `LoaiHinh` varchar(50) DEFAULT NULL,
   `GiayPhepKD` varchar(100) DEFAULT NULL,
-  `TrangThai` enum('Chờ Duyệt','Đang hoạt động','Đã khóa') NOT NULL,
   `MaDiaChi` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
