@@ -31,6 +31,11 @@ exports.renderDangKyNhaCungCap = async (req, res) => {
         tinhs
     })
 }
+exports.renderDashboard = async (req, res) => {
+  // 🧭 Lấy danh sách tỉnh và xã (để hiển thị select)
+  res.render("nhacungcap/dashboard", {
+  })
+}
 
 exports.registerNhaCungCap = async (req, res) => {
     const [tinhs] = await db.execute("SELECT * FROM Tinh");

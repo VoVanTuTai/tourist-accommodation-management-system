@@ -18,30 +18,16 @@ router.get("/dangnhap", dangnhapController.getLoginPage);
 router.post("/dangnhap", dangnhapController.login);
 
 router.get("/dangxuat", dangnhapController.logout);
-
-// =====================================================
-// 🏨 QUẢN LÝ ĐƠN ĐẶT PHÒNG (YÊU CẦU ĐĂNG NHẬP)
-// =====================================================
-
 // 1️⃣ Danh sách đơn
 router.get("/don-dat-phong", ensureKhachHang, donDatPhongController.danhSachDonDatPhong);
-
 // 2️⃣ Chi tiết đơn
 router.get("/don-dat-phong/:id", ensureKhachHang, donDatPhongController.chiTietDonDatPhong);
-
 // 3️⃣ Hủy đơn (POST để tránh lỗi GET reload)
 router.post("/don-dat-phong/huy/:id", ensureKhachHang, donDatPhongController.huyDonDatPhong);
-
-// =====================================================
-// 💳 THANH TOÁN
-// =====================================================
-
 // Hiển thị trang thanh toán
 router.get("/don-dat-phong/thanhtoan/:id", ensureKhachHang, donDatPhongController.renderThanhToan);
-
 // Xử lý thanh toán
 router.post("/don-dat-phong/thanhtoan", ensureKhachHang, donDatPhongController.handleThanhToan);
-
 // =====================================================
 // ⭐ ĐÁNH GIÁ PHÒNG
 // =====================================================
@@ -53,19 +39,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 router.get("/don-dat-phong/:maDon/danhgia", ensureKhachHang, danhGiaController.renderDanhGia);
 router.post("/don-dat-phong/:maDon/danhgia", ensureKhachHang, upload.single("HinhAnh"), danhGiaController.handleDanhGia);
-
-
 const quanlytaikhoanContronller = require('../controllers/quanlythongtinController');
 const isAuthenticated = require('../middlewares/auth').isAuthenticated;
-
-
-// Danh sách đơn đặt phòng của khách
-router.get('/don-dat-phong', donDatPhongController.danhSachDonDatPhong);
-router.get("/don-dat-phong/:id", donDatPhongController.chiTietDonDatPhong);
-router.get("/don-dat-phong/huy/:id", donDatPhongController.huyDonDatPhong);
 // Quản lý tài khoản
 router.get('/thongtintaikhoan', isAuthenticated, quanlytaikhoanContronller.getTaiKhoanView);
 router.post('/thongtintaikhoan', isAuthenticated, quanlytaikhoanContronller.postCapNhatTaiKhoan);
-
-
 module.exports = router;

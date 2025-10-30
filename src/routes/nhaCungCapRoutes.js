@@ -26,7 +26,7 @@ router.post(
   uploadImage.single("GiayPhepKD"),
   nhaCungCapController.registerNhaCungCap
 );
-
+router.get("/",nhaCungCapController.renderDashboard)
 // 🔑 Nhà cung cấp đăng nhập
 router.get("/dangnhap", nhaCungCapController.renderDangNhapNhaCungCap);
 router.post("/dangnhap", nhaCungCapController.loginNhaCungCap);

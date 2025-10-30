@@ -1,210 +1,164 @@
-
 <div class="container-fluid py-4">
-    <div class="main-container">
-        <div class="card-header text-white text-center">
-            <h3 class="mb-0"><i class="fas fa-receipt me-2"></i>Chi tiết đơn đặt phòng</h3>
+    <div class="main-container glass-card p-4">
+      <!-- Header -->
+      <div class="text-center mb-4">
+        <h3 class="text-white mb-0">
+          <i class="fas fa-receipt me-2"></i>Chi tiết đơn đặt phòng
+        </h3>
+      </div>
+  
+      <!-- Thông tin đơn -->
+      <div class="row mb-4 text-white">
+        <div class="col-md-6">
+          <div class="info-section p-3 rounded-3 mb-3 shadow-sm bg-opacity-25 bg-white">
+            <div><strong>Mã đơn:</strong> <%= don.MaDon %></div>
+            <div><strong>Khách hàng:</strong> <%= don.TenKH %></div>
+            <div class="small text-muted">
+              <i class="fas fa-envelope me-1"></i><%= don.Email %> • 
+              <i class="fas fa-phone me-1"></i><%= don.SDT %>
+            </div>
+            <div class="mt-3"><strong>Ngày đặt:</strong> 
+              <i class="fas fa-calendar-plus me-1"></i>
+              <%= new Date(don.NgayDat).toLocaleDateString("vi-VN") %>
+            </div>
+          </div>
         </div>
-
-        <div class="card-body p-4">
-            <!-- Thông tin đơn -->
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <div class="info-section">
-                        <div class="info-label">Mã đơn</div>
-                        <div class="info-value"><%= don.MaDon %></div>
-                        
-                        <div class="info-label">Khách hàng</div>
-                        <div class="info-value"><%= don.TenKH %></div>
-                        <div class="text-muted small">
-                            <i class="fas fa-envelope me-1"></i><%= don.Email %> • 
-                            <i class="fas fa-phone me-1"></i><%= don.SDT %>
-                        </div>
-                        
-                        <div class="info-label mt-3">Ngày đặt</div>
-                        <div class="info-value">
-                            <i class="fas fa-calendar-plus me-2"></i>
-                            <%= new Date(don.NgayDat).toLocaleDateString("vi-VN") %>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="info-section">
-                        <div class="info-label">Ngày nhận phòng</div>
-                        <div class="info-value">
-                            <i class="fas fa-calendar-check me-2"></i>
-                            <%= new Date(don.NgayNhan).toLocaleDateString("vi-VN") %>
-                        </div>
-                        
-                        <div class="info-label">Ngày trả phòng</div>
-                        <div class="info-value">
-                            <i class="fas fa-calendar-times me-2"></i>
-                            <%= new Date(don.NgayTra).toLocaleDateString("vi-VN") %>
-                        </div>
-                        
-                        <div class="info-label">Tổng tiền</div>
-                        <div class="price-highlight">
-                            <i class="fas fa-money-bill-wave me-2"></i>
-                            <%= (don.TongTien || 0).toLocaleString("vi-VN") %> ₫
-                        </div>
-                    </div>
-                </div>
+  
+        <div class="col-md-6">
+          <div class="info-section p-3 rounded-3 mb-3 shadow-sm bg-opacity-25 bg-white">
+            <div><strong>Ngày nhận phòng:</strong> 
+              <i class="fas fa-calendar-check me-1"></i>
+              <%= new Date(don.NgayNhan).toLocaleDateString("vi-VN") %>
             </div>
-
-            <!-- Trạng thái -->
-            <div class="status-container">
-                <h5 class="mb-3"><i class="fas fa-info-circle me-2"></i>Trạng thái đơn hàng</h5>
-                <% if (don.TrangThai === 0) { %>
-                    <span class="status-badge status-0">
-                        <i class="fas fa-clock me-2"></i>Đã đặt
-                    </span>
-                <% } else if (don.TrangThai === 1) { %>
-                    <span class="status-badge status-1">
-                        <i class="fas fa-bed me-2"></i>Đang sử dụng
-                    </span>
-                <% } else if (don.TrangThai === 2) { %>
-                    <span class="status-badge status-2">
-                        <i class="fas fa-check-circle me-2"></i>Hoàn tất
-                    </span>
-                <% } else if (don.TrangThai === 3) { %>
-                    <span class="status-badge status-3">
-                        <i class="fas fa-times-circle me-2"></i>Đã hủy
-                    </span>
-                <% } %>
+            <div><strong>Ngày trả phòng:</strong> 
+              <i class="fas fa-calendar-times me-1"></i>
+              <%= new Date(don.NgayTra).toLocaleDateString("vi-VN") %>
             </div>
-
-            <hr class="divider">
-
-            <!-- Thông tin phòng -->
-            <div class="room-section">
-                <h5 class="section-title">
-                    <i class="fas fa-hotel"></i>
-                    Thông tin phòng
-                </h5>
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="room-image">
-                                <% if (don.HinhAnh) { %>
-                                    <img 
-                                    src="/images/<%= don.HinhAnh %>" 
-                                    alt="<%= don.TenPhong %>" 
-                                    onerror="this.outerHTML='<div class=&quot;no-image&quot;><i class=&quot;fas fa-image fa-3x&quot;></i></div>'">
-                                <% } else { %>
-                                    <div class="no-image"><i class="fas fa-image fa-3x"></i></div>
-                                <% } %>
-                            
-                                                            
-                            </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="info-section">
-                            <div class="info-label">Tên phòng</div>
-                            <div class="info-value"><%= don.TenPhong || 'Chưa có thông tin' %></div>
-                            
-                            <div class="info-label">Loại phòng</div>
-                            <div class="info-value"><%= don.LoaiPhong || 'Standard' %></div>
-                            
-                            <div class="info-label">Số đêm</div>
-                            <div class="info-value">
-                                <% 
-                                    const checkin = new Date(don.NgayNhan);
-                                    const checkout = new Date(don.NgayTra);
-                                    const nights = Math.ceil((checkout - checkin) / (1000 * 60 * 60 * 24));
-                                %>
-                                <%= nights %> đêm
-                            </div>
-                            
-                            <div class="info-label">Giá phòng/đêm</div>
-                            <div class="info-value">
-                                <% const pricePerNight = nights > 0 ? Math.round((don.TongTien || 0) / nights) : 0; %>
-                                <%= pricePerNight.toLocaleString("vi-VN") %> ₫
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="price-highlight mt-3">
+              <strong>Tổng tiền:</strong>
+              <i class="fas fa-money-bill-wave me-1"></i>
+              <%= (don.TongTien || 0).toLocaleString("vi-VN") %> ₫
             </div>
-
-            <!-- Nút hành động -->
-            <div class="action-buttons">
-                <button class="btn btn-primary" onclick="printBooking()">
-                    <i class="fas fa-print me-2"></i>In hóa đơn
-                </button>
-                <button class="btn btn-secondary" onclick="goBack()">
-                    <i class="fas fa-arrow-left me-2"></i>Quay lại
-                </button>
-            </div>
+          </div>
         </div>
+      </div>
+  
+      <!-- Trạng thái -->
+      <div class="status-container text-center mb-4">
+        <h5 class="text-white"><i class="fas fa-info-circle me-2"></i>Trạng thái</h5>
+        <% if (don.TrangThai === 0) { %>
+          <span class="badge bg-warning fs-6"><i class="fas fa-clock me-1"></i>Đã đặt</span>
+        <% } else if (don.TrangThai === 1) { %>
+          <span class="badge bg-primary fs-6"><i class="fas fa-bed me-1"></i>Đang sử dụng</span>
+        <% } else if (don.TrangThai === 2) { %>
+          <span class="badge bg-success fs-6"><i class="fas fa-check-circle me-1"></i>Hoàn tất</span>
+        <% } else if (don.TrangThai === 3) { %>
+          <span class="badge bg-danger fs-6"><i class="fas fa-times-circle me-1"></i>Đã hủy</span>
+        <% } %>
+      </div>
+  
+      <hr class="text-white opacity-50">
+  
+      <!-- Thông tin phòng -->
+      <div class="room-section text-white">
+        <h5 class="mb-3"><i class="fas fa-hotel me-2"></i>Thông tin phòng</h5>
+        <div class="row">
+          <div class="col-md-4">
+            <% if (don.HinhAnh) { %>
+              <img src="/images/<%= don.HinhAnh %>" class="img-fluid rounded-3 shadow-sm" alt="<%= don.TenPhong %>"
+                onerror="this.outerHTML='<div class=&quot;no-image&quot;><i class=&quot;fas fa-image fa-3x&quot;></i></div>'">
+            <% } else { %>
+              <div class="no-image bg-light p-4 rounded-3 text-center text-muted">
+                <i class="fas fa-image fa-3x"></i><div>Không có ảnh</div>
+              </div>
+            <% } %>
+          </div>
+  
+          <div class="col-md-8">
+            <div class="info-section p-3 bg-opacity-25 bg-white rounded-3 shadow-sm">
+              <p><strong>Tên phòng:</strong> <%= don.TenPhong || 'Chưa có thông tin' %></p>
+              <p><strong>Loại phòng:</strong> <%= don.LoaiPhong || 'Standard' %></p>
+              <% 
+                const checkin = new Date(don.NgayNhan);
+                const checkout = new Date(don.NgayTra);
+                const nights = Math.ceil((checkout - checkin) / (1000*60*60*24));
+                const pricePerNight = nights > 0 ? Math.round((don.TongTien||0)/nights) : 0;
+              %>
+              <p><strong>Số đêm:</strong> <%= nights %> đêm</p>
+              <p><strong>Giá/đêm:</strong> <%= pricePerNight.toLocaleString("vi-VN") %> ₫</p>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Nút hành động -->
+      <div class="text-center mt-4">
+        <% if (don.TrangThai === 0) { %>
+          <!-- Hủy phòng -->
+          <form action="/khachhang/don-dat-phong/huy/<%= don.MaDon %>" method="POST" class="d-inline">
+            <button type="submit" class="btn btn-danger me-2">
+              <i class="fas fa-ban me-2"></i>Hủy phòng
+            </button>
+          </form>
+        <% } else if (don.TrangThai === 1) { %>
+          <!-- Thanh toán -->
+          <a href="/khachhang/don-dat-phong/thanhtoan/<%= don.MaDon %>" class="btn btn-success me-2">
+            <i class="fas fa-credit-card me-2"></i>Thanh toán
+          </a>
+          
+        <% } else if (don.TrangThai === 2) { %>
+          <!-- Đánh giá -->
+          <a href="/khachhang/don-dat-phong/<%= don.MaDon %>/danhgia" class="btn btn-warning me-2">
+            <i class="fas fa-star me-2"></i>Đánh giá
+          </a>
+        <% } %>
+  
+        <button class="btn btn-primary me-2" onclick="printBooking()">
+          <i class="fas fa-print me-2"></i>In hóa đơn
+        </button>
+        <button class="btn btn-secondary" onclick="goBack()">
+          <i class="fas fa-arrow-left me-2"></i>Quay lại
+        </button>
+      </div>
     </div>
-</div>
-
-<script>
-    function printBooking() {
-        // Ẩn các nút khi in
-        const buttons = document.querySelector('.action-buttons');
-        const originalDisplay = buttons.style.display;
-        buttons.style.display = 'none';
-        
-        // In trang
-        window.print();
-        
-        // Hiện lại các nút sau khi in
-        setTimeout(() => {
-            buttons.style.display = originalDisplay;
-        }, 1000);
-    }
-
-    function goBack() {
-        // Mô phỏng quay lại trang trước
-        if (window.history.length > 1) {
-            window.history.back();
-        } else {
-            // Tạo thông báo inline thay vì alert
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: #fee2e2;
-                color: #dc2626;
-                padding: 1rem 1.5rem;
-                border-radius: 8px;
-                border: 2px solid #ef4444;
-                z-index: 1000;
-                font-weight: 600;
-            `;
-            notification.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Không có trang trước để quay lại';
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
-        }
-    }
-
-    // Thêm hiệu ứng hover cho các thẻ thông tin
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.info-section').forEach(section => {
-            section.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-2px)';
-                this.style.boxShadow = '0 8px 25px rgba(0,0,0,0.1)';
-                this.style.transition = 'all 0.3s ease';
-            });
-            
-            section.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-                this.style.boxShadow = 'none';
-            });
-        });
-
-        // Hiệu ứng cho status badge
-        const statusBadge = document.querySelector('.status-badge');
-        if (statusBadge) {
-            statusBadge.addEventListener('click', function() {
-                this.style.transform = 'scale(1.05)';
-                setTimeout(() => {
-                    this.style.transform = 'scale(1)';
-                }, 200);
-            });
-        }
-    });
-</script>
-
+  </div>
+  
+  <script>
+  function goBack() {
+    if (window.history.length > 1) window.history.back();
+    else window.location.href = "/khachhang/don-dat-phong";
+  }
+  
+  function printBooking() {
+    const btns = document.querySelector('.text-center.mt-4');
+    btns.style.display = 'none';
+    window.print();
+    setTimeout(() => btns.style.display = 'block', 1000);
+  }
+  </script>
+  
+  <style>
+  body {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    min-height: 100vh;
+  }
+  
+  .glass-card {
+    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+  }
+  
+  .info-section:hover {
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+  }
+  
+  .price-highlight {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #facc15;
+  }
+  </style>
+  

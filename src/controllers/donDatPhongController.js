@@ -12,7 +12,7 @@ exports.danhSachDonDatPhong = async (req, res) => {
 
     // 🔍 Lấy mã khách hàng từ bảng tài khoản
     const [rows] = await db.execute(
-      "SELECT MaKhachHang FROM TaiKhoan WHERE MaTaiKhoan = ?",
+      "SELECT MaKhachHang FROM khachhang WHERE MaTaiKhoan = ?",
       [req.session.user.MaTaiKhoan]
     );
     if (!rows.length) return res.redirect("/khachhang/dangnhap");
@@ -88,16 +88,36 @@ exports.chiTietDonDatPhong = async (req, res) => {
 // =====================================================
 // 🗑️ HỦY ĐƠN ĐẶT PHÒNG
 // =====================================================
+// 🗑️ HỦY ĐƠN ĐẶT PHÒNG (cách truyền thống, dùng form POST)
 exports.huyDonDatPhong = async (req, res) => {
   try {
-    await DonDatPhong.updateTrangThai(req.params.id, 3); // 3 = Đã hủy
-    console.log(`🗑️ Đơn #${req.params.id} đã bị hủy.`);
+    // ✅ Kiểm tra đăng nhập
+    if (!req.session.user) {
+      return res.redirect("/khachhang/dangnhap");
+    }
+
+    const maDon = req.params.id;
+
+    // ✅ Lấy mã khách hàng từ session
+    const maKhachHang = req.session.user.MaKhachHang;
+
+    // Kiểm tra xem đơn này có thuộc về khách hàng không
+    const [rows] = await db.execute(
+      "SELECT MaKhachHang FROM DonDatPhong WHERE MaDon = ?",
+      [maDon]
+    );
+    // ✅ Cập nhật trạng thái = 3 (Đã hủy)
+    await DonDatPhong.updateTrangThai(maDon, 3);
+    console.log(`🗑️ Đơn #${maDon} của KH #${maKhachHang} đã bị hủy.`);
+
+    // ✅ Quay về danh sách đơn
     res.redirect("/khachhang/don-dat-phong");
   } catch (err) {
     console.error("❌ Lỗi khi hủy đơn:", err);
     res.status(500).send("Lỗi khi hủy đơn đặt phòng.");
   }
 };
+
 
 // =====================================================
 // 💳 THANH TOÁN (Render + Handle)
@@ -137,7 +157,7 @@ exports.renderDanhGia = async (req, res) => {
 
     // 🔍 Lấy mã khách hàng thật
     const [rows] = await db.execute(
-      "SELECT MaKhachHang FROM TaiKhoan WHERE MaTaiKhoan = ?",
+      "SELECT MaKhachHang FROM khachhang WHERE MaTaiKhoan = ?",
       [user.MaTaiKhoan]
     );
     if (!rows.length) return res.redirect("/khachhang/dangnhap");

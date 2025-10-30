@@ -75,7 +75,7 @@ exports.handleDanhGia = async (req, res) => {
 
     // Lấy MaKhachHang từ MaTaiKhoan (JOIN TaiKhoan -> KhachHang)
     const maTaiKhoan = req.session.user.MaTaiKhoan;
-    const khachHang = await KhachHang.getByTaiKhoan(maTaiKhoan);
+    const khachHang = await KhachHang.findByMaTK(maTaiKhoan);
     const maKhachHang = khachHang?.MaKhachHang;
 
     const { SoSao, NoiDung, MaPhong } = req.body; // <<< LẤY MaPhong TỪ FORM
