@@ -1,97 +1,394 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <title>Sửa thông tin phòng</title>
+
+  <script src="/_sdk/element_sdk.js"></script>
   <style>
-    body { font-family: "Segoe UI", sans-serif; background: #f5f6f7; }
-    .container { max-width: 800px; margin: 40px auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    label { display: block; margin-top: 10px; font-weight: bold; }
-    input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; }
-    button { margin-top: 20px; width: 100%; padding: 10px; background: #007bff; border: none; color: white; font-size: 16px; border-radius: 6px; cursor: pointer; }
-    button:hover { background: #0056b3; }
-    img { border-radius: 6px; margin-top: 10px; }
-  </style>
-</head>
-<body>
-<div class="container">
-  <h2>✏️ Sửa thông tin phòng</h2>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      margin: auto;
+      min-height: 100vh;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
 
-  <form action="/nhacungcap/phong/suaphong/<%= phong.MaPhong %>" method="POST" enctype="multipart/form-data">
-    <input type="hidden" name="MaPhong" value="<%= phong.MaPhong %>">
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 2rem;
+      overflow-y: auto;
+    }
 
-    <label>Tên phòng:</label>
-    <input type="text" name="TenPhong" value="<%= phong.TenPhong %>" required>
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 2.5rem;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
 
-    <label>Loại phòng:</label>
-    <select name="MaLoai" required>
-      <% loaiPhongs.forEach(lp => { %>
-        <option value="<%= lp.MaLoai %>" <%= lp.MaLoai === phong.MaLoai ? 'selected' : '' %>><%= lp.TenLoai %></option>
-      <% }) %>
-    </select>
+    h2 {
+      color: #2d3748;
+      margin: 0 0 1.5rem 0;
+      font-size: 2rem;
+      font-weight: 700;
+    }
 
-    <label>Giá (VNĐ):</label>
-    <input type="number" name="Gia" value="<%= phong.Gia %>" required>
+    .success-message {
+      background: #d4edda;
+      color: #155724;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid #28a745;
+      display: none;
+    }
 
-    <label>Sức chứa:</label>
-    <input type="number" name="SucChua" value="<%= phong.SucChua %>" required>
+    .error-box {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid #dc3545;
+      display: none;
+    }
 
-    <!-- 📝 Mô tả -->
-    <label>Mô tả:</label>
-    <textarea name="MoTa" rows="4" placeholder="Mô tả đặc điểm, tiện nghi của phòng..."><%= phong.MoTa || '' %></textarea>
+    label {
+      display: block;
+      margin-top: 1.25rem;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #4a5568;
+      font-size: 0.95rem;
+    }
 
-    <label>Tình trạng:</label>
-    <select name="TinhTrang" required>
-      <option value="1" <%= phong.TinhTrang === 1 ? 'selected' : '' %>>🟢 Còn trống</option>
-      <option value="0" <%= phong.TinhTrang === 0 ? 'selected' : '' %>>🔴 Đã đặt</option>
-      <option value="2" <%= phong.TinhTrang === 2 ? 'selected' : '' %>>🟠 Bảo trì</option>
-    </select>
+    input[type="text"],
+    input[type="number"],
+    input[type="hidden"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
 
-    <hr>
-    <h3>📍 Địa chỉ phòng</h3>
+    input[type="hidden"] {
+      display: none;
+    }
 
-    <label>Chi tiết địa chỉ:</label>
-    <input type="text" name="ChiTietDiaChi" value="<%= diaChiHienTai ? diaChiHienTai.ChiTiet : '' %>" required>
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
 
-    <label>Tỉnh:</label>
-    <select name="MaTinh" id="selectTinh" required>
-      <% tinhs.forEach(t => { %>
-        <option value="<%= t.MaTinh %>" <%= diaChiHienTai && t.MaTinh === diaChiHienTai.MaTinh ? 'selected' : '' %>><%= t.TenTinh %></option>
-      <% }) %>
-    </select>
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
 
-    <label>Xã:</label>
-    <select name="MaXa" id="selectXa" required>
-      <% xas.forEach(x => { %>
-        <option value="<%= x.MaXa %>" data-tinh="<%= x.MaTinh %>" <%= diaChiHienTai && x.MaXa === diaChiHienTai.MaXa ? 'selected' : '' %>><%= x.TenXa %></option>
-      <% }) %>
-    </select>
+    input[type="file"] {
+      width: 100%;
+      padding: 0.5rem;
+      border: 2px dashed #e2e8f0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
 
-    <script>
-      const selectTinh = document.getElementById('selectTinh');
-      const selectXa = document.getElementById('selectXa');
-      const allXaOptions = Array.from(selectXa.options);
+    input[type="file"]:hover {
+      border-color: #667eea;
+      background: #f7fafc;
+    }
 
-      function filterXaByTinh() {
-        const tinhValue = selectTinh.value;
-        selectXa.innerHTML = '';
-        allXaOptions.forEach(opt => {
-          if (opt.dataset.tinh === tinhValue) selectXa.appendChild(opt);
-        });
+    .current-image {
+      margin-top: 1rem;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .current-image img {
+      width: 200px;
+      height: auto;
+      display: block;
+    }
+
+    .image-preview {
+      margin-top: 1rem;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: none;
+    }
+
+    .image-preview img {
+      width: 200px;
+      height: auto;
+      display: block;
+    }
+
+    hr {
+      border: none;
+      border-top: 2px solid #e2e8f0;
+      margin: 2rem 0;
+    }
+
+    h3 {
+      color: #2d3748;
+      margin: 0 0 1rem 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 1rem;
+      margin-top: 2rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);
+    }
+
+    button[type="submit"]:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    button[type="submit"]:active {
+      transform: translateY(0);
+    }
+
+    button[type="submit"]:disabled {
+      background: #cbd5e0;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .loading-spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .required {
+      color: #e53e3e;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
       }
 
-      selectTinh.addEventListener('change', filterXaByTinh);
-      filterXaByTinh(); // Gọi lần đầu để khớp xã của tỉnh hiện tại
-    </script>
+      .container {
+        padding: 1.5rem;
+      }
 
-    <label>Ảnh phòng:</label>
-    <% if (phong.HinhAnh) { %>
-      <img src="/images/<%= phong.HinhAnh %>" width="150">
+      h2 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+
+  <body>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+
+  <div class="container mt-5 p-4 bg-white rounded shadow-sm">
+    <h2 id="formTitle" class="text-center mb-4">✏️ Sửa thông tin phòng</h2>
+
+    <% if (typeof message !== 'undefined' && message) { %>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <%= message %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
     <% } %>
-    <input type="file" name="HinhAnh" accept="image/*">
 
-    <button type="submit">💾 Cập nhật phòng</button>
-  </form>
-</div>
+    <div id="successMessage" class="alert alert-success alert-dismissible fade show d-none" role="alert">
+      Cập nhật phòng thành công!
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div id="errorBox" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
+      <!-- Lỗi phía client sẽ được hiển thị ở đây -->
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <form id="editRoomForm"
+      action="/nhacungcap/phong/suaphong/<%= phong.MaPhong %>"
+      method="POST"
+      enctype="multipart/form-data">
+
+      <input type="hidden" name="MaPhong" value="<%= phong.MaPhong %>" />
+
+      <label for="TenPhong" class="fw-bold mt-3">Tên phòng: <span class="text-danger">*</span></label>
+      <input type="text" name="TenPhong" id="TenPhong" class="form-control"
+             value="<%= phong.TenPhong %>" required />
+
+      <label for="MaLoai" class="fw-bold mt-3">Loại phòng: <span class="text-danger">*</span></label>
+      <select name="MaLoai" id="MaLoai" class="form-select" required>
+        <% loaiPhongs.forEach(lp => { %>
+          <option value="<%= lp.MaLoai %>" <%= lp.MaLoai === phong.MaLoai ? 'selected' : '' %>>
+            <%= lp.TenLoai %>
+          </option>
+        <% }) %>
+      </select>
+
+      <label for="Gia" class="fw-bold mt-3">Giá (VNĐ): <span class="text-danger">*</span></label>
+      <input type="number" name="Gia" id="Gia" class="form-control"
+             value="<%= phong.Gia %>" required min="1" />
+
+      <label for="SucChua" class="fw-bold mt-3">Sức chứa: <span class="text-danger">*</span></label>
+      <input type="number" name="SucChua" id="SucChua" class="form-control"
+             value="<%= phong.SucChua %>" required min="1" />
+
+      <label for="MoTa" class="fw-bold mt-3">Mô tả:</label>
+      <textarea name="MoTa" id="MoTa" rows="4" class="form-control"><%= phong.MoTa || '' %></textarea>
+
+      <label for="TinhTrang" class="fw-bold mt-3">Tình trạng: <span class="text-danger">*</span></label>
+      <select name="TinhTrang" id="TinhTrang" class="form-select" required>
+        <option value="1" <%= phong.TinhTrang === 1 ? 'selected' : '' %>>🟢 Còn trống</option>
+        <option value="0" <%= phong.TinhTrang === 0 ? 'selected' : '' %>>🔴 Đã đặt</option>
+        <option value="2" <%= phong.TinhTrang === 2 ? 'selected' : '' %>>🟠 Bảo trì</option>
+      </select>
+
+      <hr class="my-4" />
+      <h4 id="addressSectionTitle">📍 Địa chỉ phòng</h4>
+
+      <label for="ChiTietDiaChi" class="fw-bold mt-2">Chi tiết địa chỉ: <span class="text-danger">*</span></label>
+      <input type="text" name="ChiTietDiaChi" id="ChiTietDiaChi"
+             class="form-control"
+             value="<%= diaChiHienTai ? diaChiHienTai.ChiTiet : '' %>" required />
+
+      <label for="selectTinh" class="fw-bold mt-3">Tỉnh: <span class="text-danger">*</span></label>
+      <select name="MaTinh" id="selectTinh" class="form-select" required>
+        <% tinhs.forEach(t => { %>
+          <option value="<%= t.MaTinh %>" <%= diaChiHienTai && t.MaTinh === diaChiHienTai.MaTinh ? 'selected' : '' %>>
+            <%= t.TenTinh %>
+          </option>
+        <% }) %>
+      </select>
+
+      <label for="selectXa" class="fw-bold mt-3">Xã: <span class="text-danger">*</span></label>
+      <select name="MaXa" id="selectXa" class="form-select" required>
+        <% xas.forEach(x => { %>
+          <option value="<%= x.MaXa %>" data-tinh="<%= x.MaTinh %>"
+            <%= diaChiHienTai && x.MaXa === diaChiHienTai.MaXa ? 'selected' : '' %>>
+            <%= x.TenXa %>
+          </option>
+        <% }) %>
+      </select>
+
+      <label for="HinhAnh" class="fw-bold mt-3">Ảnh phòng:</label>
+      <% if (phong.HinhAnh) { %>
+        <div class="current-image mb-2">
+          <img src="/images/<%= phong.HinhAnh %>" alt="Ảnh phòng hiện tại" class="rounded" width="150" />
+        </div>
+      <% } %>
+      <input type="file" name="HinhAnh" id="HinhAnh" class="form-control" accept="image/ *" />
+      <div class="image-preview mt-2"><img id="previewImg" class="rounded" width="150" /></div>
+
+      <button type="submit" id="submitBtn" class="btn btn-primary w-100 mt-4">
+        <span id="submitText">💾 Cập nhật phòng</span>
+        <div class="spinner-border spinner-border-sm text-light d-none" id="loadingSpinner"></div>
+      </button>
+    </form>
+  </div>
+
+  <script>
+    // Lọc xã theo tỉnh
+    const selectTinh = document.getElementById("selectTinh");
+    const selectXa = document.getElementById("selectXa");
+    const allXaOptions = Array.from(selectXa.options);
+
+    function filterXaByTinh() {
+      const tinhValue = selectTinh.value;
+      selectXa.innerHTML = '';
+      allXaOptions.forEach(opt => {
+        if (opt.dataset.tinh === tinhValue) selectXa.appendChild(opt.cloneNode(true));
+      });
+    }
+    selectTinh.addEventListener('change', filterXaByTinh);
+    filterXaByTinh();
+
+    // Hiển thị preview ảnh
+    const fileInput = document.getElementById('HinhAnh');
+    const previewImg = document.getElementById('previewImg');
+    fileInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = evt => {
+          previewImg.src = evt.target.result;
+          previewImg.parentElement.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Kiểm tra dữ liệu trước khi gửi
+    const form = document.getElementById('editRoomForm');
+    const errorBox = document.getElementById('errorBox');
+    const successBox = document.getElementById('successMessage');
+    const submitBtn = document.getElementById('submitBtn');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const submitText = document.getElementById('submitText');
+
+    form.addEventListener('submit', e => {
+      const tenPhong = document.getElementById('TenPhong').value.trim();
+      const gia = parseInt(document.getElementById('Gia').value);
+      const sucChua = parseInt(document.getElementById('SucChua').value);
+      const chiTiet = document.getElementById('ChiTietDiaChi').value.trim();
+      const errors = [];
+
+      if (!tenPhong) errors.push("❌ Vui lòng nhập tên phòng.");
+      if (isNaN(gia) || gia < 100000) errors.push("❌ Giá phòng phải lớn hơn 100.000 VND.");
+      if (isNaN(sucChua) || sucChua < 1) errors.push("❌ Sức chứa phải lớn hơn 0.");
+      if (!chiTiet || chiTiet.length < 5) errors.push("❌ Chi tiết địa chỉ phải có ít nhất 5 ký tự.");
+
+      if (errors.length > 0) {
+        e.preventDefault();
+        errorBox.innerHTML = errors.join("<br>");
+        errorBox.classList.remove("d-none");
+        return;
+      }
+
+      // Loading state
+      submitBtn.disabled = true;
+      submitText.style.display = "none";
+      loadingSpinner.classList.remove("d-none");
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
