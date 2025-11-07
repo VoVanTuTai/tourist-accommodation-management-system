@@ -121,7 +121,7 @@ exports.handleThemPhong = async (req, res) => {
     if (!ncc) return res.status(401).send("⚠️ Vui lòng đăng nhập trước khi thêm phòng.");
 
     const { TenPhong, MaLoai, Gia, SucChua, MaXa, ChiTietDiaChi, MoTa } = req.body;
-    const image = req.file ? req.file.filename : null;
+    const images = req.files ? req.files.map(f => f.filename) : []; // 🔹 Nhiều ảnh
 
     // 🧩 KIỂM TRA DỮ LIỆU NHẬP
     const errors = [];
@@ -144,12 +144,11 @@ exports.handleThemPhong = async (req, res) => {
     if (!ChiTietDiaChi || ChiTietDiaChi.trim().length < 5)
       errors.push("Chi tiết địa chỉ phải có ít nhất 5 ký tự.");
 
-    if (!image)
+    if (images.length === 0)
       errors.push("Vui lòng tải lên ít nhất một hình ảnh.");
 
     if (errors.length > 0) {
       console.warn("⚠️ Lỗi nhập liệu:", errors);
-      // Có thể render lại form và hiển thị thông báo
       const loaiPhongs = await LoaiPhong.getAll();
       const [tinhs] = await db.execute("SELECT * FROM Tinh");
       const [xas] = await db.execute("SELECT * FROM Xa");
@@ -165,6 +164,7 @@ exports.handleThemPhong = async (req, res) => {
     // 🏠 Nếu dữ liệu hợp lệ → tạo địa chỉ
     const newMaDiaChi = await DiaChi.create({ ChiTiet: ChiTietDiaChi, MaXa });
 
+    // 🏡 Chuẩn bị dữ liệu thêm phòng
     const data = {
       TenPhong,
       MaLoai,
@@ -172,19 +172,20 @@ exports.handleThemPhong = async (req, res) => {
       Gia,
       SucChua,
       TinhTrang: 1,
-      HinhAnh: image,
+      HinhAnh: JSON.stringify(images), // 🔹 Lưu JSON ["img1.jpg", "img2.jpg"]
       MaDiaChi: newMaDiaChi,
       MaNhaCungCap: ncc.MaNCC ?? null
     };
 
     await Phong.addPhong(data);
-    console.log("✅ Thêm phòng thành công!");
+    console.log("Thêm phòng thành công!");
     res.redirect("/nhacungcap/phong");
   } catch (err) {
-    console.error("❌ Lỗi handleThemPhong:", err);
+    console.error("Lỗi handleThemPhong:", err);
     res.status(500).send("Lỗi khi thêm phòng mới");
   }
 };
+
 
 /* =====================================================
    ✅ 6. HIỂN THỊ FORM SỬA PHÒNG
