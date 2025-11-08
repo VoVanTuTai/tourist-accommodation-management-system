@@ -1,8 +1,4 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <title>Chi tiết phòng</title>
+
   <style>
     body { font-family: "Segoe UI", sans-serif; background: #f5f6f7; }
     .container { max-width: 800px; margin: 40px auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
@@ -25,59 +21,64 @@
     .btn-status:hover { background-color: #1e7e34; }
     .btn-back:hover { background-color: #5a6268; }
   </style>
-</head>
 <body>
-<div class="container">
-  <h2>🛏️ Chi tiết phòng: <%= phong.TenPhong %></h2>
+  <body>
 
-  <p><strong>Mã phòng:</strong> <%= phong.MaPhong %></p>
-  <p><strong>Loại phòng:</strong> <%= phong.TenLoai %></p>
-  <p><strong>Giá:</strong> <%= Number(phong.Gia).toLocaleString() %> VND/đêm</p>
-  <p><strong>Sức chứa:</strong> <%= phong.SucChua %> người</p>
+    <div class="container">
+      <h2>🛏️ Chi tiết phòng: <%= phong.TenPhong %></h2>
+    
+      <p><strong>Mã phòng:</strong> <%= phong.MaPhong %></p>
+      <p><strong>Loại phòng:</strong> <%= phong.TenLoai %></p>
+      <p><strong>Giá:</strong> <%= Number(phong.Gia).toLocaleString("vi-VN") %> VND/đêm</p>
+      <p><strong>Sức chứa:</strong> <%= phong.SucChua %> người</p>
+    
+      <p><strong>Trạng thái:</strong>
+        <% if (phong.TinhTrang === 1) { %>
+          🟢 Còn trống
+        <% } else if (phong.TinhTrang === 0) { %>
+          🔴 Đã đặt
+        <% } else { %>
+          🟠 Bảo trì
+        <% } %>
+      </p>
+    
+      <% if (phong.MoTa) { %>
+        <p><strong>Mô tả:</strong> <%= phong.MoTa %></p>
+      <% } %>
+    
+      <% if (phong.DiaChiChiTiet && phong.TenXa && phong.TenTinh) { %>
+        <p><strong>Địa chỉ:</strong>
+          <%= phong.DiaChiChiTiet %>, <%= phong.TenXa %>, <%= phong.TenTinh %>
+        </p>
+      <% } else { %>
+        <p><strong>Địa chỉ:</strong> Không xác định</p>
+      <% } %>
+    
+      <% if (phong.HinhAnh) { 
+            const dsAnh = JSON.parse(phong.HinhAnh); // Chuyển chuỗi JSON thành mảng
+      %>
+        <div class="gallery" style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <% dsAnh.forEach(anh => { %>
+            <img src="/images/<%= anh %>" width="250" style="border-radius: 8px; object-fit: cover;" alt="Ảnh phòng">
+          <% }) %>
+        </div>
+      <% } else { %>
+        <p style="text-align:center; color:#888;">Không có hình ảnh</p>
+      <% } %>
+    
+      <div class="actions">
+        <% if (phong.TinhTrang === 0) { %>
+          <span style="color: gray;">🚫 Không thể thao tác</span>
+        <% } else if (phong.TinhTrang === 1) { %>
+          <a href="/nhacungcap/phong/trangthai/<%= phong.MaPhong %>" class="btn-status">🔄 Cập nhật trạng thái</a>
+        <% } else if (phong.TinhTrang === 2) { %>
+          <a href="/nhacungcap/phong/suaphong/<%= phong.MaPhong %>" class="btn-edit">✏️ Sửa phòng</a>
+          <a href="/nhacungcap/phong/trangthai/<%= phong.MaPhong %>" class="btn-status">🔄 Cập nhật trạng thái</a>
+        <% } %>
+    
+        <a href="/nhacungcap/phong" class="btn-back">⬅️ Quay lại danh sách</a>
+      </div>
+    </div>
+    
+    </body>
 
-  <p><strong>Trạng thái:</strong>
-    <% if (phong.TinhTrang === 1) { %>
-      🟢 Còn trống
-    <% } else if (phong.TinhTrang === 0) { %>
-      🔴 Đã đặt
-    <% } else { %>
-      🟠 Bảo trì
-    <% } %>
-  </p>
-
-  <% if (phong.MoTa) { %>
-    <p><strong>Mô tả:</strong> <%= phong.MoTa %></p>
-  <% } %>
-
-  <% if (phong.TenXa && phong.TenTinh && phong.ChiTiet) { %>
-    <p><strong>Địa chỉ:</strong>
-      <%= phong.ChiTiet %>, <%= phong.TenXa %>, <%= phong.TenTinh %>
-    </p>
-  <% } else { %>
-    <p><strong>Địa chỉ:</strong> Không xác định</p>
-  <% } %>
-
-  <% if (phong.HinhAnh) { %>
-    <img src="/images/<%= phong.HinhAnh %>" width="300" alt="Ảnh phòng">
-  <% } else { %>
-    <p style="text-align:center; color:#888;">Không có hình ảnh</p>
-  <% } %>
-
-  <div class="actions">
-    <% if (phong.TinhTrang === 0) { %>
-      <!-- 🔴 ĐÃ ĐẶT: Không có nút nào -->
-      <span style="color: gray;">🚫 Không thể thao tác</span>
-    <% } else if (phong.TinhTrang === 1) { %>
-      <!-- 🟢 CÒN TRỐNG: Chỉ nút cập nhật trạng thái -->
-      <a href="/nhacungcap/phong/trangthai/<%= phong.MaPhong %>" class="btn-status">🔄 Cập nhật trạng thái</a>
-    <% } else if (phong.TinhTrang === 2) { %>
-      <!-- 🟠 BẢO TRÌ: Có cả sửa và cập nhật -->
-      <a href="/nhacungcap/phong/suaphong/<%= phong.MaPhong %>" class="btn-edit">✏️ Sửa phòng</a>
-      <a href="/nhacungcap/phong/trangthai/<%= phong.MaPhong %>" class="btn-status">🔄 Cập nhật trạng thái</a>
-    <% } %>
-
-    <a href="/nhacungcap/phong" class="btn-back">⬅️ Quay lại danh sách</a>
-  </div>
-</div>
-</body>
-</html>

@@ -121,7 +121,7 @@ exports.handleThemPhong = async (req, res) => {
     if (!ncc) return res.status(401).send("⚠️ Vui lòng đăng nhập trước khi thêm phòng.");
 
     const { TenPhong, MaLoai, Gia, SucChua, MaXa, ChiTietDiaChi, MoTa } = req.body;
-    const image = req.file ? req.file.filename : null;
+    const images = req.files ? req.files.map(f => f.filename) : []; // 🔹 Nhiều ảnh
 
     // 🧩 KIỂM TRA DỮ LIỆU NHẬP
     const errors = [];
@@ -144,12 +144,11 @@ exports.handleThemPhong = async (req, res) => {
     if (!ChiTietDiaChi || ChiTietDiaChi.trim().length < 5)
       errors.push("Chi tiết địa chỉ phải có ít nhất 5 ký tự.");
 
-    if (!image)
+    if (images.length === 0)
       errors.push("Vui lòng tải lên ít nhất một hình ảnh.");
 
     if (errors.length > 0) {
       console.warn("⚠️ Lỗi nhập liệu:", errors);
-      // Có thể render lại form và hiển thị thông báo
       const loaiPhongs = await LoaiPhong.getAll();
       const [tinhs] = await db.execute("SELECT * FROM Tinh");
       const [xas] = await db.execute("SELECT * FROM Xa");
@@ -165,6 +164,7 @@ exports.handleThemPhong = async (req, res) => {
     // 🏠 Nếu dữ liệu hợp lệ → tạo địa chỉ
     const newMaDiaChi = await DiaChi.create({ ChiTiet: ChiTietDiaChi, MaXa });
 
+    // 🏡 Chuẩn bị dữ liệu thêm phòng
     const data = {
       TenPhong,
       MaLoai,
@@ -172,19 +172,20 @@ exports.handleThemPhong = async (req, res) => {
       Gia,
       SucChua,
       TinhTrang: 1,
-      HinhAnh: image,
+      HinhAnh: JSON.stringify(images), // 🔹 Lưu JSON ["img1.jpg", "img2.jpg"]
       MaDiaChi: newMaDiaChi,
       MaNhaCungCap: ncc.MaNCC ?? null
     };
 
     await Phong.addPhong(data);
-    console.log("✅ Thêm phòng thành công!");
+    console.log("Thêm phòng thành công!");
     res.redirect("/nhacungcap/phong");
   } catch (err) {
-    console.error("❌ Lỗi handleThemPhong:", err);
+    console.error("Lỗi handleThemPhong:", err);
     res.status(500).send("Lỗi khi thêm phòng mới");
   }
 };
+
 
 /* =====================================================
    ✅ 6. HIỂN THỊ FORM SỬA PHÒNG
@@ -210,11 +211,11 @@ exports.renderSuaPhong = async (req, res) => {
 /* =====================================================
    ✅ 7. XỬ LÝ CẬP NHẬT PHÒNG
 ===================================================== */
+
 exports.handleSuaPhong = async (req, res) => {
   try {
     const ncc = req.session.user;
-    if (!ncc)
-      return res.status(401).send("⚠️ Vui lòng đăng nhập trước khi sửa phòng.");
+    if (!ncc) return res.status(401).send("⚠️ Vui lòng đăng nhập trước khi sửa phòng.");
 
     const {
       MaPhong,
@@ -227,16 +228,16 @@ exports.handleSuaPhong = async (req, res) => {
       ChiTietDiaChi,
       MoTa,
     } = req.body;
-    const newImage = req.file ? req.file.filename : null;
 
-    // 🧩 KIỂM TRA DỮ LIỆU NHẬP
+    const newImages = req.files ? req.files.map(f => f.filename) : []; // ⬅️ nhiều ảnh mới
+
+    // 🧩 Kiểm tra dữ liệu
     const errors = [];
 
     if (!TenPhong || TenPhong.trim().length < 3)
       errors.push("Tên phòng phải có ít nhất 3 ký tự.");
 
-    if (!MaLoai)
-      errors.push("Vui lòng chọn loại phòng.");
+    if (!MaLoai) errors.push("Vui lòng chọn loại phòng.");
 
     if (!Gia || isNaN(Gia) || Gia < 100000)
       errors.push("Giá phòng phải là số lớn hơn 100.000 VND.");
@@ -248,13 +249,12 @@ exports.handleSuaPhong = async (req, res) => {
     if (![0, 1, 2].includes(tinhTrangInt))
       errors.push("Tình trạng không hợp lệ (0: Đã đặt, 1: Còn trống, 2: Bảo trì).");
 
-    if (!MaXa)
-      errors.push("Vui lòng chọn xã.");
+    if (!MaXa) errors.push("Vui lòng chọn xã.");
 
     if (!ChiTietDiaChi || ChiTietDiaChi.trim().length < 5)
       errors.push("Chi tiết địa chỉ phải có ít nhất 5 ký tự.");
 
-    // Lấy dữ liệu hiện tại để render lại nếu có lỗi
+    // Lấy dữ liệu cũ
     const phong = await Phong.getPhongById(MaPhong);
     const loaiPhongs = await LoaiPhong.getAll();
     const diaChiHienTai = phong?.MaDiaChi ? await DiaChi.getById(phong.MaDiaChi) : null;
@@ -262,7 +262,6 @@ exports.handleSuaPhong = async (req, res) => {
     const [xas] = await db.execute("SELECT * FROM Xa");
 
     if (errors.length > 0) {
-      console.warn("⚠️ Lỗi nhập liệu:", errors);
       return res.render("nhacungcap/phong/suaphong", {
         phong,
         loaiPhongs,
@@ -274,19 +273,35 @@ exports.handleSuaPhong = async (req, res) => {
       });
     }
 
-    // 🖼️ ẢNH
-    let finalImage = phong.HinhAnh;
-    if (newImage) {
-      if (phong.HinhAnh) {
-        const oldPath = path.join(__dirname, "../public/images", phong.HinhAnh);
-        fs.unlink(oldPath, (err) => {
-          if (err) console.warn("⚠️ Không thể xóa ảnh cũ:", err.message);
-        });
+    // 🖼️ Ảnh
+    let finalImages = [];
+    if (phong.HinhAnh) {
+      try {
+        // Parse JSON nếu có
+        if (phong.HinhAnh.trim().startsWith("[")) {
+          finalImages = JSON.parse(phong.HinhAnh);
+        } else {
+          finalImages = [phong.HinhAnh];
+        }
+      } catch (err) {
+        finalImages = [phong.HinhAnh];
       }
-      finalImage = newImage;
     }
 
-    // 📍 ĐỊA CHỈ
+    // Nếu upload ảnh mới → ghi đè toàn bộ (có thể tùy chỉnh thành “ghép thêm”)
+    if (newImages.length > 0) {
+      // Xoá ảnh cũ trên server
+      finalImages.forEach(img => {
+        const oldPath = path.join(__dirname, "../public/images", img);
+        fs.unlink(oldPath, err => {
+          if (err) console.warn("⚠️ Không thể xóa ảnh cũ:", err.message);
+        });
+      });
+
+      finalImages = newImages; // ghi đè toàn bộ
+    }
+
+    // 📍 Cập nhật địa chỉ
     let finalMaDiaChi = phong.MaDiaChi;
     if (finalMaDiaChi) {
       await DiaChi.update({
@@ -295,15 +310,13 @@ exports.handleSuaPhong = async (req, res) => {
         MaXa,
       });
     } else {
-      const newId = await DiaChi.create({
+      finalMaDiaChi = await DiaChi.create({
         ChiTiet: ChiTietDiaChi,
         MaXa,
-        MaNhaCungCap: ncc.MaNCC ?? null,
       });
-      finalMaDiaChi = newId;
     }
 
-    // 💾 DỮ LIỆU CẬP NHẬT
+    // 💾 Dữ liệu cập nhật
     const updatedData = {
       MaPhong,
       TenPhong: TenPhong.trim(),
@@ -312,7 +325,7 @@ exports.handleSuaPhong = async (req, res) => {
       SucChua,
       MoTa: MoTa || null,
       TinhTrang: tinhTrangInt,
-      HinhAnh: finalImage,
+      HinhAnh: JSON.stringify(finalImages), // ✅ lưu mảng JSON
       MaDiaChi: finalMaDiaChi,
     };
 
@@ -325,6 +338,7 @@ exports.handleSuaPhong = async (req, res) => {
     res.status(500).send("Lỗi khi cập nhật phòng.");
   }
 };
+
 
 
 
