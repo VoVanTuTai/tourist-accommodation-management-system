@@ -4,82 +4,89 @@
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      margin: auto;
+      margin: 0;
       min-height: 100vh;
     }
-    
-    * {
-      box-sizing: border-box;
+
+    /* Căn giữa nội dung chính */
+    .content-wrapper {
+      display: flex;
+      justify-content: center;     /* Căn giữa ngang */
+      align-items: flex-start;     /* Giữ form bắt đầu từ trên xuống */
+      min-height: calc(100vh - 160px); /* Trừ header/footer, có thể điều chỉnh */
+      padding: 20px 20px 20px;    /* Chừa chỗ cho header và footer */
     }
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 2rem;
-      overflow-y: auto;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
+    /* Form hiển thị đẹp, có giới hạn chiều rộng */
+    .form-container {
       background: white;
-      padding: 2.5rem;
-      border-radius: 16px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 25px 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 900px;
+    }
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     h2 {
-      color: #2d3748;
-      margin: 0 0 1.5rem 0;
-      font-size: 2rem;
+      color: #667eea;
+      font-size: 32px;
+      margin-bottom: 30px;
+      text-align: center;
       font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
     }
 
-    .success-message {
-      background: #d4edda;
-      color: #155724;
-      padding: 1rem;
-      border-radius: 8px;
-      margin-bottom: 1.5rem;
-      border-left: 4px solid #28a745;
-      display: none;
+    .section-title {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 16px;
+      margin: 30px 0 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .error-box {
-      background: #f8d7da;
-      color: #721c24;
-      padding: 1rem;
-      border-radius: 8px;
-      margin-bottom: 1.5rem;
-      border-left: 4px solid #dc3545;
-      display: none;
+    .section-title:first-of-type {
+      margin-top: 0;
     }
 
     label {
       display: block;
-      margin-top: 1.25rem;
-      margin-bottom: 0.5rem;
+      color: #333;
       font-weight: 600;
-      color: #4a5568;
-      font-size: 0.95rem;
+      margin-bottom: 8px;
+      margin-top: 20px;
+      font-size: 14px;
     }
 
     input[type="text"],
     input[type="number"],
-    input[type="hidden"],
     select,
     textarea {
       width: 100%;
-      padding: 0.75rem;
-      border: 2px solid #e2e8f0;
-      border-radius: 8px;
-      font-size: 1rem;
-      transition: all 0.3s ease;
+      padding: 14px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 15px;
       font-family: inherit;
-    }
-
-    input[type="hidden"] {
-      display: none;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
     }
 
     input[type="text"]:focus,
@@ -88,7 +95,15 @@
     textarea:focus {
       outline: none;
       border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+
+    input[type="text"]:hover,
+    input[type="number"]:hover,
+    select:hover,
+    textarea:hover {
+      border-color: #b8c5f2;
     }
 
     textarea {
@@ -98,120 +113,142 @@
 
     input[type="file"] {
       width: 100%;
-      padding: 0.5rem;
-      border: 2px dashed #e2e8f0;
-      border-radius: 8px;
+      padding: 14px;
+      border: 2px dashed #667eea;
+      border-radius: 10px;
+      background: #f0f4ff;
       cursor: pointer;
       transition: all 0.3s ease;
+      font-size: 14px;
     }
 
     input[type="file"]:hover {
-      border-color: #667eea;
-      background: #f7fafc;
+      background: #e6edff;
+      border-color: #764ba2;
     }
 
-    .current-image {
-      margin-top: 1rem;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .current-image img {
-      width: 200px;
-      height: auto;
-      display: block;
-    }
-
-    .image-preview {
-      margin-top: 1rem;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      display: none;
-    }
-
-    .image-preview img {
-      width: 200px;
-      height: auto;
-      display: block;
-    }
-
-    hr {
-      border: none;
-      border-top: 2px solid #e2e8f0;
-      margin: 2rem 0;
-    }
-
-    h3 {
-      color: #2d3748;
-      margin: 0 0 1rem 0;
-      font-size: 1.5rem;
-      font-weight: 600;
-    }
-
-    button[type="submit"] {
-      width: 100%;
-      padding: 1rem;
-      margin-top: 2rem;
+    input[type="file"]::file-selector-button {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       border: none;
+      padding: 10px 20px;
       border-radius: 8px;
-      font-size: 1.1rem;
+      cursor: pointer;
       font-weight: 600;
+      margin-right: 12px;
+      transition: transform 0.2s ease;
+    }
+
+    input[type="file"]::file-selector-button:hover {
+      transform: scale(1.05);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 35px;
+      flex-wrap: wrap;
+    }
+
+    button[type="submit"] {
+      flex: 1;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      min-width: 200px;
     }
 
     button[type="submit"]:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
     }
 
     button[type="submit"]:active {
       transform: translateY(0);
     }
 
-    button[type="submit"]:disabled {
-      background: #cbd5e0;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
+    .button-group a {
+      flex: 1;
+      background: white;
+      color: #667eea;
+      border: 2px solid #667eea;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      text-decoration: none;
+      text-align: center;
+      transition: all 0.3s ease;
+      min-width: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
-    .loading-spinner {
-      display: none;
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto;
+    .button-group a:hover {
+      background: #667eea;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .required {
-      color: #e53e3e;
-    }
-
+    /* Responsive Design */
     @media (max-width: 768px) {
       body {
-        padding: 1rem;
+        padding: 20px 15px;
       }
 
-      .container {
-        padding: 1.5rem;
+      .form-container {
+        padding: 30px 20px;
       }
 
       h2 {
-        font-size: 1.5rem;
+        font-size: 26px;
       }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      button[type="submit"],
+      .button-group a {
+        width: 100%;
+        min-width: auto;
+      }
+    }
+
+    /* Validation styles */
+    input:invalid:not(:placeholder-shown),
+    select:invalid:not(:placeholder-shown),
+    textarea:invalid:not(:placeholder-shown) {
+      border-color: #ff6b6b;
+    }
+
+    input:valid,
+    select:valid,
+    textarea:valid {
+      border-color: #51cf66;
+    }
+
+    ::placeholder {
+      color: #adb5bd;
+    }
+
+    select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
     }
   </style>
   <style>@view-transition { navigation: auto; }</style>
@@ -224,171 +261,201 @@
     rel="stylesheet"
   />
 
-  <div class="container mt-5 p-4 bg-white rounded shadow-sm">
-    <h2 id="formTitle" class="text-center mb-4">✏️ Sửa thông tin phòng</h2>
+  <main class="content-wrapper">
+    <div class="form-container">
+      <h2>✏️ Cập nhật thông tin phòng</h2>
 
-    <% if (typeof message !== 'undefined' && message) { %>
-      <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <%= message %>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    <% } %>
+      <!-- Hiển thị lỗi tổng quát nếu có -->
+      <div id="error-summary" style="color:red; text-align:center; margin-bottom:10px;"></div>
 
-    <div id="successMessage" class="alert alert-success alert-dismissible fade show d-none" role="alert">
-      Cập nhật phòng thành công!
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
+      <form id="editRoomForm"
+            action="/nhacungcap/phong/suaphong/<%= phong.MaPhong %>"
+            method="POST"
+            enctype="multipart/form-data"
+            novalidate>
 
-    <div id="errorBox" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
-      <!-- Lỗi phía client sẽ được hiển thị ở đây -->
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
+        <input type="hidden" name="MaPhong" value="<%= phong.MaPhong %>">
 
-    <form id="editRoomForm"
-      action="/nhacungcap/phong/suaphong/<%= phong.MaPhong %>"
-      method="POST"
-      enctype="multipart/form-data">
+        <!-- 🔹 Thông tin phòng -->
+        <div class="section-title">Thông tin phòng</div>
 
-      <input type="hidden" name="MaPhong" value="<%= phong.MaPhong %>" />
+        <label for="TenPhong">Tên phòng:</label>
+        <input type="text" id="TenPhong" name="TenPhong" 
+               value="<%= phong.TenPhong %>" 
+               placeholder="Nhập tên phòng..." required minlength="3">
+        <small class="error-message" style="color:red"></small>
 
-      <label for="TenPhong" class="fw-bold mt-3">Tên phòng: <span class="text-danger">*</span></label>
-      <input type="text" name="TenPhong" id="TenPhong" class="form-control"
-             value="<%= phong.TenPhong %>" required />
+        <label for="MaLoai">Loại phòng:</label>
+        <select id="MaLoai" name="MaLoai" required>
+          <% loaiPhongs.forEach(loai => { %>
+            <option value="<%= loai.MaLoai %>" <%= loai.MaLoai === phong.MaLoai ? 'selected' : '' %>>
+              <%= loai.TenLoai %>
+            </option>
+          <% }) %>
+        </select>
+        <small class="error-message" style="color:red"></small>
 
-      <label for="MaLoai" class="fw-bold mt-3">Loại phòng: <span class="text-danger">*</span></label>
-      <select name="MaLoai" id="MaLoai" class="form-select" required>
-        <% loaiPhongs.forEach(lp => { %>
-          <option value="<%= lp.MaLoai %>" <%= lp.MaLoai === phong.MaLoai ? 'selected' : '' %>>
-            <%= lp.TenLoai %>
-          </option>
-        <% }) %>
-      </select>
+        <label for="Gia">Giá (VND):</label>
+        <input type="number" id="Gia" name="Gia" min="100000"
+               value="<%= phong.Gia %>"
+               placeholder="VD: 500000" required>
+        <small class="error-message" style="color:red"></small>
 
-      <label for="Gia" class="fw-bold mt-3">Giá (VNĐ): <span class="text-danger">*</span></label>
-      <input type="number" name="Gia" id="Gia" class="form-control"
-             value="<%= phong.Gia %>" required min="1" />
+        <label for="SucChua">Sức chứa:</label>
+        <input type="number" id="SucChua" name="SucChua" min="1" max="50"
+               value="<%= phong.SucChua %>"
+               placeholder="VD: 4" required>
+        <small class="error-message" style="color:red"></small>
 
-      <label for="SucChua" class="fw-bold mt-3">Sức chứa: <span class="text-danger">*</span></label>
-      <input type="number" name="SucChua" id="SucChua" class="form-control"
-             value="<%= phong.SucChua %>" required min="1" />
+        <label for="MoTa">Mô tả:</label>
+        <textarea id="MoTa" name="MoTa" rows="4" placeholder="Nhập mô tả chi tiết về phòng..."><%= phong.MoTa || '' %></textarea>
+        <small class="error-message" style="color:red"></small>
 
-      <label for="MoTa" class="fw-bold mt-3">Mô tả:</label>
-      <textarea name="MoTa" id="MoTa" rows="4" class="form-control"><%= phong.MoTa || '' %></textarea>
+        <label for="TinhTrang">Tình trạng:</label>
+        <select id="TinhTrang" name="TinhTrang" required>
+          <option value="1" <%= phong.TinhTrang === 1 ? 'selected' : '' %>>🟢 Còn trống</option>
+          <option value="0" <%= phong.TinhTrang === 0 ? 'selected' : '' %>>🔴 Đã đặt</option>
+          <option value="2" <%= phong.TinhTrang === 2 ? 'selected' : '' %>>🟠 Bảo trì</option>
+        </select>
+        <small class="error-message" style="color:red"></small>
 
-      <label for="TinhTrang" class="fw-bold mt-3">Tình trạng: <span class="text-danger">*</span></label>
-      <select name="TinhTrang" id="TinhTrang" class="form-select" required>
-        <option value="1" <%= phong.TinhTrang === 1 ? 'selected' : '' %>>🟢 Còn trống</option>
-        <option value="0" <%= phong.TinhTrang === 0 ? 'selected' : '' %>>🔴 Đã đặt</option>
-        <option value="2" <%= phong.TinhTrang === 2 ? 'selected' : '' %>>🟠 Bảo trì</option>
-      </select>
+        <!-- 🔹 Địa chỉ -->
+        <div class="section-title">Địa chỉ</div>
 
-      <hr class="my-4" />
-      <h4 id="addressSectionTitle">📍 Địa chỉ phòng</h4>
+        <label for="MaTinh">Tỉnh:</label>
+        <select id="MaTinh" name="MaTinh" required onchange="filterXa()">
+          <% tinhs.forEach(t => { %>
+            <option value="<%= t.MaTinh %>" <%= diaChiHienTai && t.MaTinh === diaChiHienTai.MaTinh ? 'selected' : '' %>><%= t.TenTinh %></option>
+          <% }) %>
+        </select>
+        <small class="error-message" style="color:red"></small>
 
-      <label for="ChiTietDiaChi" class="fw-bold mt-2">Chi tiết địa chỉ: <span class="text-danger">*</span></label>
-      <input type="text" name="ChiTietDiaChi" id="ChiTietDiaChi"
-             class="form-control"
-             value="<%= diaChiHienTai ? diaChiHienTai.ChiTiet : '' %>" required />
+        <label for="MaXa">Xã:</label>
+        <select id="MaXa" name="MaXa" required>
+          <% xas.forEach(x => { %>
+            <option value="<%= x.MaXa %>" data-tinh="<%= x.MaTinh %>"
+              <%= diaChiHienTai && x.MaXa === diaChiHienTai.MaXa ? 'selected' : '' %>>
+              <%= x.TenXa %>
+            </option>
+          <% }) %>
+        </select>
+        <small class="error-message" style="color:red"></small>
 
-      <label for="selectTinh" class="fw-bold mt-3">Tỉnh: <span class="text-danger">*</span></label>
-      <select name="MaTinh" id="selectTinh" class="form-select" required>
-        <% tinhs.forEach(t => { %>
-          <option value="<%= t.MaTinh %>" <%= diaChiHienTai && t.MaTinh === diaChiHienTai.MaTinh ? 'selected' : '' %>>
-            <%= t.TenTinh %>
-          </option>
-        <% }) %>
-      </select>
+        <label for="ChiTietDiaChi">Chi tiết địa chỉ:</label>
+        <input type="text" id="ChiTietDiaChi" name="ChiTietDiaChi"
+               value="<%= diaChiHienTai ? diaChiHienTai.ChiTiet : '' %>"
+               placeholder="Số nhà, đường, thôn/xóm..." required minlength="5">
+        <small class="error-message" style="color:red"></small>
 
-      <label for="selectXa" class="fw-bold mt-3">Xã: <span class="text-danger">*</span></label>
-      <select name="MaXa" id="selectXa" class="form-select" required>
-        <% xas.forEach(x => { %>
-          <option value="<%= x.MaXa %>" data-tinh="<%= x.MaTinh %>"
-            <%= diaChiHienTai && x.MaXa === diaChiHienTai.MaXa ? 'selected' : '' %>>
-            <%= x.TenXa %>
-          </option>
-        <% }) %>
-      </select>
+        <!-- 🔹 Hình ảnh -->
+        <div class="section-title">Hình ảnh</div>
 
-      <label for="HinhAnh" class="fw-bold mt-3">Ảnh phòng:</label>
-      <% if (phong.HinhAnh) { %>
-        <div class="current-image mb-2">
-          <img src="/images/<%= phong.HinhAnh %>" alt="Ảnh phòng hiện tại" class="rounded" width="150" />
+        <label for="HinhAnh">Ảnh hiện tại:</label>
+        <%
+          let dsAnh = [];
+          if (phong.HinhAnh) {
+            try {
+              if (phong.HinhAnh.trim().startsWith("[")) {
+                dsAnh = JSON.parse(phong.HinhAnh);
+              } else {
+                dsAnh = [phong.HinhAnh];
+              }
+            } catch (err) {
+              dsAnh = [phong.HinhAnh];
+            }
+          }
+        %>
+
+        <% if (dsAnh.length > 0) { %>
+          <div class="gallery mb-3 d-flex flex-wrap gap-2">
+            <% dsAnh.forEach(anh => { %>
+              <img src="/images/<%= anh %>" alt="Ảnh phòng" width="150" class="rounded border shadow-sm" />
+            <% }) %>
+          </div>
+        <% } else { %>
+          <p class="text-muted">Chưa có ảnh nào được lưu.</p>
+        <% } %>
+
+        <label for="HinhAnhMoi">Tải lên hình ảnh mới:</label>
+        <input type="file" id="HinhAnhMoi" name="HinhAnh" accept="image/*" multiple>
+        <div id="previewContainer" class="d-flex flex-wrap gap-2 mt-3"></div>
+        <small class="error-message" style="color:red"></small>
+
+        <div class="button-group" style="margin-top: 20px; text-align: center;">
+          <button type="submit">💾 Cập nhật phòng</button>
+          <a href="/nhacungcap/phong">⬅️ Quay lại</a>
         </div>
-      <% } %>
-      <input type="file" name="HinhAnh" id="HinhAnh" class="form-control" accept="image/ *" />
-      <div class="image-preview mt-2"><img id="previewImg" class="rounded" width="150" /></div>
-
-      <button type="submit" id="submitBtn" class="btn btn-primary w-100 mt-4">
-        <span id="submitText">💾 Cập nhật phòng</span>
-        <div class="spinner-border spinner-border-sm text-light d-none" id="loadingSpinner"></div>
-      </button>
-    </form>
-  </div>
+      </form>
+    </div>
+  </main>
 
   <script>
-    // Lọc xã theo tỉnh
-    const selectTinh = document.getElementById("selectTinh");
-    const selectXa = document.getElementById("selectXa");
-    const allXaOptions = Array.from(selectXa.options);
+  // 🔹 Lọc xã theo tỉnh
+  function filterXa() {
+    const maTinh = document.getElementById('MaTinh').value;
+    const xaSelect = document.getElementById('MaXa');
+    const options = xaSelect.querySelectorAll('option');
+    xaSelect.value = '';
+    options.forEach(opt => {
+      const tinh = opt.getAttribute('data-tinh');
+      opt.style.display = tinh === maTinh ? 'block' : 'none';
+    });
+  }
 
-    function filterXaByTinh() {
-      const tinhValue = selectTinh.value;
-      selectXa.innerHTML = '';
-      allXaOptions.forEach(opt => {
-        if (opt.dataset.tinh === tinhValue) selectXa.appendChild(opt.cloneNode(true));
-      });
+  // 🔹 Preview ảnh mới
+  const input = document.getElementById("HinhAnhMoi");
+  const previewContainer = document.getElementById("previewContainer");
+
+  input.addEventListener("change", () => {
+    previewContainer.innerHTML = "";
+    Array.from(input.files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        img.width = 150;
+        img.className = "rounded border shadow-sm";
+        previewContainer.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+
+  // 🔹 Validation client-side
+  document.getElementById("editRoomForm").addEventListener("submit", function(e) {
+    let isValid = true;
+    const errorSummary = document.getElementById("error-summary");
+    errorSummary.innerHTML = "";
+    document.querySelectorAll(".error-message").forEach(el => el.innerText = "");
+
+    const tenPhong = document.getElementById("TenPhong").value.trim();
+    const maLoai = document.getElementById("MaLoai").value;
+    const gia = parseFloat(document.getElementById("Gia").value);
+    const sucChua = parseInt(document.getElementById("SucChua").value);
+    const moTa = document.getElementById("MoTa").value.trim();
+    const maTinh = document.getElementById("MaTinh").value;
+    const maXa = document.getElementById("MaXa").value;
+    const diaChi = document.getElementById("ChiTietDiaChi").value.trim();
+
+    if (tenPhong.length < 3) { setError("TenPhong", "Tên phòng phải có ít nhất 3 ký tự."); isValid = false; }
+    if (!maLoai) { setError("MaLoai", "Vui lòng chọn loại phòng."); isValid = false; }
+    if (isNaN(gia) || gia < 100000) { setError("Gia", "Giá phòng phải >= 100.000 VND."); isValid = false; }
+    if (isNaN(sucChua) || sucChua < 1) { setError("SucChua", "Sức chứa phải >= 1."); isValid = false; }
+    if (moTa.length < 10) { setError("MoTa", "Mô tả cần ít nhất 10 ký tự."); isValid = false; }
+    if (!maTinh) { setError("MaTinh", "Vui lòng chọn tỉnh."); isValid = false; }
+    if (!maXa) { setError("MaXa", "Vui lòng chọn xã."); isValid = false; }
+    if (diaChi.length < 5) { setError("ChiTietDiaChi", "Địa chỉ phải có ít nhất 5 ký tự."); isValid = false; }
+
+    if (!isValid) {
+      e.preventDefault();
+      errorSummary.innerHTML = "⚠️ Vui lòng kiểm tra lại các trường bị lỗi.";
     }
-    selectTinh.addEventListener('change', filterXaByTinh);
-    filterXaByTinh();
+  });
 
-    // Hiển thị preview ảnh
-    const fileInput = document.getElementById('HinhAnh');
-    const previewImg = document.getElementById('previewImg');
-    fileInput.addEventListener('change', e => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = evt => {
-          previewImg.src = evt.target.result;
-          previewImg.parentElement.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    // Kiểm tra dữ liệu trước khi gửi
-    const form = document.getElementById('editRoomForm');
-    const errorBox = document.getElementById('errorBox');
-    const successBox = document.getElementById('successMessage');
-    const submitBtn = document.getElementById('submitBtn');
-    const loadingSpinner = document.getElementById('loadingSpinner');
-    const submitText = document.getElementById('submitText');
-
-    form.addEventListener('submit', e => {
-      const tenPhong = document.getElementById('TenPhong').value.trim();
-      const gia = parseInt(document.getElementById('Gia').value);
-      const sucChua = parseInt(document.getElementById('SucChua').value);
-      const chiTiet = document.getElementById('ChiTietDiaChi').value.trim();
-      const errors = [];
-
-      if (!tenPhong) errors.push("❌ Vui lòng nhập tên phòng.");
-      if (isNaN(gia) || gia < 100000) errors.push("❌ Giá phòng phải lớn hơn 100.000 VND.");
-      if (isNaN(sucChua) || sucChua < 1) errors.push("❌ Sức chứa phải lớn hơn 0.");
-      if (!chiTiet || chiTiet.length < 5) errors.push("❌ Chi tiết địa chỉ phải có ít nhất 5 ký tự.");
-
-      if (errors.length > 0) {
-        e.preventDefault();
-        errorBox.innerHTML = errors.join("<br>");
-        errorBox.classList.remove("d-none");
-        return;
-      }
-
-      // Loading state
-      submitBtn.disabled = true;
-      submitText.style.display = "none";
-      loadingSpinner.classList.remove("d-none");
-    });
-  </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  function setError(id, msg) {
+    const el = document.getElementById(id);
+    const err = el.nextElementSibling;
+    if (err && err.classList.contains("error-message")) err.innerText = msg;
+  }
+</script>
 </body>

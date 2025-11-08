@@ -43,7 +43,7 @@ router.get("/phong/them", phongController.renderThemPhong);
 router.post("/phong/them", upload.array("HinhAnh", 10), phongController.handleThemPhong);
 //Sửa phòng
 router.get("/phong/suaphong/:id", phongController.renderSuaPhong);
-router.post("/phong/suaphong/:id", upload.array("HinhAnh", 10), phongController.handleThemPhong);
+router.post("/phong/suaphong/:id", upload.array("HinhAnh", 10), phongController.handleSuaPhong);
 //Cập nhật trạng thái
 router.get("/phong/trangthai/:id", phongController.renderUpdateStatus);
 router.post("/phong/trangthai/:id", phongController.handleUpdateStatus);

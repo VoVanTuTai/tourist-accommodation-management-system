@@ -72,8 +72,26 @@
             </td>
 
             <td>
-              <% if (p.HinhAnh) { %>
-                <img src="/images/<%= p.HinhAnh %>" class="room-image" alt="<%= p.TenPhong %>">
+              <% if (p.HinhAnh) { 
+                  let firstImage = "";
+                  try {
+                    if (p.HinhAnh.trim().startsWith("[")) {
+                      // Nếu là JSON array → lấy phần tử đầu tiên
+                      const arr = JSON.parse(p.HinhAnh);
+                      if (arr.length > 0) firstImage = arr[0];
+                    } else {
+                      // Nếu chỉ là chuỗi đơn
+                      firstImage = p.HinhAnh;
+                    }
+                  } catch (err) {
+                    firstImage = p.HinhAnh;
+                  }
+              %>
+                <% if (firstImage) { %>
+                  <img src="/images/<%= firstImage %>" class="room-image" alt="<%= p.TenPhong %>">
+                <% } else { %>
+                  <span style="color:#cbd5e0;">—</span>
+                <% } %>
               <% } else { %>
                 <span style="color:#cbd5e0;">—</span>
               <% } %>
