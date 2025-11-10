@@ -323,7 +323,7 @@
         <label for="HinhAnh">Tải lên hình ảnh:</label>
         
         <input type="file" id="HinhAnh" name="HinhAnh" accept="image/*" multiple required>
-
+        <div id="previewContainer" class="d-flex flex-wrap gap-2 mt-3"></div>
         <small class="error-message" style="color:red"></small>
 
         <div class="button-group" style="margin-top: 20px; text-align: center;">
@@ -346,68 +346,73 @@
         option.style.display = (optionTinh === maTinh) ? 'block' : 'none';
       });
     }
+    // 🔹 Preview ảnh mới
+    const input = document.getElementById("HinhAnh");
+    const previewContainer = document.getElementById("previewContainer");
 
-    // Kiểm tra form trước khi submit
-    document.getElementById("formThemPhong").addEventListener("submit", function(e) {
-      let isValid = true;
-      const errorSummary = document.getElementById("error-summary");
-      errorSummary.innerHTML = ""; // reset lỗi tổng quát
-
-      // Reset lỗi cũ
-      document.querySelectorAll(".error-message").forEach(el => el.innerText = "");
-
-      const tenPhong = document.getElementById("TenPhong").value.trim();
-      const maLoai = document.getElementById("MaLoai").value;
-      const gia = parseFloat(document.getElementById("Gia").value);
-      const sucChua = parseInt(document.getElementById("SucChua").value);
-      const moTa = document.getElementById("MoTa").value.trim();
-      const maTinh = document.getElementById("MaTinh").value;
-      const maXa = document.getElementById("MaXa").value;
-      const diaChi = document.getElementById("ChiTietDiaChi").value.trim();
-      const hinh = document.getElementById("HinhAnh").value;
-
-      // Kiểm tra từng trường
-      if (tenPhong.length < 3) {
-        setError("TenPhong", "Tên phòng phải có ít nhất 3 ký tự."); isValid = false;
-      }
-      if (!maLoai) {
-        setError("MaLoai", "Vui lòng chọn loại phòng."); isValid = false;
-      }
-      if (isNaN(gia) || gia < 100000) {
-        setError("Gia", "Giá phòng phải >= 100.000 VND."); isValid = false;
-      }
-      if (isNaN(sucChua) || sucChua < 1) {
-        setError("SucChua", "Sức chứa phải >= 1."); isValid = false;
-      }
-      if (moTa.length < 10) {
-        setError("MoTa", "Mô tả cần ít nhất 10 ký tự."); isValid = false;
-      }
-      if (!maTinh) {
-        setError("MaTinh", "Vui lòng chọn tỉnh."); isValid = false;
-      }
-      if (!maXa) {
-        setError("MaXa", "Vui lòng chọn xã."); isValid = false;
-      }
-      if (diaChi.length < 5) {
-        setError("ChiTietDiaChi", "Địa chỉ phải có ít nhất 5 ký tự."); isValid = false;
-      }
-      if (!hinh) {
-        setError("HinhAnh", "Vui lòng chọn hình ảnh."); isValid = false;
-      }
-
-      if (!isValid) {
-        errorSummary.innerHTML = "⚠️ Vui lòng kiểm tra lại các trường bị lỗi.";
-        e.preventDefault(); // Ngăn gửi form
-      }
+    input.addEventListener("change", () => {
+      previewContainer.innerHTML = "";
+      Array.from(input.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const img = document.createElement("img");
+          img.src = e.target.result;
+          img.width = 150;
+          img.className = "rounded border shadow-sm";
+          previewContainer.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
     });
+    // Kiểm tra form trước khi submit
+    // 🔹 Validation client-side
+    document.getElementById("formThemPhong").addEventListener("submit", function(e) {
+    let isValid = true;
+    let firstInvalidField = null; // ✅ Lưu input đầu tiên bị lỗi
 
-    function setError(fieldId, message) {
-      const input = document.getElementById(fieldId);
-      const errorEl = input.nextElementSibling;
-      if (errorEl && errorEl.classList.contains("error-message")) {
-        errorEl.innerText = message;
+    const errorSummary = document.getElementById("error-summary");
+    errorSummary.innerHTML = "";
+    document.querySelectorAll(".error-message").forEach(el => el.innerText = "");
+
+    const tenPhong = document.getElementById("TenPhong").value.trim();
+    const maLoai = document.getElementById("MaLoai").value;
+    const gia = parseFloat(document.getElementById("Gia").value);
+    const sucChua = parseInt(document.getElementById("SucChua").value);
+    const moTa = document.getElementById("MoTa").value.trim();
+    const maTinh = document.getElementById("MaTinh").value;
+    const maXa = document.getElementById("MaXa").value;
+    const diaChi = document.getElementById("ChiTietDiaChi").value.trim();
+
+    function setError(id, message) {
+      const input = document.getElementById(id);
+      const errorEl = input.nextElementSibling; // small.error-message
+      if (errorEl) errorEl.innerText = message;
+
+      // ✅ Lưu input đầu tiên bị lỗi
+      if (!firstInvalidField) firstInvalidField = input;
+    }
+
+    // ======= KIỂM TRA DỮ LIỆU =======
+    if (tenPhong.length < 3) { setError("TenPhong", "Tên phòng phải có ít nhất 3 ký tự."); isValid = false; }
+    if (!maLoai) { setError("MaLoai", "Vui lòng chọn loại phòng."); isValid = false; }
+    if (isNaN(gia) || gia < 100000) { setError("Gia", "Giá phòng phải >= 100.000 VND."); isValid = false; }
+    if (isNaN(sucChua) || sucChua < 1) { setError("SucChua", "Sức chứa phải >= 1."); isValid = false; }
+    if (moTa.length < 10) { setError("MoTa", "Mô tả cần ít nhất 10 ký tự."); isValid = false; }
+    if (!maTinh) { setError("MaTinh", "Vui lòng chọn tỉnh."); isValid = false; }
+    if (!maXa) { setError("MaXa", "Vui lòng chọn xã."); isValid = false; }
+    if (diaChi.length < 5) { setError("ChiTietDiaChi", "Địa chỉ phải có ít nhất 5 ký tự."); isValid = false; }
+
+    // ======= NẾU LỖI =======
+    if (!isValid) {
+      e.preventDefault();
+      errorSummary.innerHTML = "⚠️ Vui lòng kiểm tra lại các trường bị lỗi.";
+      errorSummary.scrollIntoView({ behavior: "smooth", block: "center" }); // cuộn lên phần báo lỗi
+      if (firstInvalidField) {
+        firstInvalidField.focus(); // ✅ focus vào input lỗi đầu tiên
+        firstInvalidField.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     }
+  });
   </script>
 </body>
 

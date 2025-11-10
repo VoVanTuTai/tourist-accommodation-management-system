@@ -139,6 +139,7 @@ const DonDatPhong = {
         dp.NgayNhan,
         dp.NgayTra,
         dp.TongTien,
+        ncc.MaNCC,  -- ✅ thêm dòng này
         COALESCE(GROUP_CONCAT(DISTINCT ncc.TenNCC ORDER BY ncc.TenNCC SEPARATOR ', '), 'Chưa rõ') AS TenNCC,
         COALESCE(GROUP_CONCAT(DISTINCT ncc.ThongTinThanhToan ORDER BY ncc.ThongTinThanhToan SEPARATOR ' | '), '') AS ThongTinThanhToan,
         COALESCE(GROUP_CONCAT(DISTINCT CONCAT_WS(', ', d.ChiTiet, x.TenXa, t.TenTinh) ORDER BY d.ChiTiet SEPARATOR ' | '), '') AS DiaChiNCC
@@ -155,20 +156,8 @@ const DonDatPhong = {
     `;
     const [rows] = await db.execute(sql, [maDon]);
     return rows[0];
-  },
-
-  // 🔄 Cập nhật trạng thái đơn
-  async updateTrangThai(maDon, trangThai) {
-    const sql = `UPDATE DonDatPhong SET TrangThai = ? WHERE MaDon = ?`;
-    const [result] = await db.execute(sql, [trangThai, maDon]);
-    return result;
-  },
-
-  // 💰 Ghi thanh toán mới
-  async insertThanhToan(maDon, soTien) {
-    const sql = `INSERT INTO ThanhToan (MaDon, NgayTT, SoTien) VALUES (?, NOW(), ?)`;
-    await db.execute(sql, [maDon, soTien]);
-  },
+  }
+  
 };
 
 module.exports = DonDatPhong;

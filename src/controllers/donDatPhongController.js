@@ -46,21 +46,26 @@ exports.danhSachDonDatPhong = async (req, res) => {
 // =====================================================
 // 📋 CHI TIẾT ĐƠN ĐẶT PHÒNG
 // =====================================================
+
+
 exports.chiTietDonDatPhong = async (req, res) => {
   try {
     const maDon = req.params.id;
 
-    // 🔹 Lấy thông tin đơn và phòng (1 đơn chỉ có 1 phòng)
+    // 🔹 Lấy thông tin đơn và phòng chính (1 đơn có thể gắn 1 phòng)
     const don = await DonDatPhong.getDonVaPhong(maDon);
-
     if (!don) {
       return res.render("khachhang/chitietdondatphong", {
         error: "Không tìm thấy đơn đặt phòng.",
         don: null,
+        order: null,
       });
     }
 
-    // 🔹 Nếu có thông tin đánh giá, có thể nối thêm vào đây (nếu dùng)
+    // 🔹 Lấy thêm thông tin thanh toán / nhà cung cấp / địa chỉ (bạn đã có sẵn hàm này)
+    const order = await DonDatPhong.getThongTinThanhToan(maDon);
+
+    // 🔹 Lấy đánh giá nếu có
     let danhGia = null;
     try {
       danhGia = await DanhGia.getByUserAndPhong(don.MaKhachHang, don.MaPhong);
@@ -68,10 +73,11 @@ exports.chiTietDonDatPhong = async (req, res) => {
       console.warn("⚠️ Không lấy được đánh giá:", err.message);
     }
 
-    // 🔹 Render ra view
+    // 🔹 Render view với đầy đủ dữ liệu
     res.render("khachhang/chitietdondatphong", {
       error: null,
       don,
+      order, // ✅ thêm biến order để EJS dùng cho thanh toán VNPay
       daDanhGia: !!danhGia,
       danhGia: danhGia || null,
       js: ["/js/khachhang/chitietdondatphong"],

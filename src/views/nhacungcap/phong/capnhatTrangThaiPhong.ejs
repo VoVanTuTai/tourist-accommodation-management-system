@@ -1,24 +1,83 @@
-<h2>🔄 Thay đổi trạng thái phòng</h2>
+<body>
+  <div class="container" style="max-width: 900px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
 
-    <form action="/nhacungcap/phong/trangthai/<%= phong.MaPhong %>" method="POST">
-      <input type="hidden" name="MaPhong" value="<%= phong.MaPhong %>">
+    <h2 style="text-align:center; margin-bottom:20px;">🔄 Cập nhật trạng thái phòng</h2>
 
+    <!-- 🛏️ Thông tin chi tiết phòng -->
+    <section style="margin-bottom: 30px;">
+      <h3>🛏️ Thông tin phòng</h3>
+      <p><strong>Mã phòng:</strong> <%= phong.MaPhong %></p>
       <p><strong>Tên phòng:</strong> <%= phong.TenPhong %></p>
+      <p><strong>Loại phòng:</strong> <%= phong.TenLoai %></p>
+      <p><strong>Giá:</strong> <%= Number(phong.Gia).toLocaleString("vi-VN") %> VND/đêm</p>
+      <p><strong>Sức chứa:</strong> <%= phong.SucChua %> người</p>
+
       <p><strong>Trạng thái hiện tại:</strong>
-        <% if (phong.TinhTrang === 1) { %> 🟢 Còn trống
-        <% } else if (phong.TinhTrang === 0) { %> 🔴 Đã đặt
-        <% } else { %> 🟠 Bảo trì <% } %>
+        <% if (phong.TinhTrang === 1) { %>
+          🟢 Còn trống
+        <% } else if (phong.TinhTrang === 0) { %>
+          🔴 Đã đặt
+        <% } else { %>
+          🟠 Bảo trì
+        <% } %>
       </p>
 
-      <label for="TinhTrang">Chọn trạng thái mới:</label>
-      <select name="TinhTrang" id="TinhTrang" required>
-        <option value="1" <%= phong.TinhTrang === 1 ? "selected" : "" %>>🟢 Còn trống</option>
-        <option value="0" <%= phong.TinhTrang === 0 ? "selected" : "" %>>🔴 Đã đặt</option>
-        <option value="2" <%= phong.TinhTrang === 2 ? "selected" : "" %>>🟠 Đang bảo trì</option>
-      </select>
+      <% if (phong.MoTa) { %>
+        <p><strong>Mô tả:</strong> <%= phong.MoTa %></p>
+      <% } %>
 
-      <button type="submit">💾 Cập nhật trạng thái</button>
-    </form>
+      <% if (phong.DiaChiChiTiet && phong.TenXa && phong.TenTinh) { %>
+        <p><strong>Địa chỉ:</strong>
+          <%= phong.DiaChiChiTiet %>, <%= phong.TenXa %>, <%= phong.TenTinh %>
+        </p>
+      <% } else { %>
+        <p><strong>Địa chỉ:</strong> Không xác định</p>
+      <% } %>
 
-    <a href="/nhacungcap/phong" class="back">⬅️ Quay lại danh sách</a>
+      <% if (phong.HinhAnh) { 
+            let dsAnh = [];
+            try {
+              if (phong.HinhAnh.trim().startsWith("[")) {
+                dsAnh = JSON.parse(phong.HinhAnh);
+              } else {
+                dsAnh = [phong.HinhAnh];
+              }
+            } catch (err) {
+              dsAnh = [phong.HinhAnh];
+            }
+      %>
+        <div class="gallery" style="display:flex; flex-wrap:wrap; gap:10px; margin-top:10px;">
+          <% dsAnh.forEach(anh => { %>
+            <img src="/images/<%= anh %>" alt="Ảnh phòng" width="220"
+                 style="border-radius:8px; object-fit:cover; box-shadow:0 0 5px rgba(0,0,0,0.2);">
+          <% }) %>
+        </div>
+      <% } else { %>
+        <p style="color:#888;">Không có hình ảnh</p>
+      <% } %>
+    </section>
+
+    <!-- 🔄 Form cập nhật trạng thái -->
+    <section style="margin-top:30px;">
+      <h3>⚙️ Thay đổi trạng thái phòng</h3>
+
+      <form action="/nhacungcap/phong/trangthai/<%= phong.MaPhong %>" method="POST" style="margin-top:15px;">
+        <input type="hidden" name="MaPhong" value="<%= phong.MaPhong %>">
+
+        <label for="TinhTrang" style="font-weight:bold;">Chọn trạng thái mới:</label>
+        <select name="TinhTrang" id="TinhTrang" required style="margin-left:10px; padding:5px 8px; border-radius:5px;">
+          <option value="1" <%= phong.TinhTrang === 1 ? "selected" : "" %>>🟢 Còn trống</option>
+          <option value="0" <%= phong.TinhTrang === 0 ? "selected" : "" %>>🔴 Đã đặt</option>
+          <option value="2" <%= phong.TinhTrang === 2 ? "selected" : "" %>>🟠 Bảo trì</option>
+        </select>
+
+        <div style="margin-top:20px;">
+          <button type="submit" style="background:#007bff; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">
+            💾 Cập nhật trạng thái
+          </button>
+          <a href="/nhacungcap/phong" style="margin-left:15px; text-decoration:none; color:#555;">⬅️ Quay lại danh sách</a>
+        </div>
+      </form>
+    </section>
   </div>
+</body>

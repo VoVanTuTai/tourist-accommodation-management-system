@@ -18,12 +18,13 @@ const diachiRoutes = require("./src/routes/diachiRoutes");
 const loaiphongRoutes = require("./src/routes/loaiphongRoutes");
 const nhaCungCapRoutes = require("./src/routes/nhaCungCapRoutes");
 const datPhongRoutes = require("./src/routes/datPhongRoutes");
-
+const vnpayRoutes = require("./src/routes/vnpayRoutes");
 /* =====================================================
    ✅ THIẾT LẬP EJS + LAYOUT
 ===================================================== */
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "src", "views"));
+app.set('trust proxy', 1);
 app.use(expressLayouts);
 
 /* =====================================================
@@ -63,6 +64,7 @@ app.use((req, res, next) => {
   res.locals.session = req.session || {};
   next();
 });
+// ✅ Thêm đoạn này để truyền session tới tất cả view
 
 /* =====================================================
    ✅ GIẢ LẬP NHÀ CUNG CẤP (TẠM THỜI ĐỂ TEST)
@@ -99,7 +101,10 @@ app.use("/nhacungcap", nhaCungCapRoutes);
 
 // 🛠️ Route admin
 app.use('/admin', adminRoutes);
-
+/* =====================================================
+   ✅ ROUTE THANH TOÁN VNPAY
+===================================================== */
+app.use('/payment', vnpayRoutes);
 /* =====================================================
    ✅ KHỞI ĐỘNG SERVER
 ===================================================== */
