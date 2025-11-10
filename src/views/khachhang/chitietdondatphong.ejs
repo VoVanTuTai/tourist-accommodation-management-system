@@ -91,34 +91,7 @@
         </div>
       </div>
   
-      <!-- Nút hành động -->
-      <div class="text-center mt-4">
-        <% if (don.TrangThai === 0) { %>
-          <!-- Hủy phòng -->
-          <form action="/khachhang/don-dat-phong/huy/<%= don.MaDon %>" method="POST" class="d-inline">
-            <button type="submit" class="btn btn-danger me-2">
-              <i class="fas fa-ban me-2"></i>Hủy phòng
-            </button>
-          </form>
-        <% } else if (don.TrangThai === 1) { %>
-          <!-- Thanh toán -->
-          <a href="/khachhang/don-dat-phong/thanhtoan/<%= don.MaDon %>" class="btn btn-success me-2">
-            <i class="fas fa-credit-card me-2"></i>Thanh toán
-          </a>
-          
-        <% } else if (don.TrangThai === 2) { %>
-          <!-- Đánh giá -->
-          <a href="/khachhang/don-dat-phong/<%= don.MaDon %>/danhgia" class="btn btn-warning me-2">
-            <i class="fas fa-star me-2"></i>Đánh giá
-          </a>
-        <% } %>
-  
-        <button class="btn btn-primary me-2" onclick="printBooking()">
-          <i class="fas fa-print me-2"></i>In hóa đơn
-        </button>
-        <button class="btn btn-secondary" onclick="goBack()">
-          <i class="fas fa-arrow-left me-2"></i>Quay lại
-        </button>
+      
       </div>
     </div>
   </div>
@@ -161,4 +134,52 @@
     color: #facc15;
   }
   </style>
-  
+    <!-- Nút hành động -->
+    <div class="text-center mt-4">
+
+      <% if (don.TrangThai === 0) { %>
+        <!-- Hủy phòng -->
+        <form action="/khachhang/don-dat-phong/huy/<%= don.MaDon %>" method="POST" class="d-inline">
+          <button type="submit" class="btn btn-danger me-2">
+            <i class="fas fa-ban me-2"></i>Hủy phòng
+          </button>
+        </form>
+    
+      <% } else if (don.TrangThai === 1) { %>
+        <!-- Thanh toán -->
+        <div class="d-flex justify-content-center gap-2">
+          <!-- Thanh toán trực tiếp -->
+          <a href="/khachhang/don-dat-phong/thanhtoan/<%= don.MaDon %>" class="btn btn-success">
+            <i class="fas fa-credit-card me-2"></i>Thanh toán trực tiếp
+          </a>
+    
+          <!-- Thanh toán VNPay -->
+          <% if (order) { %>
+            <form action="/payment/create_payment" method="POST">
+              <input type="hidden" name="amount" value="<%= order.TongTien %>">
+              <input type="hidden" name="orderId" value="<%= order.MaDon %>">
+              <input type="hidden" name="maNCC" value="<%= order.MaNCC %>">
+              <button type="submit" class="btn btn-success">Thanh toán VNPay</button>
+            </form>
+            
+          <% } else { %>
+            <p class="text-danger">Không tìm thấy thông tin thanh toán VNPay.</p>
+          <% } %>
+        </div>
+    
+      <% } else if (don.TrangThai === 2) { %>
+        <!-- Đánh giá -->
+        <a href="/khachhang/don-dat-phong/<%= don.MaDon %>/danhgia" class="btn btn-warning me-2">
+          <i class="fas fa-star me-2"></i>Đánh giá
+        </a>
+      <% } %>
+    
+      <!-- Nút chung -->
+      <button class="btn btn-primary me-2" onclick="printBooking()">
+        <i class="fas fa-print me-2"></i>In hóa đơn
+      </button>
+      <button class="btn btn-secondary" onclick="goBack()">
+        <i class="fas fa-arrow-left me-2"></i>Quay lại
+      </button>
+    </div>
+    

@@ -1,0 +1,13 @@
+<h2>Thanh toán qua VNPay</h2>
+
+<div style="margin-bottom: 1em;">
+  <p><strong>Nhà cung cấp:</strong> <%= supplier.TenNCC %></p>
+  <p><strong>Ngân hàng:</strong> <%= supplier.LoaiNganHang %></p>
+  <p><strong>Tài khoản:</strong> <%= supplier.MaTaiKhoan %></p>
+  <p><strong>Thông tin thanh toán:</strong> <%= supplier.ThongTinThanhToan %></p>
+</div>
+
+<div style="text-align:center">
+  <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=<%= paymentUrl %>" alt="QR Code" />
+  <p><a href="<%= paymentUrl %>" target="_blank">Hoặc bấm vào đây để mở VNPay</a></p>
+</div>

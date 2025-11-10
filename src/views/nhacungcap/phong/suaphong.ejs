@@ -421,9 +421,11 @@
     });
   });
 
-  // 🔹 Validation client-side
-  document.getElementById("editRoomForm").addEventListener("submit", function(e) {
+    // 🔹 Validation client-side
+    document.getElementById("editRoomForm").addEventListener("submit", function(e) {
     let isValid = true;
+    let firstInvalidField = null; // ✅ Lưu input đầu tiên bị lỗi
+
     const errorSummary = document.getElementById("error-summary");
     errorSummary.innerHTML = "";
     document.querySelectorAll(".error-message").forEach(el => el.innerText = "");
@@ -437,6 +439,16 @@
     const maXa = document.getElementById("MaXa").value;
     const diaChi = document.getElementById("ChiTietDiaChi").value.trim();
 
+    function setError(id, message) {
+      const input = document.getElementById(id);
+      const errorEl = input.nextElementSibling; // small.error-message
+      if (errorEl) errorEl.innerText = message;
+
+      // ✅ Lưu input đầu tiên bị lỗi
+      if (!firstInvalidField) firstInvalidField = input;
+    }
+
+    // ======= KIỂM TRA DỮ LIỆU =======
     if (tenPhong.length < 3) { setError("TenPhong", "Tên phòng phải có ít nhất 3 ký tự."); isValid = false; }
     if (!maLoai) { setError("MaLoai", "Vui lòng chọn loại phòng."); isValid = false; }
     if (isNaN(gia) || gia < 100000) { setError("Gia", "Giá phòng phải >= 100.000 VND."); isValid = false; }
@@ -446,11 +458,18 @@
     if (!maXa) { setError("MaXa", "Vui lòng chọn xã."); isValid = false; }
     if (diaChi.length < 5) { setError("ChiTietDiaChi", "Địa chỉ phải có ít nhất 5 ký tự."); isValid = false; }
 
+    // ======= NẾU LỖI =======
     if (!isValid) {
       e.preventDefault();
       errorSummary.innerHTML = "⚠️ Vui lòng kiểm tra lại các trường bị lỗi.";
+      errorSummary.scrollIntoView({ behavior: "smooth", block: "center" }); // cuộn lên phần báo lỗi
+      if (firstInvalidField) {
+        firstInvalidField.focus(); // ✅ focus vào input lỗi đầu tiên
+        firstInvalidField.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
     }
   });
+
 
   function setError(id, msg) {
     const el = document.getElementById(id);
