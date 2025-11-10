@@ -1,0 +1,16 @@
+<% if (success) { %>
+    <div style="text-align:center; padding: 30px;">
+      <h2 style="color: green;">✅ Thanh toán thành công!</h2>
+      <p>Mã đơn hàng: <strong><%= orderId %></strong></p>
+      <p>Mã giao dịch VNPay: <strong><%= transactionNo %></strong></p>
+      <p>Thời gian thanh toán: <strong><%= payDate %></strong></p>
+      <a href="/orders/<%= orderId %>" class="btn btn-primary">Xem chi tiết đơn hàng</a>
+    </div>
+  <% } else { %>
+    <div style="text-align:center; padding: 30px;">
+      <h2 style="color: red;">❌ Thanh toán thất bại!</h2>
+      <p><%= message || 'Giao dịch không thành công.' %></p>
+      <a href="/" class="btn btn-secondary">Quay lại trang chủ</a>
+    </div>
+  <% } %>
+  
