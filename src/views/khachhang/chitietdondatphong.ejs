@@ -155,7 +155,7 @@
     
           <!-- Thanh toán VNPay -->
           <% if (order) { %>
-            <form action="/payment/create_payment" method="POST">
+            <form action="/vnpay/create_payment" method="POST">
               <input type="hidden" name="amount" value="<%= order.TongTien %>">
               <input type="hidden" name="orderId" value="<%= order.MaDon %>">
               <input type="hidden" name="maNCC" value="<%= order.MaNCC %>">

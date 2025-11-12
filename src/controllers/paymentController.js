@@ -72,7 +72,7 @@ exports.createPayment = async (req, res) => {
       vnp_CreateDate: createDate,
       vnp_ExpireDate: expireDate,
     };
-
+    vnp_Params.vnp_TxnRef = `${orderId}_${Date.now()}`;
     // 2) Sắp xếp & ký (PHẢI encode khi ký theo RFC1738)
     vnp_Params = sortObject(vnp_Params);
 
@@ -102,21 +102,32 @@ exports.createPayment = async (req, res) => {
 
 exports.vnpayReturn = async (req, res) => {
   try {
+    // 📦 Sao chép toàn bộ query từ VNPay trả về
     let vnp_Params = { ...req.query };
+
+    // 🔐 Lưu hash từ VNPay và loại bỏ khỏi params trước khi tính lại
     const secureHashRecv = vnp_Params.vnp_SecureHash;
     delete vnp_Params.vnp_SecureHash;
     delete vnp_Params.vnp_SecureHashType;
 
+    // 🧩 Sắp xếp tham số theo alphabet (A-Z)
     vnp_Params = sortObject(vnp_Params);
-    const signData = qs.stringify(vnp_Params, { encode: false });
-    const secureHashCalc = crypto.createHmac('sha512', process.env.VNP_HASHSECRET)
-                                 .update(Buffer.from(signData, 'utf-8'))
-                                 .digest('hex');
 
+    // 🧾 Chuỗi ký phải encode RFC1738 giống VNPay
+    const signData = qs.stringify(vnp_Params, { encode: true, format: 'RFC1738' });
+
+    // 🔒 Tính lại hash với HMAC SHA512
+    const secureHashCalc = crypto
+      .createHmac('sha512', process.env.VNP_HASHSECRET)
+      .update(Buffer.from(signData, 'utf-8'))
+      .digest('hex');
+
+    // 🧠 Debug log
     console.log('🔍 Return Params:', vnp_Params);
     console.log('🔑 SecureHash (nhận):', secureHashRecv);
     console.log('🔑 SecureHash (tính):', secureHashCalc);
 
+    // ❌ Nếu hash không trùng -> cảnh báo tấn công hoặc lỗi encoding
     if (secureHashRecv !== secureHashCalc) {
       return res.render('khachhang/payment_success', {
         success: false,
@@ -124,24 +135,35 @@ exports.vnpayReturn = async (req, res) => {
       });
     }
 
+    // ✅ Hash hợp lệ -> xử lý kết quả thanh toán
     const orderId = vnp_Params.vnp_TxnRef;
-    const resp    = vnp_Params.vnp_ResponseCode;
-    const amount  = Number(vnp_Params.vnp_Amount) / 100;
+    const respCode = vnp_Params.vnp_ResponseCode;
+    const amount = Number(vnp_Params.vnp_Amount) / 100;
 
-    if (resp === '00') {
+    if (respCode === '00') {
+      const transactionNo = vnp_Params.vnp_TransactionNo;
+      const payDate = vnp_Params.vnp_PayDate;
+      // 💾 Cập nhật trạng thái đơn
       await db.query('UPDATE dondatphong SET TrangThai = ? WHERE MaDon = ?', [2, orderId]);
+
+      // 💰 Ghi nhận thanh toán
       await db.query('INSERT INTO thanhtoan (MaDon, NgayTT, SoTien) VALUES (?, NOW(), ?)', [orderId, amount]);
 
       return res.render('khachhang/payment_success', {
-        success: true, orderId, amount, message: 'Thanh toán thành công!'
+        success: true,
+        orderId,
+        amount,
+        transactionNo,   // ✅ thêm dòng này
+        payDate,         // ✅ và dòng này
+        message: 'Thanh toán thành công!'
+      });
+    } else {
+      return res.render('khachhang/payment_success', {
+        success: false,
+        orderId,
+        message: `Thanh toán không thành công (Mã lỗi: ${respCode}).`
       });
     }
-
-    return res.render('khachhang/payment_success', {
-      success: false,
-      orderId,
-      message: `Thanh toán không thành công (Mã: ${resp}).`
-    });
   } catch (err) {
     console.error('❌ Lỗi xử lý VNPay return:', err);
     return res.status(500).send('Lỗi khi xác thực thanh toán.');
