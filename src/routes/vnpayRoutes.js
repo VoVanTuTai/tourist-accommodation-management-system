@@ -12,6 +12,7 @@ console.log('Payment Controller:', paymentController);
 router.post('/create_payment', (req, res) => paymentController.createPayment(req, res));
 
 // ✅ Route VNPay trả kết quả về
-router.get('/vnpay_return', (req, res) => paymentController.vnpayReturn(req, res));
+router.get('/return', (req, res) => paymentController.vnpayReturn(req, res));
+
 
 module.exports = router;
