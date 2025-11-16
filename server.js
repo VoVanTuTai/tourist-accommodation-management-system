@@ -104,7 +104,7 @@ app.use('/admin', adminRoutes);
 /* =====================================================
    ✅ ROUTE THANH TOÁN VNPAY
 ===================================================== */
-app.use('/payment', vnpayRoutes);
+
 app.use('/vnpay', vnpayRoutes);
 /* =====================================================
    ✅ KHỞI ĐỘNG SERVER

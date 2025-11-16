@@ -1,4 +1,4 @@
-<form action="/timkiem" method="get" class="container bg-light p-3 rounded shadow-sm mt-3">
+<form action="/timkiem" method="get"class="container-fluid search-glass">
   <div class="row g-3 align-items-end">
 
     <!-- Loại phòng -->
@@ -56,3 +56,15 @@
     </div>
   </div>
 </form>
+<style>
+  .search-glass {
+    background: rgba(255, 255, 255, 0.25);   /* nền trắng mờ */
+    backdrop-filter: blur(12px);             /* làm mờ nền phía sau */
+    -webkit-backdrop-filter: blur(12px);     /* hỗ trợ Safari */
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    padding: 20px !important;
+}
+
+</style>

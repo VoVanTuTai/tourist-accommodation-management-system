@@ -1,77 +1,77 @@
-<header class="header">
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <a
-                href="/"
-                class="navbar-brand"
-                style="color: #ffffff; display: flex; align-items: center"
-            >
-                <div class="logo-inner" style="margin-right: 8px">
-                    <img
-                        src="/images/logo.png"
-                        alt="logo"
-                        sizes=""
-                        srcset=""
-                        class="d-block w-100"
-                    />
+<header class="header shadow-sm">
+    <nav class="navbar custom-navbar">
+        <div class="container d-flex align-items-center justify-content-between flex-wrap">
+
+            <!-- Logo + brand -->
+            <a href="/" class="navbar-brand d-flex align-items-center fw-bold text-white mb-2 mb-lg-0">
+                <div class="logo-inner me-2">
+                    <img src="/images/logo.png" alt="logo" class="logo-img" />
                 </div>
-                <span>Tourist Management</span>
+                Tourist Management
             </a>
-            <button
-                class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarScroll"
-                aria-controls="navbarScroll"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-            >
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class=" navbar-collapse show" id="navbarScroll0">
-                <ul
-                    class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll color-white"
-                    style="--bs-scroll-height: 100px"
-                >
+
+            <!-- MENU + USER -->
+            <div class="d-flex align-items-center flex-wrap gap-3">
+
+                <!-- Left menu -->
+                <ul class="navbar-nav flex-row flex-wrap mb-0">
                     <li class="nav-item">
-                        <a class="nav-link text-light" aria-current="page" href="/"
-                            >Trang chủ</a
-                        >
+                        <a class="nav-link nav-link-custom" href="/">Trang chủ</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-light" href="/phong">Phòng</a>
+                        <a class="nav-link nav-link-custom" href="/phong">Phòng</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-light" href="/khachhang/don-dat-phong">Đơn đặt phòng</a>
+                        <a class="nav-link nav-link-custom" href="/khachhang/don-dat-phong">Đơn đặt phòng</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-light" href="/lienhe">Liên hệ</a>
+                        <a class="nav-link nav-link-custom" href="/lienhe">Liên hệ</a>
                     </li>
+
                     <% if (session.user && session.user.PhanQuyen === 'Admin') { %>
-                     <li class="nav-item">
-                        <a class="nav-link text-light" href="/admin/dashboard">Quản trị</a>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" href="/admin/dashboard">Quản trị</a>
                     </li>
                     <% } %>
                 </ul>
-                <div class="user-menu">
+
+                <!-- Right user actions -->
+                <div class="d-flex align-items-center gap-2 ms-3">
+
                     <% if (!session.user) { %>
-                    <a href="/khachhang/dangky" class="btn btn-primary">Đăng ký</a>
-                    <a href="/khachhang/dangnhap" class="btn btn-primary">Đăng nhập</a>
+
+                        <a href="/khachhang/dangky" class="btn btn-outline-light rounded-pill px-3">
+                            Đăng ký
+                        </a>
+                        <a href="/khachhang/dangnhap" class="btn btn-light rounded-pill px-3">
+                            Đăng nhập
+                        </a>
+
                     <% } else { %>
-                    <% if (session.user.PhanQuyen === 'NhaCungCap') { %>
-                    <a href="/nhacungcap/dashboard" class="btn">Quản lý chỗ ở</a>
-                    <% } else if (session.user.PhanQuyen === 'Admin') { %>
-                    <a href="/admin/dashboard" class="btn btn-warning"
-                        >Trang quản trị</a
-                    >
-                    <% } else { %>
-                    <a href="/khachhang/quanlythongtin" class="username"
-                        >👤 <%= session.user.TaiKhoan %></a
-                    >
+
+                        <% if (session.user.PhanQuyen === 'NhaCungCap') { %>
+                            <a href="/nhacungcap/dashboard" class="btn btn-light rounded-pill px-3">
+                                Quản lý chỗ ở
+                            </a>
+
+                        <% } else if (session.user.PhanQuyen === 'Admin') { %>
+                            <a href="/admin/dashboard" class="btn btn-warning rounded-pill px-3">
+                                Trang quản trị
+                            </a>
+
+                        <% } else { %>
+                            <a href="/khachhang/quanlythongtin"
+                               class="user-pill rounded-pill px-3 text-white">
+                                👤 <%= session.user.TaiKhoan %>
+                            </a>
+                        <% } %>
+
+                        <a href="/khachhang/dangxuat" class="btn btn-danger rounded-pill px-3">
+                            Đăng xuất
+                        </a>
+
                     <% } %>
 
-                    <a href="/khachhang/dangxuat" class="btn btn-logout btn-secondary">Đăng xuất</a>
-                    <% } %>
                 </div>
             </div>
         </div>

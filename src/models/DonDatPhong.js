@@ -50,30 +50,50 @@ const DonDatPhong = {
         dp.NgayTra,
         dp.TrangThai,
         dp.TongTien,
-        
+        dp.TenNguoiNhan,
+        dp.SDTNguoiNhan,
+  
         kh.HoTen AS TenKH,
         kh.Email,
         kh.SoDienThoai AS SDT,
   
         p.MaPhong,
         p.TenPhong,
-        p.Gia AS GiaPhong,        -- ✅ alias rõ ràng, không thể nhầm
+        p.Gia AS GiaPhong,
         lp.TenLoai AS LoaiPhong,
         ncc.TenNCC AS TenChoO,
-        p.HinhAnh                 -- ✅ lấy ảnh nếu có
-        
+        p.HinhAnh,
+  
+        -- ⭐ THÔNG TIN THANH TOÁN
+        tt.MaThanhToan,
+        tt.NgayTT,
+        tt.SoTien AS SoTienThanhToan,
+  
+        -- ⭐ TRẠNG THÁI THANH TOÁN (0 = chưa, 1 = đã thanh toán)
+        CASE 
+          WHEN tt.MaThanhToan IS NULL THEN 0
+          ELSE 1
+        END AS TrangThaiThanhToan
+  
       FROM DonDatPhong dp
       JOIN KhachHang kh ON dp.MaKhachHang = kh.MaKhachHang
       JOIN chitietdondatphong ctdp ON dp.MaDon = ctdp.MaDon
       JOIN Phong p ON ctdp.MaPhong = p.MaPhong
       LEFT JOIN LoaiPhong lp ON p.MaLoai = lp.MaLoai
       LEFT JOIN NhaCungCap ncc ON p.MaNhaCungCap = ncc.MaNCC
+  
+      -- ⭐ JOIN BẢNG THANH TOÁN
+      LEFT JOIN ThanhToan tt ON tt.MaDon = dp.MaDon
+  
       WHERE dp.MaDon = ?
+      LIMIT 1;
     `;
+  
     const [rows] = await db.execute(sql, [maDon]);
-    console.log("📦 getDonVaPhong result:", rows[0]); // 👀 in ra để debug
+    console.log("📦 getDonVaPhong result (FULL):", rows[0]); 
     return rows.length > 0 ? rows[0] : null;
   },
+  
 
   // 📑 Một đơn → nhiều dòng (mỗi dòng là 1 phòng trong đơn)
   // 📑 Một đơn → nhiều dòng (mỗi dòng 1 phòng)
@@ -106,7 +126,11 @@ const DonDatPhong = {
     const [rows] = await db.execute(sql, [maDon]);
     return rows;
   },
-
+  updateTrangThai: async (maDon, trangThai) => {
+    const sql = 'UPDATE dondatphong SET TrangThai = ? WHERE MaDon = ?';
+    await db.execute(sql, [trangThai, maDon]);
+    return true;
+  },
 
   // 🏨 Danh sách phòng thuộc 1 đơn (gọn để dùng cho dropdown đánh giá)
   async getDanhSachPhongTheoDon(maDon) {
