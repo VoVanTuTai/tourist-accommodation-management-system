@@ -1,56 +1,163 @@
-<%- include("../partials/timkiem") %>
+<div style="margin-top: 60px;">
+    <%- include("../partials/timkiem") %>
+</div>
 
-<div class="container mt-4">
-    <h3 class="text-center mb-3">Kết quả tìm kiếm phòng</h3>
+
+<div class="search-results-container">
+
+    <h3 class="search-title">🌴 Kết quả tìm kiếm phòng</h3>
 
     <% if (message) { %>
-    <div class="alert alert-warning text-center"><%= message %></div>
-    <% } %> <% if (phongList && phongList.length > 0) { %> <% if (query.giaMin
-    || query.giaMax) { %>
-    <p class="text-muted text-center">
-        Kết quả cho phòng có giá từ <%= parseInt(query.giaMin ||
-        0).toLocaleString() %> ₫ đến <%= parseInt(query.giaMax ||
-        0).toLocaleString() %> ₫
-    </p>
+        <div class="empty-box mt-3"><%= message %></div>
     <% } %>
 
-    <div class="row">
+    <% if (phongList && phongList.length > 0) { %>
+
+    <% if (query.giaMin || query.giaMax) { %>
+        <p class="text-center text-white mt-3">
+            Giá từ 
+            <strong><%= parseInt(query.giaMin || 0).toLocaleString() %> ₫</strong> 
+            đến 
+            <strong><%= parseInt(query.giaMax || 0).toLocaleString() %> ₫</strong>
+        </p>
+    <% } %>
+
+    <div class="row mt-4">
         <% phongList.forEach(phong => { %>
         <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
-                <img
-                    src="<%= phong.HinhAnh ? '/images/' + phong.HinhAnh : '/public/images/no-image.jpg' %>"
-                    class="card-img-top"
-                    alt="Ảnh phòng"
-                    style="height: 220px; object-fit: cover"
-                />
+            <div class="room-card card">
+                <% 
+                    let imgArr = [];
 
-                <div class="card-body d-flex flex-column">
+                    try {
+                        imgArr = JSON.parse(phong.HinhAnh); 
+                    } catch(e) {}
+
+                    let firstImg = imgArr.length > 0 ? imgArr[0] : null;
+                    %>
+
+                    <img 
+                        src="<%= firstImg ? '/images/' + firstImg : '/images/no-image.jpg' %>"
+                        alt="Ảnh phòng"
+                    />
+                <div class="card-body">
                     <h5 class="card-title"><%= phong.TenPhong %></h5>
+
                     <p class="card-text mb-2">
                         <strong>Loại:</strong> <%= phong.TenLoai %><br />
-                        <strong>Địa điểm:</strong> <%= phong.TenXa %>, <%=
-                        phong.TenTinh %><br />
-                        <strong>Giá:</strong> <%= phong.Gia.toLocaleString() %>
-                        ₫ / đêm<br />
-                        <strong>Đánh giá:</strong> ⭐ <%= phong.DanhGia ?
-                        phong.DanhGia.toFixed(1) : 'Chưa có' %>
+                        <strong>Địa điểm:</strong> <%= phong.TenXa %>, <%= phong.TenTinh %><br />
+                        <strong>Giá:</strong> <%= phong.Gia.toLocaleString() %> ₫ / đêm<br />
+                        <strong>Đánh giá:</strong> ⭐ <%= phong.DanhGia ? phong.DanhGia.toFixed(1) : 'Chưa có' %>
                     </p>
-                    <a
-                        href="/phong/chi-tiet/<%= phong.MaPhong %>"
-                        class="btn w-100 **custom-gradient-btn**"
-                    >
+
+                    <a href="/phong/chi-tiet/<%= phong.MaPhong %>" class="btn custom-gradient-btn w-100">
                         Xem chi tiết
                     </a>
                 </div>
+
             </div>
         </div>
         <% }) %>
     </div>
 
     <% } else { %>
-    <div class="alert alert-info text-center">
-        Không có phòng nào để hiển thị.
-    </div>
+    <div class="empty-box">Không có phòng nào để hiển thị.</div>
     <% } %>
+
 </div>
+<style>
+    /* =============== WRAPPER =============== */
+.search-results-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+/* =============== TITLE =============== */
+.search-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+
+    background: rgba(255, 255, 255, 0.25);
+    padding: 18px 20px;
+    border-radius: 18px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+
+/* =============== ROOM CARD =============== */
+.room-card {
+    border-radius: 18px;
+    overflow: hidden;
+
+    background: rgba(255,255,255,0.35);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,255,255,0.45);
+    transition: 0.3s ease;
+}
+
+.room-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+}
+
+/* Ảnh phòng */
+.room-card img {
+    height: 230px;
+    object-fit: cover;
+    border-bottom: 1px solid rgba(255,255,255,0.35);
+}
+
+/* Nội dung card */
+.room-card .card-body {
+    color: #fff;
+}
+
+/* Tên phòng */
+.room-card .card-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+/* Text */
+.room-card .card-text {
+    font-size: 0.95rem;
+    color: #f2f2f2;
+}
+
+/* =============== BUTTON — Glass Gradient =============== */
+.custom-gradient-btn {
+    background: linear-gradient(135deg, #6a8ddf, #8b7de8);
+    border: none;
+    color: white;
+    padding: 12px;
+    font-weight: 600;
+    border-radius: 14px;
+
+    transition: 0.3s ease;
+    box-shadow: 0 6px 18px rgba(106, 141, 223, 0.4);
+}
+
+.custom-gradient-btn:hover {
+    background: linear-gradient(135deg, #5c7bd1, #7c6ee6);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(90, 120, 230, 0.5);
+}
+
+/* =============== EMPTY MESSAGE =============== */
+.empty-box {
+    background: rgba(255,255,255,0.20);
+    padding: 30px 20px;
+    backdrop-filter: blur(12px);
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.35);
+    color: #fff;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+}
+
+</style>

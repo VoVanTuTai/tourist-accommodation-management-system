@@ -1,28 +1,27 @@
-/* =======================
+/* ======================================
    GLOBAL
-======================= */
+====================================== */
 body {
-    box-sizing: border-box;
-    margin: 0;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-
-    min-height: 100%;
+    background: url('/images/bg3.jpg') center/cover fixed no-repeat;
+    min-height: 100vh;
+    padding-top: 100px;
 }
 
-.container-fluid {
-    margin: 0 auto;
-}
-
-/* =======================
-   MAIN WRAPPER
-======================= */
+/* Wrapper glass */
 .main-container {
-    background: white;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+
     border-radius: 20px;
+    margin: 0 auto;
+    width: 95%;
+
+    border: 1px solid rgba(255,255,255,0.35);
+    box-shadow: 0 20px 45px rgba(0,0,0,0.25);
+
+    animation: fadeIn 0.25s ease-out;
     overflow: hidden;
-    border: 1px solid rgba(139, 125, 232, 0.1);
-    box-shadow: 0 15px 35px rgba(106, 141, 223, 0.2);
-    animation: fadeIn 0.2s ease-out;
 }
 
 @keyframes fadeIn {
@@ -30,262 +29,229 @@ body {
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* =======================
-   PAGE TITLE
-======================= */
+/* ======================================
+   PAGE TITLE — GLASS BAR
+====================================== */
 .page-title {
-    background: linear-gradient(135deg, #6a8ddf 0%, #8b7de8 100%);
-    color: white;
+    padding: 25px;
+    margin: 0;
     text-align: center;
-    padding: 30px;
-    margin: 0;
     font-size: 2rem;
-    font-weight: 600;
-    position: relative;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    color: #fff;
+    font-weight: 700;
+
+    background: rgba(255,255,255,0.22);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+    text-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
-.page-title::before {
-    content: "";
-    position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-}
-
-/* =======================
-   STATUS TABS
-======================= */
+/* ======================================
+   STATUS TABS — GLASS TABS
+====================================== */
 .status-tabs {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    padding: 0;
-    margin: 0;
-    background: linear-gradient(135deg, #f8f9ff 0%, #f5f7ff 100%);
-    border-bottom: 3px solid #e8ecff;
-    box-shadow: inset 0 -1px 0 rgba(139,125,232,0.1);
+    background: rgba(255,255,255,0.10);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    border-bottom: 1px solid rgba(255,255,255,0.25);
+    padding: 10px 0;
 }
 
-.nav-item {
-    list-style: none;
-}
-
-.nav-link {
-    display: block;
-    padding: 18px 28px;
-    text-decoration: none;
-    color: #6c7293;
-    font-weight: 500;
-    position: relative;
-    white-space: nowrap;
-    background: transparent;
-    border-bottom: 3px solid transparent;
-    transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
-}
-
-.nav-link:hover {
-    color: #6a8ddf;
-    background: rgba(106,141,223,0.05);
-    transform: translateY(-2px);
-}
-
-.nav-link.active {
-    color: #6a8ddf;
-    background: rgb(113, 141, 216);
-    border-bottom-color: #8b7de8;
-    box-shadow: 0 -2px 10px rgba(139,125,232,0.1);
-}
-
-.nav-link i { margin-right: 8px; font-size: 1.1em; }
-
-/* =======================
-   TABLE
-======================= */
-.table-container {
-    background: white;
-    padding: 0;
-    overflow-x: auto;
-}
-
-.table {
-    width: 100%;
-    margin: 0;
-    border-collapse: separate;
-    border-spacing: 0;
-    font-size: 0.95rem;
-}
-
-.table thead th {
-    padding: 20px 15px;
-    background: linear-gradient(135deg, #6a8ddf 0%, #8b7de8 100%);
-    color: white;
-    font-weight: 600;
+.nav-tabs .nav-link {
+    color: #eef;
     border: none;
-    white-space: nowrap;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-radius: 14px;
+    padding: 12px 22px;
+    margin: 4px 6px;
+
+    background: rgba(255,255,255,0.15);
+    transition: 0.25s ease;
+    font-weight: 600;
 }
 
-.table tbody td {
-    padding: 18px 15px;
-    vertical-align: middle;
-    border-bottom: 1px solid #e8ecff;
-    transition: 0.3s ease;
+.nav-tabs .nav-link:hover {
+    background: rgba(255,255,255,0.25);
+    transform: translateY(-2px);
+    color: #fff;
 }
 
+.nav-tabs .nav-link.active {
+    background: rgba(255,255,255,0.35);
+    border: 1px solid rgba(255,255,255,0.45);
+    color: #fff;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.20);
+}
+
+/* ======================================================
+   TABLE — GLASS LIST
+====================================================== */
+
+/* Khung ngoài bảng */
+.table-container {
+    background: rgba(255,255,255,0.14);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.28);
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+    padding: 0;
+    overflow-x: auto !important; /* cuộn ngang */
+    overflow-y: hidden;
+    white-space: nowrap; /* không xuống dòng cell */
+}
+
+/* Giới hạn chiều cao bảng */
+.table-scroll {
+    max-height: 550px;      /* 10 dòng (tuỳ theo padding bạn dùng) */
+    overflow-y: auto;       /* cuộn dọc */
+    overflow-x: hidden;
+}
+
+/* HEADER — trong suốt nhưng đậm hơn để phân tách */
+.table thead th {
+    background: rgba(255,255,255,0.32);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    padding: 16px 14px;
+    font-weight: 700;
+    color: #ffffff;
+    border: none;
+
+    text-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+
+/* XÓA nền mặc định của từng ô */
+.table td,
+.table th {
+    background-color: transparent !important;
+}
+
+/* DÒNG BÌNH THƯỜNG — sáng hơn */
 .table tbody tr {
-    transition: 0.3s ease;
+    background: rgba(255,255,255,0.70); /* tăng từ 0.55 → 0.70 */
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    border-bottom: 1px solid rgba(255,255,255,0.55);
+    transition: 0.28s ease;
+
+    box-shadow: 0 4px 12px rgba(255,255,255,0.25); /* ánh sáng nhẹ */
 }
 
+/* Zebra sáng hơn */
+.table tbody tr:nth-child(even) {
+    background: rgba(255,255,255,0.60); /* tăng từ 0.45 → 0.60 */
+}
+
+/* Hover — làm sáng mạnh hơn */
 .table tbody tr:hover {
-    background: linear-gradient(135deg, rgba(106,141,223,0.03), rgba(139,125,232,0.03));
-    transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(106,141,223,0.1);
+    background: rgba(255,255,255,0.85);
+    box-shadow: 0 10px 25px rgba(255,255,255,0.35);
+    transform: translateY(-3px);
 }
 
-.table tbody tr:last-child td { border-bottom: none; }
 
-.table-striped tbody tr:nth-of-type(odd) {
-    background: rgba(106,141,223,0.02);
+/* Hover nâng khối lên */
+.table tbody tr:hover {
+    background: rgba(255,255,255,0.80);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 26px rgba(0,0,0,0.28);
 }
 
-/* =======================
-   TEXT STYLES
-======================= */
+/* Ô dữ liệu */
+.table tbody td {
+    padding: 16px 14px;
+    font-weight: 500;
+    color: #1d2230 !important;   /* chữ đậm, dễ nhìn */
+}
+
+/* Dòng cuối bỏ border dưới */
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Mã đơn & giá tiền nổi bật */
 .order-id {
     font-weight: 700;
-    color: #6a8ddf;
-    font-size: 1.05em;
+    color: #4551e8 !important;
 }
 
 .price {
     font-weight: 700;
-    color: #8b7de8;
-    font-size: 1.1em;
+    color: #5b46f0 !important;
 }
 
-/* =======================
-   BADGES
-======================= */
+/* ======================================================
+   STATUS BADGE — GLASS PILL
+====================================================== */
+
 .status-badge {
-    padding: 10px 16px;
-    border-radius: 25px;
+    padding: 8px 16px;
+    border-radius: 999px;
     font-size: 0.85rem;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+    border: 1px solid rgba(255,255,255,0.55);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    box-shadow: 0 4px 14px rgba(0,0,0,0.22);
 }
 
-.bg-primary {
-    background: linear-gradient(135deg, #6a8ddf, #7b8ee6) !important;
-    color: white !important;
-}
+/* màu badge trong suốt, tươi */
+.bg-primary { background: rgba(90, 140, 255, 0.70) !important; color:#fff !important; }
+.bg-warning { background: rgba(255, 210, 90, 0.80) !important; color:#2a2415 !important; }
+.bg-success { background: rgba(80, 210, 135, 0.80) !important; color:#fff !important; }
+.bg-danger  { background: rgba(245, 90, 110, 0.80) !important; color:#fff !important; }
 
-.bg-warning {
-    background: linear-gradient(135deg, #ffd93d, #ff9f43) !important;
-    color: #8b4513 !important;
-}
+/* ======================================================
+   ACTION BUTTON — GLASS BUTTON
+====================================================== */
 
-.bg-success {
-    background: linear-gradient(135deg, #6bcf7f, #4ea5d9) !important;
-    color: white !important;
-}
-
-.bg-danger {
-    background: linear-gradient(135deg, #ff6b6b, #ee5a52) !important;
-    color: white !important;
-}
-
-/* =======================
-   ACTION BUTTONS
-======================= */
 .action-btn {
     padding: 8px 16px;
-    margin: 3px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-weight: 500;
-    border: none;
-    border-radius: 20px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    transition: 0.3s cubic-bezier(0.4,0,0.2,1);
-}
+    border-radius: 18px;
+    font-weight: 600;
+    border: 1px solid rgba(255,255,255,0.5);
 
-.btn-info {
-    background: linear-gradient(135deg, #6a8ddf, #8b7de8);
-    color: rgb(54, 46, 46);
-    box-shadow: 0 4px 15px rgba(106,141,223,0.3);
-}
+    background: rgba(255,255,255,0.30);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
 
-.btn-success {
-    background: linear-gradient(135deg, #6bcf7f, #4ea5d9);
-    color: white;
-    box-shadow: 0 4px 15px rgba(107,207,127,0.3);
-}
-
-.btn-danger {
-    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
-    color: white;
-    box-shadow: 0 4px 15px rgba(255,107,107,0.3);
+    color: #1d2230;
+    transition: 0.28s ease;
 }
 
 .action-btn:hover {
+    background: rgba(255,255,255,0.60);
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 26px rgba(0,0,0,0.30);
 }
 
-.action-btn:active {
-    transform: translateY(-1px);
-}
+/* ======================================================
+   EMPTY STATE — GLASS CARD
+====================================================== */
 
-/* =======================
-   EMPTY STATE
-======================= */
 .empty-state {
+    padding: 70px 20px;
     text-align: center;
-    padding: 80px 20px;
-    color: #8b7de8;
-    background: linear-gradient(
-        135deg,
-        rgba(106,141,223,0.05),
-        rgba(139,125,232,0.05)
-    );
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.35);
+    color: #1d2230;
 }
 
 .empty-state i {
-    font-size: 5rem;
-    margin-bottom: 25px;
-    opacity: 0.6;
-    background: linear-gradient(135deg, #6a8ddf, #8b7de8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-size: 4rem;
+    opacity: 0.85;
+    margin-bottom: 10px;
+    color: #5b46f0;
 }
 
-/* =======================
-   UTILITY CLASSES
-======================= */
-.me-2 { margin-right: 0.5rem; }
-.text-center { text-align: center; }
-.align-middle { vertical-align: middle; }
-.mb-0 { margin-bottom: 0; }
-.justify-content-center { justify-content: center; }
-.table-responsive { overflow-x: auto; }
-
-/* =======================
-   RESPONSIVE
-======================= */
-@media (max-width: 768px) {
-    .page-title { font-size: 1.6rem; padding: 25px 20px; }
-    .nav-link { padding: 15px 20px; font-size: 0.9rem; }
-    .table { font-size: 0.85rem; }
-    .table thead th, .table tbody td { padding: 12px 10px; }
-    .action-btn { padding: 6px 12px; font-size: 0.8rem; margin: 2px; }
-}
-
-@media (max-width: 576px) {
-    .status-tabs { flex-direction: column; }
-    .nav-link { text-align: center; border-bottom: none; border-right: 3px solid transparent; }
-    .nav-link.active { border-right-color: #8b7de8; }
-}

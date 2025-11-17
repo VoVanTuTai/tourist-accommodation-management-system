@@ -1,6 +1,6 @@
-<div class="container-fluid py-4">
+<div class="container py-4">
     <div class="main-container fade-in">
-        <h2 class="page-title">🏨 Danh sách đơn đặt phòng</h2>
+        <h2 class="page-title">Danh sách đơn đặt phòng</h2>
         <!-- 🔹 Thanh tab trạng thái -->
         <ul class="nav nav-tabs status-tabs justify-content-center">
             <li class="nav-item">
@@ -46,102 +46,104 @@
         </ul>
 
         <!-- 🔹 Bảng danh sách đơn -->
-        <div class="table-responsive table-container">
-            <table class="table table-striped text-center align-middle mb-0">
-                <thead>
-                    <tr>
-                        <th><i class="bi bi-hash me-2"></i>Mã đơn</th>
-                        <th>
-                            <i class="bi bi-building me-2"></i>Tên nhà cung cấp
-                            (chỗ ở)
-                        </th>
-                        <th>
-                            <i class="bi bi-calendar-plus me-2"></i>Ngày đặt
-                        </th>
-                        <th>
-                            <i class="bi bi-calendar-check me-2"></i>Ngày nhận
-                        </th>
-                        <th><i class="bi bi-calendar-x me-2"></i>Ngày trả</th>
-                        <th>
-                            <i class="bi bi-currency-dollar me-2"></i>Tổng tiền
-                        </th>
-                        <th><i class="bi bi-flag me-2"></i>Trạng thái</th>
-                        <th><i class="bi bi-gear me-2"></i>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% if (donDatPhongList.length > 0) { %> <%
-                    donDatPhongList.forEach((don) => { %>
-                    <tr>
-                        <td class="order-id">#<%= don.MaDon %></td>
+        <div class="table-container">
+            <div class="table-scroll">
+                <table class="table text-center align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th><i class="bi bi-hash me-2"></i>Mã đơn</th>
+                            <th>
+                                <i class="bi bi-building me-2"></i>Tên nhà cung cấp
+                                (chỗ ở)
+                            </th>
+                            <th>
+                                <i class="bi bi-calendar-plus me-2"></i>Ngày đặt
+                            </th>
+                            <th>
+                                <i class="bi bi-calendar-check me-2"></i>Ngày nhận
+                            </th>
+                            <th><i class="bi bi-calendar-x me-2"></i>Ngày trả</th>
+                            <th>
+                                <i class="bi bi-currency-dollar me-2"></i>Tổng tiền
+                            </th>
+                            <th><i class="bi bi-flag me-2"></i>Trạng thái</th>
+                            <th><i class="bi bi-gear me-2"></i>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (donDatPhongList.length > 0) { %> <%
+                        donDatPhongList.forEach((don) => { %>
+                        <tr>
+                            <td class="order-id">#<%= don.MaDon %></td>
 
-                        <td><%= don.TenChoO || "Chưa rõ" %></td>
+                            <td><%= don.TenChoO || "Chưa rõ" %></td>
 
-                        <td>
-                            <%= don.NgayDat ? new
-                            Date(don.NgayDat).toLocaleDateString("vi-VN") : "-"
-                            %>
-                        </td>
-                        <td>
-                            <%= don.NgayNhan ? new
-                            Date(don.NgayNhan).toLocaleDateString("vi-VN") : "-"
-                            %>
-                        </td>
-                        <td>
-                            <%= don.NgayTra ? new
-                            Date(don.NgayTra).toLocaleDateString("vi-VN") : "-"
-                            %>
-                        </td>
+                            <td>
+                                <%= don.NgayDat ? new
+                                Date(don.NgayDat).toLocaleDateString("vi-VN") : "-"
+                                %>
+                            </td>
+                            <td>
+                                <%= don.NgayNhan ? new
+                                Date(don.NgayNhan).toLocaleDateString("vi-VN") : "-"
+                                %>
+                            </td>
+                            <td>
+                                <%= don.NgayTra ? new
+                                Date(don.NgayTra).toLocaleDateString("vi-VN") : "-"
+                                %>
+                            </td>
 
-                        <td class="price">
-                            <%= don.TongTien ?
-                            don.TongTien.toLocaleString("vi-VN") : 0 %> ₫
-                        </td>
+                            <td class="price">
+                                <%= don.TongTien ?
+                                don.TongTien.toLocaleString("vi-VN") : 0 %> ₫
+                            </td>
 
-                        <td>
-                            <% if (don.TrangThai == 0) { %>
-                            <span class="badge bg-primary status-badge"
-                                >Đã đặt</span
-                            >
-                            <% } else if (don.TrangThai == 1) { %>
-                            <span
-                                class="badge bg-warning text-dark status-badge"
-                                >Đang sử dụng</span
-                            >
-                            <% } else if (don.TrangThai == 2) { %>
-                            <span class="badge bg-success status-badge"
-                                >Hoàn tất</span
-                            >
-                            <% } else if (don.TrangThai == 3) { %>
-                            <span class="badge bg-danger status-badge"
-                                >Đã hủy</span
-                            >
-                            <% } %>
-                        </td>
+                            <td>
+                                <% if (don.TrangThai == 0) { %>
+                                <span class="badge bg-primary status-badge"
+                                    >Đã đặt</span
+                                >
+                                <% } else if (don.TrangThai == 1) { %>
+                                <span
+                                    class="badge bg-warning text-dark status-badge"
+                                    >Đang sử dụng</span
+                                >
+                                <% } else if (don.TrangThai == 2) { %>
+                                <span class="badge bg-success status-badge"
+                                    >Hoàn tất</span
+                                >
+                                <% } else if (don.TrangThai == 3) { %>
+                                <span class="badge bg-danger status-badge"
+                                    >Đã hủy</span
+                                >
+                                <% } %>
+                            </td>
 
-                        <td>
-                            <button
-                                class="action-btn btn-info"
-                                onclick="location.href='/khachhang/don-dat-phong/<%= don.MaDon %>'"
-                            >
-                                Chi tiết
-                            </button>
-                        </td>
-                    </tr>
-                    <% }); %> <% } else { %>
-                    <tr>
-                        <td colspan="8" class="empty-state">
-                            <i class="bi bi-inbox"></i>
-                            <h4>Không có đơn đặt phòng nào</h4>
-                            <p>
-                                Chưa có đơn đặt phòng nào phù hợp với bộ lọc
-                                hiện tại.
-                            </p>
-                        </td>
-                    </tr>
-                    <% } %>
-                </tbody>
-            </table>
+                            <td>
+                                <button
+                                    class="action-btn btn-info"
+                                    onclick="location.href='/khachhang/don-dat-phong/<%= don.MaDon %>'"
+                                >
+                                    Chi tiết
+                                </button>
+                            </td>
+                        </tr>
+                        <% }); %> <% } else { %>
+                        <tr>
+                            <td colspan="8" class="empty-state">
+                                <i class="bi bi-inbox"></i>
+                                <h4>Không có đơn đặt phòng nào</h4>
+                                <p>
+                                    Chưa có đơn đặt phòng nào phù hợp với bộ lọc
+                                    hiện tại.
+                                </p>
+                            </td>
+                        </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

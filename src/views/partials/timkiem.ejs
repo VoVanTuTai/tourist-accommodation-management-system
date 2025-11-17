@@ -1,32 +1,34 @@
-<form action="/timkiem" method="get"class="container-fluid search-glass">
-  <div class="row g-3 align-items-end">
+<form action="/timkiem" method="get" class="container-fruild search-glass">
+  <div class="row g-4">
 
-    <!-- Loại phòng -->
-    <div class="col-md-3">
+    <!-- ========================= -->
+    <!--  🔶 HÀNG 1: LOẠI – TỈNH – XÃ  -->
+    <!-- ========================= -->
+    <div class="col-md-4">
       <label class="form-label fw-semibold">Loại phòng</label>
       <select name="maLoai" class="form-select" id="loaiPhong">
         <option value="">-- Chọn loại phòng --</option>
       </select>
     </div>
 
-    <!-- Tỉnh -->
-    <div class="col-md-3">
+    <div class="col-md-4">
       <label class="form-label fw-semibold">Tỉnh / Thành phố</label>
       <select name="maTinh" class="form-select" id="tinh">
         <option value="">-- Chọn tỉnh --</option>
       </select>
     </div>
 
-    <!-- Xã -->
-    <div class="col-md-3">
+    <div class="col-md-4">
       <label class="form-label fw-semibold">Xã / Huyện</label>
       <select name="maXa" class="form-select" id="xa" disabled>
         <option value="">-- Chọn xã / huyện --</option>
       </select>
     </div>
 
-    <!-- Thanh trượt giá kép -->
-    <div class="col-md-4">
+    <!-- ========================= -->
+    <!--  🔶 HÀNG 2: GIÁ – CHECKIN – CHECKOUT  -->
+    <!-- ========================= -->
+    <div class="col-md-3">
       <label class="form-label fw-semibold">Khoảng giá (₫)</label>
 
       <div id="price-slider" class="my-3"></div>
@@ -36,35 +38,52 @@
         <span id="giaMaxVal" class="fw-semibold">10,000,000</span> ₫
       </div>
 
-      <!-- Hidden inputs gửi server -->
       <input type="hidden" id="giaMin" name="giaMin" value="0">
       <input type="hidden" id="giaMax" name="giaMax" value="10000000">
     </div>
 
-    <!-- Ngày nhận/trả -->
-    <div class="col-md-2">
+    <div class="col-md-3">
       <label class="form-label fw-semibold">Nhận phòng</label>
       <input type="date" name="checkin" class="form-control">
     </div>
-    <div class="col-md-2">
+
+    <div class="col-md-3">
       <label class="form-label fw-semibold">Trả phòng</label>
       <input type="date" name="checkout" class="form-control">
     </div>
 
-    <div class="col-md-2 d-grid">
-      <button type="submit" class="btn btn-primary">🔍 Tìm kiếm</button>
+    <!-- ========================= -->
+    <!--  🔶 NÚT TÌM KIẾM  -->
+    <!-- ========================= -->
+    <div class="col-3 text-center mt-5">
+      <button type="submit" class="btn search-btn px-5 py-3">
+        🔍 Tìm phòng ngay
+      </button>
     </div>
+
   </div>
 </form>
 <style>
-  .search-glass {
-    background: rgba(255, 255, 255, 0.25);   /* nền trắng mờ */
-    backdrop-filter: blur(12px);             /* làm mờ nền phía sau */
-    -webkit-backdrop-filter: blur(12px);     /* hỗ trợ Safari */
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    padding: 20px !important;
+  .search-btn {
+    background: linear-gradient(135deg, #a3d9df, #bab3e1); /* ĐẬM HƠN */
+    border-radius: 30px;
+    color: rgb(8, 69, 23);
+    font-weight: 700;
+    font-size: 1.15rem;
+
+    padding: 12px 40px;
+    border: none;
+
+    box-shadow: 0 10px 25px rgba(63, 123, 104, 0.45);
+    letter-spacing: 0.5px;
+
+    transition: 0.25s ease;
 }
 
-</style>
+.search-btn:hover {
+    background: linear-gradient(135deg, #3c7064, #706796); /* ĐẬM THÊM */
+    transform: translateY(-3px);
+    box-shadow: 0 14px 35px rgba(74, 91, 215, 0.55);
+}
+
+ .search-glass { background: rgba(255, 255, 255, 0.25); /* nền trắng mờ */ backdrop-filter: blur(12px); /* làm mờ nền phía sau */ -webkit-backdrop-filter: blur(12px); /* hỗ trợ Safari */ border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.35); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); padding: 20px !important; } </style>
