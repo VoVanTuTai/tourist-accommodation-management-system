@@ -1,30 +1,38 @@
 
-  <style>
-    body { font-family: "Segoe UI", sans-serif; background: #f5f6f7; }
-    .container { max-width: 800px; margin: 40px auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    h2 { text-align: center; color: #333; }
-    p { font-size: 16px; margin: 8px 0; }
-    img { display: block; margin: 15px auto; border-radius: 10px; }
-    .actions { margin-top: 25px; text-align: center; }
-    .actions a {
-      display: inline-block;
-      margin: 0 10px;
-      padding: 8px 14px;
-      text-decoration: none;
-      border-radius: 6px;
-      font-weight: 500;
-    }
-    .btn-edit { background-color: #007bff; color: white; }
-    .btn-status { background-color: #28a745; color: white; }
-    .btn-back { background-color: #6c757d; color: white; }
-    .btn-edit:hover { background-color: #0056b3; }
-    .btn-status:hover { background-color: #1e7e34; }
-    .btn-back:hover { background-color: #5a6268; }
-  </style>
-
-  <body>
-
-    <div class="container">
+<div class="container-fluid py-4 mt-3">
+  <div class="row">
+    <div class="col-lg-3 mb-4">
+      <div class="sidebar-nav bg-white rounded shadow-sm p-3">
+          <ul class="nav flex-column gap-1">
+              <li class="nav-item">
+                  <a class="nav-link text-dark active-nav fw-semibold" href="/nhacungcap/dashboard">
+                      <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link text-dark active" href="/nhacungcap/phong">
+                      <i class="bi bi-house-door me-2"></i> **Danh sách phòng**
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link text-dark" href="/nhacungcap/dondat">
+                      <i class="bi bi-calendar-check me-2"></i> Đơn đặt phòng
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link text-dark" href="/nhacungcap/thongtin">
+                      <i class="bi bi-info-circle me-2"></i> Thông tin chung
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link text-dark" href="/nhacungcap/cai-dat">
+                      <i class="bi bi-gear me-2"></i> Cài đặt
+                  </a>
+              </li>
+          </ul>
+        </div>
+    </div> 
+    <div class="col-lg-9" id="main01">
       <h2>🛏️ Chi tiết phòng: <%= phong.TenPhong %></h2>
     
       <p><strong>Mã phòng:</strong> <%= phong.MaPhong %></p>
@@ -79,6 +87,274 @@
         <a href="/nhacungcap/phong" class="btn-back">⬅️ Quay lại danh sách</a>
       </div>
     </div>
-    
-    </body>
+  </div>
+</div>
 
+
+    
+
+  <style>   
+      
+    #main01 {
+    max-width: 70%;
+    width: 100%;
+    padding: 30px;
+    border-radius: 20px;
+    margin-left: 10px;
+    /* Hiệu ứng trong suốt mờ (Glassmorphism) */
+    background: rgba(255, 255, 255, 0.2); /* Nền trắng với độ trong suốt 20% */
+    backdrop-filter: blur(10px); /* Lớp mờ (blur) 10px */
+    -webkit-backdrop-filter: blur(10px); /* Hỗ trợ trình duyệt Webkit */
+    
+    /* Đường viền trong suốt và hiệu ứng ánh sáng (nổi bật) */
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); /* Bóng đổ mạnh mẽ hơn */
+  }
+
+    
+    h2 {
+        font-size: 2.2rem;
+        font-weight: 700; /* Đậm hơn cho rõ ràng */
+        color: #ffffff; /* Màu chữ trắng cho tiêu đề */
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Thêm bóng chữ cho nổi bật */
+        text-align: center;
+        margin-bottom: 30px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.5); /* Đường gạch dưới mờ */
+    }
+
+    p {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 15px;
+        padding: 5px 0;
+        color: #1a1a1a; /* Nội dung chính vẫn giữ màu tối */
+    }
+
+    p strong {
+        font-weight: 700;
+        color: #333333;
+        display: inline-block;
+        min-width: 120px;
+    }
+
+    /* 4. Trạng thái (Tình trạng) */
+    /* Giữ nguyên các định dạng cơ bản để trạng thái vẫn dễ đọc */
+
+    /* 5. Thư viện Hình ảnh - Điều chỉnh cho Glassmorphism */
+    .gallery {
+        gap: 15px !important;
+        margin-top: 25px;
+    }
+
+    .gallery img {
+        width: 250px;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 12px !important;
+        /* Áp dụng hiệu ứng mờ nhẹ cho ảnh */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: transform 0.3s ease;
+    }
+
+    /* 6. Khu vực Hành động */
+    .actions {
+        gap: 15px;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.5); /* Đường phân cách mờ */
+    }
+
+    /* 7. Thiết kế Nút Hành động cho Glassmorphism */
+    .actions a, .actions span {
+        text-decoration: none;
+        font-size: 1rem;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        /* Nền nút mờ nhẹ */
+        background: rgba(255, 255, 255, 0.2); 
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Màu chữ cho các nút */
+    .btn-status { color: #157347; } /* Xanh lá đậm */
+    .btn-edit { color: #997404; } /* Vàng đậm */
+    .btn-back { color: #495057; } /* Xám đậm */
+
+    /* Hiệu ứng khi di chuột */
+    .actions a:hover {
+        background: rgba(255, 255, 255, 0.4); /* Sáng hơn khi hover */
+        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .actions a:active {
+        background: rgba(255, 255, 255, 0.1); /* Lõm xuống khi click */
+        transform: scale(0.98);
+    }
+
+    /* Trạng thái không thể thao tác */
+    .actions span {
+        color: #888;
+        background: rgba(255, 255, 255, 0.1);
+        cursor: not-allowed;
+    }
+
+    /* Căn chỉnh lại cho thông báo không có ảnh */
+    p[style*="text-align:center"] {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 8px;
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+    .sidebar-nav {
+    background-color: rgba(255, 255, 255, 0.25) !important;
+    
+    
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    
+    border-radius: 12px; 
+    border: 1px solid rgba(255, 255, 255, 0.4); 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-nav h5 {
+    
+    color: #172b4d !important; 
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 0.5rem;
+}
+
+
+.sidebar-nav .nav-link {
+    color: #2d3748 !important; 
+    font-weight: 500;
+    transition: background-color 0.2s, transform 0.2s;
+    border-radius: 8px;
+}
+
+.sidebar-nav .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.6);
+    transform: translateX(2px);
+}
+
+.sidebar-nav .nav-link.active {
+    
+    background-color: #5d59c5 !important;
+    color: white !important; 
+    font-weight: 600 !important;
+}
+
+.main-content-panel {
+    
+    background-color: rgba(255, 255, 255, 0.35) !important; 
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    
+    border-radius: 12px; 
+    border: 1px solid rgba(255, 255, 255, 0.5); 
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    min-height: 85vh; 
+}
+
+
+.main-content-panel .page-header h2 {
+    color: #172b4d !important;
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
+    border-bottom-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+
+.main-content-panel .table-container {
+    overflow-x: auto;
+    background-color: rgba(255, 255, 255, 0.9) !important; 
+    border: none;
+}
+
+.main-content-panel .table thead {
+    
+    background-color: #f8f9fa !important; 
+}
+
+
+.table-container {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6; 
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+    overflow: hidden; 
+}
+
+.table {
+    margin-bottom: 0; 
+}
+
+
+.status-badge {
+    display: inline-block;
+    padding: 0.3em 0.6em;
+    border-radius: 0.25rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    transition: background-color 0.3s;
+}
+
+.status-available {
+    color: #0f5132;
+    background-color: #d1e7dd; 
+    border: 1px solid #badbcc;
+}
+
+.status-booked {
+    color: #842029;
+    background-color: #f8d7da; 
+    border: 1px solid #f5c2c7;
+}
+
+.status-maintenance {
+    color: #664d03;
+    background-color: #fff3cd; 
+    border: 1px solid #ffecb5;
+}
+
+
+.price {
+    font-size: 1.1rem;
+    font-weight: 700 !important;
+    color: #dc3545 !important; 
+}
+
+
+.room-image {
+    width: 80px; 
+    height: 60px;
+    object-fit: cover; 
+    border-radius: 0.25rem;
+    border: 1px solid #e9ecef;
+}
+
+
+.action-detail-btn {
+    width: 100%;
+    color: #0d6efd; 
+    background-color: #e9ecef; 
+    border-color: #e9ecef;
+    transition: all 0.2s;
+}
+
+.action-detail-btn:hover {
+    color: #fff;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+</style>

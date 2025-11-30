@@ -1,4 +1,17 @@
 <div class="container py-4">
+    <% if (success && success.length > 0) { %>
+        <script>
+          Swal.fire({
+            icon: 'success',
+            title: 'Thành công!',
+            text: '<%= success %>',
+            timer: 2200,
+            showConfirmButton: false
+          });
+        </script>
+      <% } %>
+      
+
     <div class="main-container fade-in">
         <h2 class="page-title">Danh sách đơn đặt phòng</h2>
         <!-- 🔹 Thanh tab trạng thái -->

@@ -90,10 +90,12 @@ exports.createPayment = async (req, res) => {
     console.log('🟩 VNPay URL:', paymentUrl);
     console.log('🧩 signData gửi:', signData);
     console.log('🧩 chữ ký tạo:', signed);
-
-    return res.render('khachhang/payment_qr', {
-      paymentUrl, supplier, session: req.session
-    });
+    //ĐÂY LÀ CHO LIÊN KẾT TRỰC TIẾP ĐỂ TINH GIẢN QUÁ TRÌNH THANH TOÁN
+    return res.redirect(paymentUrl);
+    //ĐÂY LÀ CÁCH ĐEM RA ĐƯỜNG DẪN TRUNG GIAN NHƯNG GIỜ KHÔNG CẦN
+    // return res.render('khachhang/payment_qr', {
+    //   paymentUrl, supplier, session: req.session
+    // });
   } catch (err) {
     console.error('❌ Lỗi VNPay:', err);
     return res.status(500).send('Lỗi khi tạo thanh toán VNPay.');

@@ -97,40 +97,48 @@ const DonDatPhong = {
 
   // 📑 Một đơn → nhiều dòng (mỗi dòng là 1 phòng trong đơn)
   // 📑 Một đơn → nhiều dòng (mỗi dòng 1 phòng)
-  async getChiTietDon(maDon) {
-    const sql = `
-      SELECT 
-        dp.MaDon,
-        dp.NgayDat,
-        dp.NgayNhan,
-        dp.NgayTra,
-        dp.TrangThai,
-        dp.TongTien,
-        kh.HoTen AS TenKH,
-        kh.Email,
-        kh.SoDienThoai AS SDT,
-        p.MaPhong,
-        p.TenPhong,
-        p.Gia AS GiaApDung,
-        lp.TenLoai AS LoaiPhong,
-        ncc.TenNCC
-      FROM DonDatPhong dp
-      JOIN KhachHang kh ON dp.MaKhachHang = kh.MaKhachHang
-      JOIN chitietdondatphong ctdp ON dp.MaDon = ctdp.MaDon
-      JOIN Phong p ON ctdp.MaPhong = p.MaPhong
-      LEFT JOIN LoaiPhong lp ON p.MaLoai = lp.MaLoai
-      LEFT JOIN NhaCungCap ncc ON p.MaNhaCungCap = ncc.MaNCC
-      WHERE dp.MaDon = ?
-      ORDER BY p.MaPhong ASC
-    `;
-    const [rows] = await db.execute(sql, [maDon]);
-    return rows;
-  },
+  // async getChiTietDon(maDon) {
+  //   const sql = `
+  //     SELECT 
+  //       dp.MaDon,
+  //       dp.NgayDat,
+  //       dp.NgayNhan,
+  //       dp.NgayTra,
+  //       dp.TrangThai,
+  //       dp.TongTien,
+  //       kh.HoTen AS TenKH,
+  //       kh.Email,
+  //       kh.SoDienThoai AS SDT,
+  //       p.MaPhong,
+  //       p.TenPhong,
+  //       p.Gia AS GiaApDung,
+  //       lp.TenLoai AS LoaiPhong,
+  //       ncc.TenNCC
+  //     FROM DonDatPhong dp
+  //     JOIN KhachHang kh ON dp.MaKhachHang = kh.MaKhachHang
+  //     JOIN chitietdondatphong ctdp ON dp.MaDon = ctdp.MaDon
+  //     JOIN Phong p ON ctdp.MaPhong = p.MaPhong
+  //     LEFT JOIN LoaiPhong lp ON p.MaLoai = lp.MaLoai
+  //     LEFT JOIN NhaCungCap ncc ON p.MaNhaCungCap = ncc.MaNCC
+  //     WHERE dp.MaDon = ?
+  //     ORDER BY p.MaPhong ASC
+  //   `;
+  //   const [rows] = await db.execute(sql, [maDon]);
+  //   return rows;
+  // },
   updateTrangThai: async (maDon, trangThai) => {
-    const sql = 'UPDATE dondatphong SET TrangThai = ? WHERE MaDon = ?';
-    await db.execute(sql, [trangThai, maDon]);
-    return true;
+    const sql = `
+      UPDATE dondatphong 
+      SET TrangThai = ? 
+      WHERE MaDon = ?
+    `;
+  
+    const [result] = await db.execute(sql, [trangThai, maDon]);
+  
+    // result.affectedRows == 0 → đơn không tồn tại
+    return result.affectedRows > 0;
   },
+  
 
   // 🏨 Danh sách phòng thuộc 1 đơn (gọn để dùng cho dropdown đánh giá)
   async getDanhSachPhongTheoDon(maDon) {

@@ -4,6 +4,8 @@ const expressLayouts = require("express-ejs-layouts");
 const session = require("express-session");
 const MySQLStore = require("express-mysql-session")(session);
 const adminRoutes = require('./src/routes/adminRoutes')
+const flash = require("express-flash");
+
 
 const app = express();
 
@@ -32,7 +34,13 @@ app.use(expressLayouts);
 ===================================================== */
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "./src/public")));
+
+//app.use(express.static(path.join(__dirname, "./src/public")));
+// STATIC MAIN
+app.use(express.static(path.join(__dirname, "src/public")));
+
+// STATIC cho folder ảnh đánh giá
+app.use("/images/danhgia", express.static(path.join(__dirname, "src/public/images/danhgia")));
 
 /* =====================================================
    ✅ CẤU HÌNH MYSQL + SESSION
@@ -57,6 +65,12 @@ app.use(
   })
 );
 
+app.use(flash());
+app.use((req, res, next) => {
+   res.locals.success = req.flash("success");
+   res.locals.error = req.flash("error");
+   next();
+ });
 /* =====================================================
    ✅ CHO PHÉP EJS TRUY CẬP SESSION TRONG MỌI VIEW
 ===================================================== */
@@ -65,24 +79,6 @@ app.use((req, res, next) => {
   next();
 });
 // ✅ Thêm đoạn này để truyền session tới tất cả view
-
-/* =====================================================
-   ✅ GIẢ LẬP NHÀ CUNG CẤP (TẠM THỜI ĐỂ TEST)
-   ⚠️ Đặt TRƯỚC khi dùng route /nhacungcap
-===================================================== */
-// app.use((req, res, next) => {
-//   if (!req.session.user) {
-//     req.session.user = {
-//       MaNCC: 1,
-//       TenNCC: "Khách sạn Hoàng Gia",
-//       Email: "hoanggia@example.com",
-//       PhanQuyen: "KhachHang",
-//       MaKhachHang: 1
-//     };
-//   }
-//   next();
-// });
-
 /* =====================================================
    ✅ ĐỊNH NGHĨA ROUTES
 ===================================================== */

@@ -1,7 +1,7 @@
 const db = require("../../config/db");
 const DonDatPhong = require("../models/DonDatPhong");
 const DanhGia = require("../models/DanhGia");
-
+const KhachHang = require("../models/KhachHang");
 // =====================================================
 // 🧾 DANH SÁCH ĐƠN ĐẶT PHÒNG CỦA KHÁCH HÀNG
 // =====================================================
@@ -91,38 +91,61 @@ exports.chiTietDonDatPhong = async (req, res) => {
 };
 
 
-// =====================================================
-// 🗑️ HỦY ĐƠN ĐẶT PHÒNG
+
 // =====================================================
 // 🗑️ HỦY ĐƠN ĐẶT PHÒNG (cách truyền thống, dùng form POST)
 exports.huyDonDatPhong = async (req, res) => {
   try {
-    // ✅ Kiểm tra đăng nhập
     if (!req.session.user) {
       return res.redirect("/khachhang/dangnhap");
     }
 
     const maDon = req.params.id;
+    const { LyDoHuy } = req.body;
 
-    // ✅ Lấy mã khách hàng từ session
-    const maKhachHang = req.session.user.MaKhachHang;
+    if (!maDon) return res.status(400).send("Thiếu mã đơn");
 
-    // Kiểm tra xem đơn này có thuộc về khách hàng không
+    //Lấy mã khách hàng thật từ DB bằng MaTaiKhoan
+    const maTaiKhoan = req.session.user.MaTaiKhoan;
+    const kh = await KhachHang.findByMaTK(maTaiKhoan);
+
+    if (!kh) return res.status(403).send("Không xác định được khách hàng");
+
+    const maKhachHang = kh.MaKhachHang;
+
+    //Kiểm tra đơn có thuộc về khách hàng không
     const [rows] = await db.execute(
       "SELECT MaKhachHang FROM DonDatPhong WHERE MaDon = ?",
       [maDon]
     );
-    // ✅ Cập nhật trạng thái = 3 (Đã hủy)
-    await DonDatPhong.updateTrangThai(maDon, 3);
-    console.log(`🗑️ Đơn #${maDon} của KH #${maKhachHang} đã bị hủy.`);
 
-    // ✅ Quay về danh sách đơn
-    res.redirect("/khachhang/don-dat-phong");
+    if (rows.length === 0) {
+      return res.status(404).send("Không tìm thấy đơn đặt phòng");
+    }
+
+    if (rows[0].MaKhachHang !== maKhachHang) {
+      return res.status(403).send("Bạn không có quyền hủy đơn này.");
+    }
+
+    // ⭐ Hủy đơn + lưu lý do
+    await db.execute(
+      `UPDATE DonDatPhong 
+       SET TrangThai = 3, LiDoHuy = ? 
+       WHERE MaDon = ?`,
+      [LyDoHuy || null, maDon]
+    );
+
+    console.log(`🗑 Đơn #${maDon} của KH #${maKhachHang} đã bị hủy. Lý do: ${LyDoHuy}`);
+    req.flash("success", "Hủy đơn thành công!");
+
+    return res.redirect("/khachhang/don-dat-phong");
+
   } catch (err) {
-    console.error("❌ Lỗi khi hủy đơn:", err);
-    res.status(500).send("Lỗi khi hủy đơn đặt phòng.");
+    console.error("Lỗi khi hủy đơn:", err);
+    return res.status(500).send("Lỗi khi hủy đơn đặt phòng.");
   }
 };
+
 
 
 // =====================================================
@@ -134,7 +157,7 @@ exports.renderThanhToan = async (req, res) => {
     if (!don) return res.status(404).send("Không tìm thấy đơn cần thanh toán.");
     res.render("khachhang/thanhtoan", { don });
   } catch (err) {
-    console.error("❌ Lỗi khi tải trang thanh toán:", err);
+    console.error("Lỗi khi tải trang thanh toán:", err);
     res.status(500).send("Lỗi khi tải trang thanh toán.");
   }
 };
@@ -147,7 +170,7 @@ exports.handleThanhToan = async (req, res) => {
     console.log(`💰 Thanh toán đơn #${MaDon} thành công.`);
     res.redirect("/khachhang/don-dat-phong");
   } catch (err) {
-    console.error("❌ Lỗi xử lý thanh toán:", err);
+    console.error("Lỗi xử lý thanh toán:", err);
     res.status(500).send("Lỗi khi xử lý thanh toán.");
   }
 };
@@ -214,7 +237,7 @@ exports.renderDanhGia = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("❌ Lỗi hiển thị form đánh giá:", err);
+    console.error("Lỗi hiển thị form đánh giá:", err);
     res.status(500).send("Lỗi khi tải trang đánh giá.");
   }
 };
