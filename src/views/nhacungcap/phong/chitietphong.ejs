@@ -76,12 +76,12 @@
     
       <div class="actions">
         <% if (phong.TinhTrang === 0) { %>
-          <span style="color: gray;">🚫 Không thể thao tác</span>
+          <span style="color: rgb(0, 0, 0);">🚫 Không thể thao tác</span>
         <% } else if (phong.TinhTrang === 1) { %>
-          <a href="/nhacungcap/phong/trangthai/<%= phong.MaPhong %>" class="btn-status">🔄 Cập nhật trạng thái</a>
+          <a href="/nhacungcap/phong/trangthai/<%= phong.MaPhong %>" class="btn-status fw-bolder">Cập nhật trạng thái</a>
         <% } else if (phong.TinhTrang === 2) { %>
-          <a href="/nhacungcap/phong/suaphong/<%= phong.MaPhong %>" class="btn-edit">✏️ Sửa phòng</a>
-          <a href="/nhacungcap/phong/trangthai/<%= phong.MaPhong %>" class="btn-status">🔄 Cập nhật trạng thái</a>
+          <a href="/nhacungcap/phong/suaphong/<%= phong.MaPhong %>" class="btn-edit fw-bolder">Sửa phòng</a>
+          <a href="/nhacungcap/phong/trangthai/<%= phong.MaPhong %>" class="btn-status fw-bolder">Cập nhật trạng thái</a>
         <% } %>
     
         <a href="/nhacungcap/phong" class="btn-back">⬅️ Quay lại danh sách</a>
@@ -101,26 +101,26 @@
     padding: 30px;
     border-radius: 20px;
     margin-left: 10px;
-    /* Hiệu ứng trong suốt mờ (Glassmorphism) */
-    background: rgba(255, 255, 255, 0.2); /* Nền trắng với độ trong suốt 20% */
-    backdrop-filter: blur(10px); /* Lớp mờ (blur) 10px */
-    -webkit-backdrop-filter: blur(10px); /* Hỗ trợ trình duyệt Webkit */
     
-    /* Đường viền trong suốt và hiệu ứng ánh sáng (nổi bật) */
+    background: rgba(255, 255, 255, 0.2); 
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(10px); 
+    
+    
     border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); /* Bóng đổ mạnh mẽ hơn */
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); 
   }
 
     
     h2 {
         font-size: 2.2rem;
-        font-weight: 700; /* Đậm hơn cho rõ ràng */
-        color: #ffffff; /* Màu chữ trắng cho tiêu đề */
-        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Thêm bóng chữ cho nổi bật */
+        font-weight: 700; 
+        color: #ffffff; 
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); 
         text-align: center;
         margin-bottom: 30px;
         padding-bottom: 10px;
-        border-bottom: 2px solid rgba(255, 255, 255, 0.5); /* Đường gạch dưới mờ */
+        border-bottom: 2px solid rgba(255, 255, 255, 0.5); 
     }
 
     p {
@@ -128,7 +128,7 @@
         line-height: 1.6;
         margin-bottom: 15px;
         padding: 5px 0;
-        color: #1a1a1a; /* Nội dung chính vẫn giữ màu tối */
+        color: #1a1a1a; 
     }
 
     p strong {
@@ -137,28 +137,19 @@
         display: inline-block;
         min-width: 120px;
     }
-
-    /* 4. Trạng thái (Tình trạng) */
-    /* Giữ nguyên các định dạng cơ bản để trạng thái vẫn dễ đọc */
-
-    /* 5. Thư viện Hình ảnh - Điều chỉnh cho Glassmorphism */
     .gallery {
         gap: 15px !important;
         margin-top: 25px;
     }
-
     .gallery img {
         width: 250px;
         height: 180px;
         object-fit: cover;
         border-radius: 12px !important;
-        /* Áp dụng hiệu ứng mờ nhẹ cho ảnh */
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.2);
         transition: transform 0.3s ease;
     }
-
-    /* 6. Khu vực Hành động */
     .actions {
         gap: 15px;
         margin-top: 30px;
@@ -178,14 +169,14 @@
 
         /* Nền nút mờ nhẹ */
         background: rgba(255, 255, 255, 0.2); 
-        border: 1px solid rgba(255, 255, 255, 0.5);
+        border: 2px solid rgba(45, 59, 66, 0.5);
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
     /* Màu chữ cho các nút */
-    .btn-status { color: #157347; } /* Xanh lá đậm */
-    .btn-edit { color: #997404; } /* Vàng đậm */
-    .btn-back { color: #495057; } /* Xám đậm */
+    .btn-status { color: #157347; } 
+    .btn-edit { color: #16142d; } 
+    .btn-back { color: #495057; } 
 
     /* Hiệu ứng khi di chuột */
     .actions a:hover {

@@ -188,8 +188,101 @@ const DonDatPhong = {
     `;
     const [rows] = await db.execute(sql, [maDon]);
     return rows[0];
+  },
+  // models/DonDatPhong.js (BỔ SUNG)
+
+  // models/DonDatPhong.js (Phương thức GỘP MỚI)
+  async getAllByNCC(maNCC, trangThai) {
+    try {
+        // Đảm bảo logic SQL này là chính xác và không có lỗi
+        let sql = `
+            SELECT 
+                dp.MaDon, dp.NgayDat, dp.NgayNhan, dp.NgayTra, 
+                dp.TrangThai, dp.TongTien, dp.TenNguoiNhan, 
+                kh.HoTen AS TenKhachHang,
+                COALESCE(GROUP_CONCAT(DISTINCT p.TenPhong SEPARATOR ', '), 'Chưa rõ') AS DanhSachPhong
+            FROM DonDatPhong dp
+            JOIN chitietdondatphong ctdp ON dp.MaDon = ctdp.MaDon
+            JOIN Phong p ON ctdp.MaPhong = p.MaPhong
+            JOIN KhachHang kh ON dp.MaKhachHang = kh.MaKhachHang
+            WHERE p.MaNhaCungCap = ? 
+        `;
+        const params = [maNCC];
+        // ... (Logic lọc trạng thái)
+        sql += `
+            GROUP BY dp.MaDon, kh.HoTen
+            ORDER BY dp.NgayDat DESC
+        `;
+        const [rows] = await db.execute(sql, params);
+        return rows;
+    } catch (err) {
+        console.error("❌ Lỗi SQL DonDatPhong.getAllByNCC:", err.message);
+        throw err;
+    }
+},
+// 🔎 Chi tiết đơn đặt phòng và các phòng trong đơn, kiểm tra MaNCC
+  async getChiTietDonVaPhongChoNCC(maDon, maNCC) {
+    try {
+        const sql = `
+            SELECT
+                dp.MaDon, dp.MaKhachHang, dp.NgayDat, dp.NgayNhan, dp.NgayTra, 
+                dp.TrangThai, dp.TongTien, dp.TenNguoiNhan, dp.SDTNguoiNhan,
+                
+                kh.HoTen AS TenKH, kh.Email, kh.SoDienThoai AS SDT,
+                
+                tt.MaThanhToan, tt.NgayTT, tt.SoTien AS SoTienThanhToan,
+                
+                -- Gom tất cả thông tin phòng thành một chuỗi JSON
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'MaPhong', p.MaPhong,
+                        'TenPhong', p.TenPhong,
+                        'GiaApDung', ctdp.Gia,
+                        'SucChua', p.SucChua,
+                        'HinhAnh', p.HinhAnh,
+                        'LoaiPhong', lp.TenLoai,
+                        'TenChoO', ncc.TenNCC
+                    )
+                ) AS ChiTietPhong
+            
+            FROM DonDatPhong dp
+            JOIN KhachHang kh ON dp.MaKhachHang = kh.MaKhachHang
+            LEFT JOIN ThanhToan tt ON tt.MaDon = dp.MaDon
+            
+            -- JOIN các bảng để lấy chi tiết phòng
+            JOIN chitietdondatphong ctdp ON dp.MaDon = ctdp.MaDon
+            JOIN Phong p ON ctdp.MaPhong = p.MaPhong
+            LEFT JOIN LoaiPhong lp ON p.MaLoai = lp.MaLoai
+            LEFT JOIN NhaCungCap ncc ON p.MaNhaCungCap = ncc.MaNCC
+
+            WHERE dp.MaDon = ? 
+            -- Đảm bảo ít nhất một phòng trong đơn thuộc về NCC này
+            AND EXISTS ( 
+                SELECT 1 
+                FROM chitietdondatphong ctdp_check 
+                JOIN Phong p_check ON ctdp_check.MaPhong = p_check.MaPhong 
+                WHERE ctdp_check.MaDon = dp.MaDon AND p_check.MaNhaCungCap = ?
+            )
+            GROUP BY dp.MaDon, kh.MaKhachHang, tt.MaThanhToan
+            LIMIT 1
+        `;
+
+        const [rows] = await db.execute(sql, [maDon, maNCC]);
+
+        if (rows.length === 0) return null;
+
+        const result = rows[0];
+        
+        // Chuyển chuỗi JSON về đối tượng JavaScript
+        result.ChiTietPhong = JSON.parse(result.ChiTietPhong);
+        
+        return result;
+
+    } catch (err) {
+        console.error("❌ Lỗi SQL DonDatPhong.getChiTietDonVaPhongChoNCC:", err.message);
+        throw err;
+    }
   }
-  
 };
 
 module.exports = DonDatPhong;

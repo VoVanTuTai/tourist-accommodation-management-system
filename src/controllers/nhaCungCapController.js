@@ -213,18 +213,17 @@ exports.loginNhaCungCap = async (req, res) => {
           formData: req.body,
         });
       }
-  
-      // 2️⃣ Truy vấn tài khoản và thông tin nhà cung cấp (JOIN)
+      // 2️⃣ Truy vấn tài khoản và thông tin nhà cung cấp (LEFT JOIN)
       const [rows] = await db.execute(
-        `SELECT 
-            tk.MaTaiKhoan, tk.TaiKhoan, tk.MatKhau, tk.PhanQuyen, tk.TrangThai,
-            ncc.MaNCC, ncc.TenNCC
-         FROM TaiKhoan tk
-         JOIN NhaCungCap ncc ON tk.MaTaiKhoan = ncc.MaTaiKhoan
-         WHERE tk.TaiKhoan = ?`,
-        [Email]
+          `SELECT 
+              tk.MaTaiKhoan, tk.TaiKhoan, tk.MatKhau, tk.PhanQuyen, tk.TrangThai,
+              ncc.MaNCC, ncc.TenNCC
+          FROM TaiKhoan tk
+          LEFT JOIN NhaCungCap ncc ON tk.MaTaiKhoan = ncc.MaTaiKhoan 
+          WHERE tk.TaiKhoan = ?`,
+          [Email]
       );
-  
+
       const account = rows[0];
       if (!account) {
         errors.Email = "Tài khoản Email không tồn tại";
@@ -235,6 +234,15 @@ exports.loginNhaCungCap = async (req, res) => {
           formData: req.body,
         });
       }
+      // BỔ SUNG KIỂM TRA QUYỀN VÀ MA_NCC sau khi lấy account
+      if (account && account.PhanQuyen === 'NhaCungCap' && !account.MaNCC) {
+        // Nếu tài khoản là NCC nhưng MaNCC là NULL/undefined (do LEFT JOIN không khớp)
+        errors.Global = "Tài khoản NCC này chưa được liên kết hoặc chưa được duyệt.";
+        return res.status(400).render("nhacungcap/dangnhap", {
+            // ... (render lỗi)
+        });
+      }  
+      
   
       // 3️⃣ Kiểm tra mật khẩu
       const passwordMatch = await bcrypt.compare(Password, account.MatKhau);
@@ -276,8 +284,8 @@ exports.loginNhaCungCap = async (req, res) => {
         TaiKhoan: account.TaiKhoan,
         PhanQuyen: account.PhanQuyen,
         TrangThai: account.TrangThai,
-        MaNCC: account.MaNCC, // ✅ Lấy từ bảng nhacungcap
-        TenNCC: account.TenNCC, // ✅ Tên NCC để hiển thị
+        MaNCC: account.MaNCC, 
+        TenNCC: account.TenNCC, 
       };
   
       console.log("✅ NCC đăng nhập:", req.session.user);

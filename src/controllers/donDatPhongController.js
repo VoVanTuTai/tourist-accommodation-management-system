@@ -241,4 +241,144 @@ exports.renderDanhGia = async (req, res) => {
     res.status(500).send("Lỗi khi tải trang đánh giá.");
   }
 };
+// =====================================================
+// 🏨 QUẢN LÝ ĐƠN ĐẶT PHÒNG CHO NHÀ CUNG CẤP (BỔ SUNG)
+// =====================================================
+// ✅ KHAI BÁO HÀM getStatusText Ở ĐÂY
+const getStatusText = (status) => {
+  switch (Number(status)) {
+      case 0: return 'Đã Đặt';
+      case 1: return 'Đang Sử Dụng'; 
+      case 2: return 'Đã Hoàn Tất'; 
+      case 3: return 'Đã Hủy'; 
+      default: return 'Không xác định';
+  }
+}
+// 1. Render Danh sách Đơn đặt phòng cho NCC
+exports.renderDanhSachDonDatPhongNCC = async (req, res) => {
+  // 🚨 BƯỚC 1: KIỂM TRA ĐĂNG NHẬP VÀ VAI TRÒ
+  // Bổ sung kiểm tra PhanQuyen
+  if (!req.session.user || req.session.user.PhanQuyen !== 'NhaCungCap') {
+      // Nếu chưa đăng nhập HOẶC vai trò không phải là NCC
+      return res.redirect("/nhacungcap/dangnhap");
+  }
+
+  // 🚨 BƯỚC 2: XỬ LÝ AN TOÀN CHO MA NCC (Giải quyết lỗi TypeError)
+  // Lấy MaNCC trực tiếp từ session
+  const maNCC = req.session.user.MaNCC; 
+  
+  // Kiểm tra tính hợp lệ nghiêm ngặt: MaNCC phải tồn tại (không phải null/undefined/0)
+  // Nếu MaNCC bị thiếu, có nghĩa tài khoản NCC chưa hoàn tất đăng ký/duyệt
+  if (!maNCC) { 
+      console.error("Lỗi: Tài khoản NCC không có MaNCC hợp lệ trong session.");
+      req.flash('error', 'Tài khoản của bạn chưa liên kết Mã Nhà Cung Cấp hoặc đang chờ duyệt.');
+      // Chuyển hướng về trang Dashboard của NCC thay vì trang đơn hàng
+      return res.redirect("/nhacungcap/"); 
+  }
+
+  const trangThai = req.query.trangThai || ''; // Lọc theo trạng thái
+
+  try {
+      // ✅ Truyền maNCC đã được xác thực (là số)
+      const orders = await DonDatPhong.getAllByNCC(maNCC, trangThai);
+
+      // Format lại ngày và gán text trạng thái
+      const formattedOrders = orders.map(d => ({
+          ...d,
+          NgayDat: d.NgayDat ? new Date(d.NgayDat) : null,
+          NgayNhan: d.NgayNhan ? new Date(d.NgayNhan) : null,
+          NgayTra: d.NgayTra ? new Date(d.NgayTra) : null,
+          TrangThaiText: getStatusText(d.TrangThai)
+      }));
+
+      res.render('nhacungcap/phong/qldondat', {
+          title: 'Quản lý Đơn Đặt Phòng',
+          orders: formattedOrders,
+          currentStatus: trangThai,
+          getStatusText
+      });
+  } catch (error) {
+      console.error("❌ Lỗi khi lấy danh sách đơn đặt phòng NCC:", error);
+      res.status(500).send('Lỗi Server khi truy vấn danh sách đơn.');
+  }
+};
+
+// 2. Render Chi tiết Đơn đặt phòng cho NCC
+exports.renderChiTietDonDatPhongNCC = async (req, res) => {
+  // 🚨 Kiểm tra đăng nhập và vai trò
+  if (!req.session.user || req.session.user.role !== 'NCC') {
+      return res.redirect("/nhacungcap/dangnhap");
+  }
+  
+  const maNCC = getMaNCCFromSession(req);
+  const maDon = req.params.id;
+
+  try {
+      // Sử dụng hàm gộp có kiểm tra quyền sở hữu của NCC
+      const orderDetail = await DonDatPhong.getChiTietDonVaPhongChoNCC(maDon, maNCC);
+
+      if (!orderDetail) {
+          req.flash('error', 'Đơn đặt phòng không tồn tại hoặc không thuộc quyền quản lý của bạn.');
+          return res.redirect('/nhacungcap/don-dat-phong');
+      }
+
+      // Format lại ngày
+      orderDetail.NgayDat = new Date(orderDetail.NgayDat).toLocaleDateString('vi-VN');
+      orderDetail.NgayNhan = new Date(orderDetail.NgayNhan).toLocaleDateString('vi-VN');
+      orderDetail.NgayTra = new Date(orderDetail.NgayTra).toLocaleDateString('vi-VN');
+      orderDetail.TrangThaiText = getStatusText(orderDetail.TrangThai);
+
+      res.render('nhacungcap/donDatPhongDetail', {
+          title: `Chi tiết Đơn hàng #${maDon}`,
+          data: orderDetail, // Chứa thông tin đơn, khách hàng, và mảng ChiTietPhong
+          getStatusText
+      });
+
+  } catch (error) {
+      console.error("❌ Lỗi khi lấy chi tiết đơn đặt phòng NCC:", error);
+      res.status(500).send('Lỗi Server khi truy vấn chi tiết đơn.');
+  }
+};
+
+// 3. Xử lý Cập nhật Trạng thái Đơn của NCC
+exports.handleCapNhatTrangThaiDonDatPhongNCC = async (req, res) => {
+  // 🚨 Kiểm tra đăng nhập và vai trò
+  if (!req.session.user || req.session.user.role !== 'NCC') {
+      return res.status(403).send("Bạn không có quyền thực hiện thao tác này.");
+  }
+  
+  const maDon = req.params.id;
+  const { newStatus } = req.body; 
+  const maNCC = getMaNCCFromSession(req);
+
+  if (newStatus === undefined || isNaN(parseInt(newStatus))) {
+      req.flash('error', 'Trạng thái cập nhật không hợp lệ.');
+      return res.redirect('/nhacungcap/don-dat-phong/chitiet/' + maDon);
+  }
+  
+  try {
+      // ⭐ BƯỚC BẢO MẬT: Kiểm tra quyền sở hữu trước khi cập nhật
+      const checkOwner = await DonDatPhong.getChiTietDonVaPhongChoNCC(maDon, maNCC);
+      if (!checkOwner) {
+          req.flash('error', 'Đơn đặt phòng không tồn tại hoặc bạn không có quyền cập nhật.');
+          return res.redirect('/nhacungcap/don-dat-phong');
+      }
+      
+      // ⭐ Thực hiện cập nhật trạng thái
+      const success = await DonDatPhong.updateTrangThai(maDon, parseInt(newStatus));
+
+      if (success) {
+          req.flash('success', `Cập nhật trạng thái đơn #${maDon} thành công: ${getStatusText(newStatus)}.`);
+      } else {
+          req.flash('error', `Không thể cập nhật trạng thái cho đơn #${maDon}.`);
+      }
+      
+      res.redirect('/nhacungcap/don-dat-phong/chitiet/' + maDon); 
+
+  } catch (error) {
+      console.error("❌ Lỗi khi cập nhật trạng thái đơn đặt phòng NCC:", error);
+      req.flash('error', 'Lỗi server khi cập nhật trạng thái.');
+      res.redirect('/nhacungcap/don-dat-phong/chitiet/' + maDon);
+  }
+};
 
