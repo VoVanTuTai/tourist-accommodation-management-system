@@ -192,13 +192,14 @@ const DonDatPhong = {
   // models/DonDatPhong.js (BỔ SUNG)
 
   // models/DonDatPhong.js (Phương thức GỘP MỚI)
-  async getAllByNCC(maNCC, trangThai) {
+  async getAllByNCC(maNCC, trangThai, searchMaDon) { // ✅ Bổ sung tham số searchMaDon
     try {
-        // Đảm bảo logic SQL này là chính xác và không có lỗi
+        // Câu lệnh SQL cơ bản, lọc theo MaNCC (là điều kiện bắt buộc)
         let sql = `
             SELECT 
                 dp.MaDon, dp.NgayDat, dp.NgayNhan, dp.NgayTra, 
-                dp.TrangThai, dp.TongTien, dp.TenNguoiNhan, 
+                dp.TrangThai, dp.TongTien, dp.TenNguoiNhan, dp.SDTNguoiNhan,
+                dp.MaKhachHang, 
                 kh.HoTen AS TenKhachHang,
                 COALESCE(GROUP_CONCAT(DISTINCT p.TenPhong SEPARATOR ', '), 'Chưa rõ') AS DanhSachPhong
             FROM DonDatPhong dp
@@ -207,13 +208,32 @@ const DonDatPhong = {
             JOIN KhachHang kh ON dp.MaKhachHang = kh.MaKhachHang
             WHERE p.MaNhaCungCap = ? 
         `;
-        const params = [maNCC];
-        // ... (Logic lọc trạng thái)
+        
+        const params = [maNCC]; // Khởi tạo mảng tham số với maNCC bắt buộc
+
+        // ⭐ 1. LOGIC LỌC THEO TRẠNG THÁI (trangThai)
+        // Kiểm tra nếu tham số trangThai tồn tại và không phải là chuỗi rỗng
+        if (trangThai !== undefined && trangThai !== "") {
+            sql += ` AND dp.TrangThai = ?`;
+            // Chuyển sang kiểu số trước khi thêm vào tham số
+            params.push(Number(trangThai)); 
+        }
+
+        // ⭐ 2. LOGIC TÌM KIẾM THEO MÃ ĐƠN (searchMaDon)
+        // Kiểm tra nếu tham số searchMaDon tồn tại và có thể chuyển thành số
+        if (searchMaDon && !isNaN(Number(searchMaDon))) { 
+            sql += ` AND dp.MaDon = ?`;
+            params.push(Number(searchMaDon));
+        }
+
+        // Đóng câu lệnh SQL với GROUP BY và ORDER BY
         sql += `
-            GROUP BY dp.MaDon, kh.HoTen
+            GROUP BY dp.MaDon
             ORDER BY dp.NgayDat DESC
         `;
-        const [rows] = await db.execute(sql, params);
+        
+        // Thực thi truy vấn với mảng tham số được xây dựng động
+        const [rows] = await db.execute(sql, params); 
         return rows;
     } catch (err) {
         console.error("❌ Lỗi SQL DonDatPhong.getAllByNCC:", err.message);
@@ -221,68 +241,50 @@ const DonDatPhong = {
     }
 },
 // 🔎 Chi tiết đơn đặt phòng và các phòng trong đơn, kiểm tra MaNCC
-  async getChiTietDonVaPhongChoNCC(maDon, maNCC) {
-    try {
-        const sql = `
-            SELECT
-                dp.MaDon, dp.MaKhachHang, dp.NgayDat, dp.NgayNhan, dp.NgayTra, 
-                dp.TrangThai, dp.TongTien, dp.TenNguoiNhan, dp.SDTNguoiNhan,
-                
-                kh.HoTen AS TenKH, kh.Email, kh.SoDienThoai AS SDT,
-                
-                tt.MaThanhToan, tt.NgayTT, tt.SoTien AS SoTienThanhToan,
-                
-                -- Gom tất cả thông tin phòng thành một chuỗi JSON
-                JSON_ARRAYAGG(
-                    JSON_OBJECT(
-                        'MaPhong', p.MaPhong,
-                        'TenPhong', p.TenPhong,
-                        'GiaApDung', ctdp.Gia,
-                        'SucChua', p.SucChua,
-                        'HinhAnh', p.HinhAnh,
-                        'LoaiPhong', lp.TenLoai,
-                        'TenChoO', ncc.TenNCC
-                    )
-                ) AS ChiTietPhong
-            
-            FROM DonDatPhong dp
-            JOIN KhachHang kh ON dp.MaKhachHang = kh.MaKhachHang
-            LEFT JOIN ThanhToan tt ON tt.MaDon = dp.MaDon
-            
-            -- JOIN các bảng để lấy chi tiết phòng
-            JOIN chitietdondatphong ctdp ON dp.MaDon = ctdp.MaDon
-            JOIN Phong p ON ctdp.MaPhong = p.MaPhong
-            LEFT JOIN LoaiPhong lp ON p.MaLoai = lp.MaLoai
-            LEFT JOIN NhaCungCap ncc ON p.MaNhaCungCap = ncc.MaNCC
+  // src/models/DonDatPhong.js (SỬA LẠI HÀM)
 
-            WHERE dp.MaDon = ? 
-            -- Đảm bảo ít nhất một phòng trong đơn thuộc về NCC này
-            AND EXISTS ( 
-                SELECT 1 
-                FROM chitietdondatphong ctdp_check 
-                JOIN Phong p_check ON ctdp_check.MaPhong = p_check.MaPhong 
-                WHERE ctdp_check.MaDon = dp.MaDon AND p_check.MaNhaCungCap = ?
-            )
-            GROUP BY dp.MaDon, kh.MaKhachHang, tt.MaThanhToan
-            LIMIT 1
-        `;
+    // src/models/DonDatPhong.js (Trong hàm getChiTietDonVaPhongChoNCC)
 
-        const [rows] = await db.execute(sql, [maDon, maNCC]);
+async getChiTietDonVaPhongChoNCC(maDon, maNCC) {
+  try {
+      const sqlDon = `
+          SELECT
+              dp.*, 
+              kh.HoTen AS TenKH, 
+              kh.Email, 
+              kh.SoDienThoai AS SDT,
+              tt.MaThanhToan, 
+              tt.NgayTT, 
+              tt.SoTien AS SoTienThanhToan
+          FROM DonDatPhong dp
+          JOIN KhachHang kh ON dp.MaKhachHang = kh.MaKhachHang
+          LEFT JOIN ThanhToan tt ON tt.MaDon = dp.MaDon
+          WHERE dp.MaDon = ?
+          AND EXISTS ( 
+              SELECT 1 FROM chitietdondatphong ctdp 
+              JOIN Phong p ON ctdp.MaPhong = p.MaPhong 
+              WHERE ctdp.MaDon = dp.MaDon AND p.MaNhaCungCap = ?
+          )
+          LIMIT 1;
+      `;
+      
+      const [donDat] = await db.execute(sqlDon, [maDon, maNCC]);
 
-        if (rows.length === 0) return null;
+      if (donDat.length === 0) return null;
 
-        const result = rows[0];
-        
-        // Chuyển chuỗi JSON về đối tượng JavaScript
-        result.ChiTietPhong = JSON.parse(result.ChiTietPhong);
-        
-        return result;
+      // TRUY VẤN 2: Lấy danh sách chi tiết các phòng
+      const chiTietPhong = await this.getDanhSachPhongTheoDon(maDon); 
 
-    } catch (err) {
-        console.error("❌ Lỗi SQL DonDatPhong.getChiTietDonVaPhongChoNCC:", err.message);
-        throw err;
-    }
+      // Gộp kết quả
+      return {
+          donDat: donDat[0],
+          chiTietPhong: chiTietPhong
+      };
+  } catch (err) {
+      console.error("❌ Lỗi SQL DonDatPhong.getChiTietDonVaPhongChoNCC:", err.message);
+      throw err;
   }
+}
 };
 
 module.exports = DonDatPhong;

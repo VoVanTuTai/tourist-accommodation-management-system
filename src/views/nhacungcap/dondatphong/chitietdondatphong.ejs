@@ -1,0 +1,173 @@
+
+<div class="container mt-5">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 text-info">
+            <i class="fas fa-clipboard-list me-2"></i> Chi tiết Đơn đặt phòng #<%= data.MaDon %>
+        </h1>
+        <a href="/nhacungcap/don-dat-phong" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Quay lại Danh sách
+        </a>
+    </div>
+
+    <% if (messages.error) { %>
+        <div class="alert alert-danger" role="alert">
+            <%= messages.error %>
+        </div>
+    <% } %>
+
+    <div class="row">
+        
+        <div class="col-lg-5">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    Thông tin Chung
+                </div>
+                <div class="card-body">
+                    <p><strong>Mã Đơn:</strong> <%= data.MaDon %></p>
+                    <p><strong>Ngày Đặt:</strong> <%= data.NgayDat %></p>
+                    <p><strong>Ngày Nhận (Check-in):</strong> <span class="text-success fw-bold"><%= data.NgayNhan %></span></p>
+                    <p><strong>Ngày Trả (Check-out):</strong> <span class="text-danger fw-bold"><%= data.NgayTra %></span></p>
+                    <p>
+                        <strong>Trạng Thái:</strong>
+                        <span class="badge bg-<%= 
+                            data.TrangThai === 3 ? 'success' : 
+                            data.TrangThai === 2 ? 'primary' : 
+                            data.TrangThai === 1 ? 'warning' : 'danger' 
+                        %> fs-6">
+                            <%= getStatusText(data.TrangThai) %>
+                        </span>
+                    </p>
+                    <hr>
+                    <h5 class="mt-4">Tổng Thanh Toán</h5>
+                    <p class="fs-4 fw-bold text-success"><%= data.TongTien.toLocaleString('vi-VN') %> VNĐ</p>
+                    
+                    <% if (data.SoTienThanhToan) { %>
+                        <p class="text-muted small">Đã thanh toán: <%= data.SoTienThanhToan.toLocaleString('vi-VN') %> VNĐ</p>
+                    <% } else { %>
+                        <p class="text-warning small">Chưa ghi nhận thanh toán.</p>
+                    <% } %>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    Cập nhật Trạng Thái
+                </div>
+                <div class="card-body">
+                    <% 
+                        // Lấy trạng thái hiện tại (đảm bảo là số)
+                        const currentStatus = Number(data.TrangThai); 
+                
+                        // Xác định xem có thể cập nhật trạng thái hay không
+                        // Cho phép cập nhật nếu là Chờ Xác nhận (0) hoặc Đang Sử dụng (1)
+                        const canUpdate = currentStatus === 0 || currentStatus === 1;
+                    %>
+                
+                    <% if (canUpdate) { %>
+                        <form action="/nhacungcap/don-dat-phong/capnhat-trangthai/<%= data.MaDon %>" method="POST">
+                            <div class="mb-3">
+                                <label for="newStatus" class="form-label">Chọn Trạng Thái Mới:</label>
+                                <select name="newStatus" id="newStatus" class="form-select">
+                                    
+                                    <option value="<%= currentStatus %>" selected>
+                                        [Hiện tại: <%= getStatusText(currentStatus) %>]
+                                    </option>
+                                    
+                                    <option disabled>--- Chuyển đổi sang ---</option>
+                
+                                    <% if (currentStatus === 0) { %>
+                                        <option value="1">Đang Sử Dụng</option>
+                                    <% } %>
+                
+                                    <% if (currentStatus === 0 || currentStatus === 1) { %>
+                                        <option value="3">Hủy Đơn</option>
+                                    <% } %>
+                
+                                    <% if (currentStatus === 1) { %>
+                                        <option value="2">Đã Hoàn Tất (Check-out)</option>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-sync-alt me-2"></i> Xác nhận Cập nhật
+                            </button>
+                        </form>
+                    <% } else { %>
+                        <div class="alert alert-secondary text-center fw-bold">
+                            <i class="fas fa-lock me-2"></i> Đơn hàng đã <%= getStatusText(currentStatus) %> (Đã khóa thao tác).
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    Thông tin Khách hàng
+                </div>
+                <div class="card-body">
+                    <p><strong>Tên Người Đặt:</strong> <%= data.TenKH %></p>
+                    <p><strong>Email:</strong> <%= data.Email %></p>
+                    <p><strong>Điện thoại:</strong> <%= data.SDT %></p>
+                    <hr>
+                    <p><strong>Người Nhận Phòng:</strong> <%= data.TenNguoiNhan %></p>
+                    <p><strong>SĐT Người Nhận:</strong> <%= data.SDTNguoiNhan %></p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    Chi tiết Các Phòng Đã Đặt (<%= chiTietPhong.length %> phòng)
+                </div>
+                <ul class="list-group list-group-flush">
+                    <% chiTietPhong.forEach((phong, index) => { %>
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0"><%= index + 1 %>. <%= phong.TenPhong %></h6>
+                                    <small class="text-muted"><%= phong.LoaiPhong %> | Sức chứa: <%= phong.SucChua %> người</small>
+                                </div>
+                                <span class="fw-bold text-primary">
+                                    <%= phong.Gia.toLocaleString('vi-VN') %> VNĐ/đêm
+                                </span>
+                            </div>
+                            <% if (phong.HinhAnh) { %>
+                                <div class="mt-2 d-flex flex-wrap gap-2">
+                                    <% 
+                                        let hinhAnhArray = [];
+                                        try {
+                                            // ⭐ BƯỚC 1: Phân tích cú pháp chuỗi JSON thành mảng JavaScript
+                                            hinhAnhArray = JSON.parse(phong.HinhAnh);
+                                        } catch (e) {
+                                            // Xử lý trường hợp chuỗi không hợp lệ (nên hiển thị ảnh đơn nếu lỗi)
+                                            // Nếu lỗi, coi như là chuỗi tên file đơn (hoặc bỏ qua)
+                                            hinhAnhArray = [phong.HinhAnh]; 
+                                        }
+                                    %>
+                            
+                                    <% 
+                                        // Lấy tối đa 3 ảnh để hiển thị trong chi tiết đơn hàng
+                                        const imagesToShow = Array.isArray(hinhAnhArray) ? hinhAnhArray.slice(0, 3) : [];
+                                    %>
+                            
+                                    <% if (imagesToShow.length > 0) { %>
+                                        <% imagesToShow.forEach(imageName => { %>
+                                            <% if (imageName) { %>
+                                                <img src="/images/<%= imageName %>" 
+                                                     alt="<%= phong.TenPhong %>" 
+                                                     class="img-thumbnail" 
+                                                     style="max-height: 80px; width: auto; object-fit: cover;">
+                                            <% } %>
+                                        <% }); %>
+                                    <% } %>
+                                </div>
+                            <% } %>
+                        </li>
+                    <% }) %>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
