@@ -170,17 +170,35 @@ exports.updateTrangThaiPhong = async (maPhong, tinhTrang) => {
 exports.getTopBookedRooms = async () => {
   try {
     const query = `
-      SELECT 
+        SELECT 
         p.MaPhong,
         p.TenPhong,
         p.MaLoai,
         p.Gia,
+        p.MoTa,
+        p.HinhAnh,
+        p.DanhGia,
+        xa.TenXa,
+        tinh.TenTinh,
         COUNT(dp.MaCTDon) AS so_luot_dat
-      FROM Phong p
-      LEFT JOIN ChiTietDonDatPhong dp ON p.MaPhong = dp.MaPhong
-      GROUP BY p.MaPhong, p.TenPhong, p.MaLoai, p.Gia
-      ORDER BY so_luot_dat DESC
-      LIMIT 10;
+          FROM Phong p
+          LEFT JOIN ChiTietDonDatPhong dp ON p.MaPhong = dp.MaPhong
+          LEFT JOIN DiaChi dc ON p.MaDiaChi = dc.MaDiaChi
+          LEFT JOIN Xa xa ON dc.MaXa = xa.MaXa
+          LEFT JOIN Tinh tinh ON xa.MaTinh = tinh.MaTinh
+          GROUP BY 
+        p.MaPhong,
+        p.TenPhong,
+        p.MaLoai,
+        p.Gia,
+        p.MoTa,
+        p.HinhAnh,
+        p.DanhGia,
+        xa.TenXa,
+        tinh.TenTinh
+    ORDER BY so_luot_dat DESC
+    LIMIT 9;
+
     `;
     const [rows] = await db.execute(query);
 

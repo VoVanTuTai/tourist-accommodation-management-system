@@ -29,7 +29,14 @@ exports.renderDanhSachPhongCuaNhaCungCap = async (req, res) => {
     res.render("nhacungcap/phong/danhsach", {
       rooms: filteredRooms,
       currentFilter: filter,
-      ncc
+      ncc,
+      css: [
+        "/css/bootstrap.min.css",
+        "/css/header.css",
+        "/css/style.css",
+        "/css/ncc/phong.css"
+      ],
+      layout: "layout"
     });
   } catch (err) {
     console.error("❌ Lỗi renderDanhSachPhongCuaNhaCungCap:", err);

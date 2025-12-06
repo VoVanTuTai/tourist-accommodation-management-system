@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require("multer");
 const phongController = require("../controllers/phongController");
 const nhaCungCapController = require("../controllers/nhaCungCapController");
+const donDatPhongController = require("../controllers/donDatPhongController");
 const path = require("path");
 
 
@@ -49,4 +50,13 @@ router.get("/phong/trangthai/:id", phongController.renderUpdateStatus);
 router.post("/phong/trangthai/:id", phongController.handleUpdateStatus);
 //Xem chi tiết phòng (dành cho NCC)
 router.get("/phong/chitiet/:id", phongController.renderChiTietPhong);
+
+// 1. Danh sách đơn đặt phòng của NCC
+router.get("/don-dat-phong", donDatPhongController.renderDanhSachDonDatPhongNCC); 
+
+// 2. Xem chi tiết đơn đặt phòng của NCC
+router.get("/don-dat-phong/chitiet/:id", donDatPhongController.renderChiTietDonDatPhongNCC); 
+
+// 3. Xử lý Cập nhật trạng thái đơn đặt phòng (POST)
+router.post("/don-dat-phong/capnhat-trangthai/:id", donDatPhongController.handleCapNhatTrangThaiDonDatPhongNCC);
 module.exports = router;
