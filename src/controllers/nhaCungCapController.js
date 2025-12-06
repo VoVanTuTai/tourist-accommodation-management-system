@@ -243,7 +243,6 @@ exports.loginNhaCungCap = async (req, res) => {
         });
       }  
       
-  
       // 3️⃣ Kiểm tra mật khẩu
       const passwordMatch = await bcrypt.compare(Password, account.MatKhau);
       if (!passwordMatch) {

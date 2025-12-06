@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th12 02, 2025 lúc 08:31 AM
+-- Thời gian đã tạo: Th12 06, 2025 lúc 07:18 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.0.30
 
@@ -207,10 +207,10 @@ CREATE TABLE `dondatphong` (
 --
 
 INSERT INTO `dondatphong` (`MaDon`, `MaKhachHang`, `TenNguoiNhan`, `SDTNguoiNhan`, `NgayDat`, `NgayNhan`, `NgayTra`, `TrangThai`, `TongTien`, `LiDoHuy`) VALUES
-(11, 12, 'Nguyễn Văn A', '0912345611', '2025-10-10', '2025-10-15', '2025-10-17', 3, 1200000, 'Tìm được nơi khác tốt hơn'),
-(12, 12, 'Nguyễn Văn B', '0123452290', '2025-09-25', '2025-09-28', '2025-09-30', 0, 1800000, NULL),
-(13, 12, 'Võ Văn Tú Tài', '0341213412', '2025-09-10', '2025-09-12', '2025-09-14', 0, 950000, NULL),
-(14, 12, 'Nguyễn Văn C', '0345435333', '2025-08-20', '2025-08-22', '2025-08-24', 0, 1350000, NULL),
+(11, 12, 'Nguyễn Văn A', '0912345611', '2025-10-10', '2025-10-15', '2025-10-17', 0, 1200000, 'Tìm được nơi khác tốt hơn'),
+(12, 12, 'Nguyễn Văn B', '0123452290', '2025-09-25', '2025-09-28', '2025-09-30', 1, 1800000, NULL),
+(13, 12, 'Võ Văn Tú Tài', '0341213412', '2025-09-10', '2025-09-12', '2025-09-14', 2, 950000, NULL),
+(14, 12, 'Nguyễn Văn C', '0345435333', '2025-08-20', '2025-08-22', '2025-08-24', 2, 1350000, NULL),
 (15, 12, 'Võ Văn Tú Tài', '0456347755', '2025-10-18', '2025-10-20', '2025-10-22', 3, 2100000, 'Thay đổi kế hoạch');
 
 -- --------------------------------------------------------
@@ -409,17 +409,9 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`session_id`, `expires`, `data`) VALUES
-('lWQR23rhlYS5HBS26-pGpOoAV-1HKntr', 1764747027, '{\"cookie\":{\"originalMaxAge\":false,\"expires\":false,\"httpOnly\":true,\"path\":\"/\"},\"flash\":{},\"user\":{\"MaTaiKhoan\":12,\"TaiKhoan\":\"tutai@gmail.com\",\"PhanQuyen\":\"NhaCungCap\",\"TrangThai\":\"HoatDong\",\"MaNCC\":1,\"TenNCC\":\"Khách sạn Hoàng Gia\"}}'),
-('sess_0001', 1893456000, '{\"user\":\"1\"}'),
-('sess_0002', 1893456000, '{\"user\":\"2\"}'),
-('sess_0003', 1893456000, '{\"user\":\"3\"}'),
-('sess_0004', 1893456000, '{\"user\":\"4\"}'),
-('sess_0005', 1893456000, '{\"user\":\"5\"}'),
-('sess_0006', 1893456000, '{\"user\":\"6\"}'),
-('sess_0007', 1893456000, '{\"user\":\"7\"}'),
-('sess_0008', 1893456000, '{\"user\":\"8\"}'),
-('sess_0009', 1893456000, '{\"user\":\"9\"}'),
-('sess_0010', 1893456000, '{\"user\":\"10\"}');
+('03Uw00lwUwWGhVYFNcHyexAaEEmD5CJi', 1765006859, '{\"cookie\":{\"originalMaxAge\":7200000,\"expires\":\"2025-12-06T07:40:59.498Z\",\"httpOnly\":true,\"path\":\"/\"},\"flash\":{}}'),
+('Fk1NfcZEI9Xe4Unl_XNbsKKNOOMqk54f', 1765012592, '{\"cookie\":{\"originalMaxAge\":false,\"expires\":false,\"httpOnly\":true,\"path\":\"/\"},\"flash\":{},\"user\":{\"MaTaiKhoan\":12,\"TaiKhoan\":\"tutai@gmail.com\",\"PhanQuyen\":\"NhaCungCap\",\"TrangThai\":\"HoatDong\",\"MaNCC\":1,\"TenNCC\":\"Khách sạn Hoàng Gia\"}}'),
+('Zsm_BbVBhbW8BaqZxPA-p_0xcUYQKjgG', 1765088186, '{\"cookie\":{\"originalMaxAge\":false,\"expires\":false,\"httpOnly\":true,\"path\":\"/\"},\"flash\":{},\"user\":{\"MaTaiKhoan\":12,\"TaiKhoan\":\"tutai@gmail.com\",\"PhanQuyen\":\"NhaCungCap\",\"TrangThai\":\"HoatDong\",\"MaNCC\":1,\"TenNCC\":\"Khách sạn Hoàng Gia\"}}');
 
 -- --------------------------------------------------------
 

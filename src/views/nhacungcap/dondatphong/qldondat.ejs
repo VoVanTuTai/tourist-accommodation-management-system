@@ -9,25 +9,16 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark active" href="/nhacungcap/phong">
-                            <i class="bi bi-house-door me-2"></i> **Danh sách phòng**
+                        <a class="nav-link text-dark" href="/nhacungcap/phong">
+                            <i class="bi bi-house-door me-2"></i> Danh sách phòng
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="/nhacungcap/don-dat-phong">
-                            <i class="bi bi-calendar-check me-2"></i> Đơn đặt phòng
+                        <a class="nav-link text-dark active" href="/nhacungcap/don-dat-phong">
+                            <i class="bi bi-calendar-check me-2"></i>Đơn đặt phòng
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" href="/nhacungcap/thongtin">
-                            <i class="bi bi-info-circle me-2"></i> Thông tin chung
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" href="/nhacungcap/cai-dat">
-                            <i class="bi bi-gear me-2"></i> Cài đặt
-                        </a>
-                    </li>
+                    
                 </ul>
             </div>
         </div>
@@ -80,7 +71,6 @@
                             <th>Mã Đơn</th>
                             <th>Mã KH</th>
                             <th>Người Nhận</th>
-                            <th>SĐT</th>
                             <th>Ngày Đặt</th>
                             <th>Ngày Nhận</th> 
                             <th>Ngày Trả</th>
@@ -97,7 +87,6 @@
                                     
                                     <td><%= order.MaKhachHang %></td>
                                     <td><%= order.TenNguoiNhan %></td>
-                                    <td><%= order.SDTNguoiNhan %></td>
                                     <td><%= order.NgayDat %></td> 
                                     <td><%= order.NgayNhan %></td>
                                     
@@ -114,7 +103,7 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <a href="/nhacungcap/don-dat-phong/chitiet/<%= order.MaDon %>" class="btn btn-sm btn-outline-info me-2">
+                                        <a href="/nhacungcap/don-dat-phong/chitiet/<%= order.MaDon %>" class="btn btn-outline-primary btn-sm fw-bolder">
                                             Chi tiết
                                         </a>
 
@@ -241,11 +230,6 @@
 /* Các thành phần Form trong bảng (dropdown cập nhật) */
 .main-content-panel .form-select-sm {
     background-color: rgba(255, 255, 255, 0.9) !important;
-}
-
-/* Nút Chi tiết */
-.action-detail-btn {
-    /* Đã được loại bỏ vì bạn đã chuyển sang dùng class Bootstrap btn-outline-info */
 }
 
 /* Giá tiền */
