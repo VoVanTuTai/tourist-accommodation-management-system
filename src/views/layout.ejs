@@ -24,6 +24,8 @@
             <link rel="stylesheet" href="<%= path %>" />
           <% }) %> 
         <% } %>
+        <%- defineContent('style') %> 
+        <%- defineContent('head-scripts') %> 
     </head>
 
     <body>
@@ -82,5 +84,6 @@
         <% js.forEach(function(file) { %>
         <script src="<%= file %>"></script>
         <% }) %> <% } %>
+        <%- defineContent('footer-scripts') %> 
     </body>
 </html>

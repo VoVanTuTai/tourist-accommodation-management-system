@@ -195,8 +195,8 @@ CREATE TABLE `dondatphong` (
   `TenNguoiNhan` text NOT NULL,
   `SDTNguoiNhan` varchar(10) DEFAULT NULL,
   `NgayDat` date DEFAULT NULL,
-  `NgayNhan` date NOT NULL DEFAULT current_timestamp(),
-  `NgayTra` date NOT NULL DEFAULT current_timestamp(),
+  `NgayNhan` datetime NOT NULL DEFAULT current_timestamp(),
+  `NgayTra` datetime NOT NULL DEFAULT current_timestamp(),
   `TrangThai` tinyint(4) DEFAULT 0,
   `TongTien` double DEFAULT 0,
   `LiDoHuy` text DEFAULT NULL
@@ -353,7 +353,7 @@ INSERT INTO `phanhoi` (`MaPh`, `NoiDung`, `NgayPh`, `MaDanhGia`, `MaNhaCungCap`)
 
 CREATE TABLE `phong` (
   `MaPhong` int(11) NOT NULL,
-  `TenPhong` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'Phòng xịn',
+  `TenPhong` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `MaLoai` int(11) NOT NULL,
   `Gia` double NOT NULL DEFAULT 0,
   `SucChua` int(11) DEFAULT 1,
