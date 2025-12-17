@@ -67,14 +67,14 @@ nav.navbar {
 }
 
 /* Nav links */
-.nav-link {
+.header .nav-link {
     color: white !important;
     
     padding: 0.5rem 1rem !important;
     transition: 0.3s ease;
 }
 
-.nav-link:hover {
+.header .nav-link:hover {
     background: rgba(255,255,255,0.2);
     border-radius: 8px;
     transform: translateY(-2px);

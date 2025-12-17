@@ -1,4 +1,4 @@
-const { NhaCungCap, addNhaCungCap } = require("../models/NhaCungCap") // Model phòng
+const NhaCungCap = require("../models/NhaCungCap") // Model phòng
 const bcrypt = require("bcryptjs")
 const TaiKhoan = require("../models/taikhoan")
 const db = require("../../config/db");
@@ -33,7 +33,13 @@ exports.renderDangKyNhaCungCap = async (req, res) => {
 }
 exports.renderDashboard = async (req, res) => {
   // 🧭 Lấy danh sách tỉnh và xã (để hiển thị select)
+  
   res.render("nhacungcap/dashboard", {
+    data: { tongPhong: 120, phongHoatDong: 75, phongBaoTri: 10, tongDon: 50, doanhThu: 1000 },
+    title: "Dashboard Nhà Cung Cấp",
+    errors: {},
+    formData: {},
+    // layout: false // Sử dụng layout khác cho dashboard
   })
 }
 
@@ -99,7 +105,7 @@ exports.registerNhaCungCap = async (req, res) => {
         const giayPhepKD = req.file ? req.file.originalname : ""
 
         if (!giayPhepKD) {
-            errors.giayPhepKD = "Vui lòng tải giấy phép kinh doanh."
+            errors.GiayPhepKD = "Vui lòng cung cấp giấy phép kinh doanh."
         }
 
         if (Object.keys(errors).length > 0) {
@@ -156,18 +162,18 @@ exports.registerNhaCungCap = async (req, res) => {
         data.MaDiaChi = maDiaChi
         data.MaTaiKhoan = maTaiKhoan
         // Tạo tài khoản cho nhà cung cấp
-        const result = await addNhaCungCap(data)
+        const result = await NhaCungCap.create(data)
 
         await db.query("COMMIT;");
         res.send(`
-        <html>
-            <body style="font-family: sans-serif; text-align:center; margin-top:100px;">
-            <h2 style="color: green;">Đăng ký thành công!</h2>
-            <p>Chờ xác nhận tài khoản...</p>
-            <p><a href="/">Trở về trang chủ</a></p>
-            </body>
-        </html>
-    `)
+            <html>
+                <body style="font-family: sans-serif; text-align:center; margin-top:100px;">
+                <h2 style="color: green;">Đăng ký thành công!</h2>
+                <p>Chờ xác nhận tài khoản...</p>
+                <p><a href="/">Trở về trang chủ</a></p>
+                </body>
+            </html>
+        `)
     } catch (error) {
         console.error("Xảy ra lỗi trong khi đăng ký nhà cung cấp:", error)
         await db.query("ROLLBACK;");
@@ -290,7 +296,7 @@ exports.loginNhaCungCap = async (req, res) => {
       console.log("✅ NCC đăng nhập:", req.session.user);
   
       // 7️⃣ Chuyển hướng đến danh sách phòng
-      res.redirect("/nhacungcap/phong");
+      res.redirect("/nhacungcap/");
     } catch (err) {
       console.error("❌ Lỗi trong loginNhaCungCap:", err);
       res.status(500).render("nhacungcap/dangnhap", {

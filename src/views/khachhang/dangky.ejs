@@ -1,12 +1,16 @@
 
 <div class="register-container">
   <div class="register-box">
-    <h2>Đăng ký tài khoản</h2>
+    <h2 class="h3 mb-2 text-capitalize" style="color: #0077b6;">Đăng ký tài khoản</h2>
 
     <% if (error) { %>
       <div class="error-box"><%= error %></div>
     <% } %>
-
+    <div>
+      <a 
+        href="/nhacungcap/dangky"
+        class="text-start d-inline-block my-3 text-decoration-underline text-primary" style="font-size: 13px;">Đăng ký cho nhà cung cấp.</a>
+    </div>
     <form action="/khachhang/dangky" method="POST" class="register-form">
       <div class="form-group">
         <label for="HoTen">Họ và tên:</label>
@@ -50,7 +54,6 @@
 
       <div class="form-group submit">
         <button type="submit" class="btn-submit">Đăng ký</button>
-        <a href="/nhacungcap/dangky" class="text-end d-block my-3">Đăng ký cho nhà cung cấp.</a>
       </div>
     </form>
   </div>
@@ -77,7 +80,7 @@
 
   .register-box h2 {
     text-align: center;
-    color: #0077b6;
+    color: #000000;
     margin-bottom: 25px;
   }
 
