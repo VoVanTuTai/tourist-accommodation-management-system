@@ -1,0 +1,186 @@
+<div class="container py-4">
+
+  <!-- Tiêu đề -->
+  <h3 class="mb-4 fw-bold">
+    <i class="bi bi-bar-chart-line-fill text-primary"></i>
+    Báo cáo doanh thu hoa hồng
+  </h3>
+
+  <!-- Bộ lọc -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body d-flex flex-wrap gap-3 align-items-end">
+      <div>
+        <label class="form-label">Từ ngày</label>
+        <input type="date" id="from" class="form-control">
+      </div>
+      <div>
+        <label class="form-label">Đến ngày</label>
+        <input type="date" id="to" class="form-control">
+      </div>
+      <button class="btn btn-primary px-4" onclick="loadData()">
+        <i class="bi bi-funnel-fill"></i> Lọc
+      </button>
+     <button onclick="exportPDF()" style="
+      background-color: #ff4d4d; 
+      color: white; 
+      border: none; 
+      padding: 10px 15px; 
+      border-radius: 5px; 
+      cursor: pointer;
+      font-weight: bold;
+      margin-right: 10px;">
+      📄 Xuất PDF
+  </button>
+
+  <button onclick="exportExcel()" style="
+      background-color: #217346; 
+      color: white; 
+      border: none; 
+      padding: 10px 15px; 
+      border-radius: 5px; 
+      cursor: pointer;
+      font-weight: bold;">
+      Excel 📊
+  </button>
+    </div>
+  </div>
+
+  <!-- Tổng hoa hồng -->
+  <div class="card mb-4 shadow-sm text-center">
+    <div class="card-body">
+      <h6 class="text-muted mb-1">Tổng hoa hồng</h6>
+      <h2 class="text-success fw-bold mb-0">
+        <span id="total">0</span> VNĐ
+      </h2>
+    </div>
+  </div>
+
+  <!-- Biểu đồ -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <canvas id="commissionChart" height="100"></canvas>
+    </div>
+  </div>
+
+  <!-- Bảng thống kê -->
+  <div class="card shadow-sm">
+    <div class="card-body p-0">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-dark text-center">
+          <tr>
+            <th style="width:60px">#</th>
+            <th class="text-start">Nhà cung cấp</th>
+            <th class="text-end">Hoa hồng (VNĐ)</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- ChartJS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+let chart;
+
+function getFilterValues() {
+  return {
+    from: document.getElementById("from").value,
+    to: document.getElementById("to").value
+  };
+}
+
+function loadData() {
+  const { from, to } = getFilterValues();
+
+  let url = "/admin/reports/commission";
+  if (from && to) {
+    url += `?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+  }
+
+  fetch(url)
+    .then(res => res.json())
+    .then(res => {
+      document.getElementById("total").innerText =
+        Number(res.totalCommission || 0).toLocaleString("vi-VN");
+
+      const data = res.data.sort((a, b) => b.TongHoaHong - a.TongHoaHong);
+
+      const tbody = document.getElementById("tableBody");
+      tbody.innerHTML = "";
+
+      const labels = [];
+      const values = [];
+
+      data.forEach((r, index) => {
+        labels.push(r.TenNCC);
+        values.push(r.TongHoaHong);
+
+        const isTop = index === 0;
+
+        tbody.innerHTML += `
+          <tr class="${isTop ? 'table-warning fw-bold' : ''}">
+            <td class="text-center">${index + 1}</td>
+            <td>${isTop ? '🥇 ' : ''}${r.TenNCC}</td>
+            <td class="text-end text-success">
+              ${Number(r.TongHoaHong).toLocaleString("vi-VN")}
+            </td>
+          </tr>
+        `;
+      });
+
+      if (chart) chart.destroy();
+      chart = new Chart(document.getElementById("commissionChart"), {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [{
+            label: "Hoa hồng (VNĐ)",
+            data: values,
+            backgroundColor: "#0d6efd",
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: {
+              ticks: {
+                callback: value => value.toLocaleString("vi-VN")
+              }
+            }
+          }
+        }
+      });
+    })
+    .catch(err => console.error("❌ Lỗi load dữ liệu:", err));
+}
+
+function exportPDF() {
+  const { from, to } = getFilterValues();
+
+  let url = "/admin/reports/commission/export/pdf";
+  if (from && to) {
+    url += `?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+  }
+
+  window.location.href = url;
+}
+
+function exportExcel() {
+  const { from, to } = getFilterValues();
+
+  let url = "/admin/reports/commission/export/excel";
+  if (from && to) {
+    url += `?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+  }
+
+  window.location.href = url;
+}
+
+loadData();
+</script>
