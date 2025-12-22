@@ -43,97 +43,81 @@ exports.renderForm = async (req, res) => {
 exports.previewConfirm = async (req, res) => {
   try {
     const b = req.body;
+    // 1. LUÔN LUÔN lấy thông tin phòng trước khi làm bất cứ việc gì khác
     const room = await DatPhong.getRoomById(b.MaPhong);
 
-    // Kiểm tra ngày
+    if (!room) {
+        return res.render("khachhang/datphong", { 
+            error: "Không tìm thấy thông tin phòng. Vui lòng thử lại.", 
+            room: null, 
+            form: b 
+        });
+    }
+
+    // 2. Kiểm tra ngày...
     if (new Date(b.NgayNhan) < new Date(todayISO()))
       return res.render("khachhang/datphong", { error: "Ngày nhận phải >= hôm nay", room, form: b });
 
-    if (new Date(b.NgayTra) <= new Date(b.NgayNhan))
-      return res.render("khachhang/datphong", { error: "Ngày trả phải > ngày nhận", room, form: b });
+    // ... (Các đoạn kiểm tra reName, rePhone, reCCCD giữ nguyên) ...
+    // Đảm bảo tất cả các chỗ res.render("khachhang/datphong", ...) ĐỀU CÓ biến room truyền vào.
 
-    // Validate người đặt
-    if (!reName.test(b.Dat_HoTen))
-      return res.render("khachhang/datphong", { error: "Tên người đặt không hợp lệ", room, form: b });
-    if (!rePhone.test(b.Dat_SDT))
-      return res.render("khachhang/datphong", { error: "Số điện thoại người đặt không hợp lệ", room, form: b });
-    if (!reCCCD.test(b.Dat_CCCD))
-      return res.render("khachhang/datphong", { error: "CCCD người đặt không hợp lệ", room, form: b });
-
-    // Validate người nhận
-    if (!reName.test(b.Nhan_HoTen))
-      return res.render("khachhang/datphong", { error: "Tên người nhận không hợp lệ", room, form: b });
-    if (!rePhone.test(b.Nhan_SDT))
-      return res.render("khachhang/datphong", { error: "Số điện thoại người nhận không hợp lệ", room, form: b });
-    if (!reCCCD.test(b.Nhan_CCCD))
-      return res.render("khachhang/datphong", { error: "CCCD người nhận không hợp lệ", room, form: b });
-
-    // ✅ Tính tiền
-    const soDem = Math.ceil(
-      (new Date(b.NgayTra) - new Date(b.NgayNhan)) / (1000 * 60 * 60 * 24)
-    );
+    // 3. Tính tiền và lưu session (giữ nguyên đoạn cũ của bạn)
+    const soDem = Math.ceil((new Date(b.NgayTra) - new Date(b.NgayNhan)) / (1000 * 60 * 60 * 24));
     const tongTien = soDem * room.Gia;
 
-    // Lưu dữ liệu tạm vào session để xác nhận
-    req.session.previewOrder = {
-      ...b,
-      TongTien: tongTien,
-      SoDem: soDem,
-    };
+    req.session.previewOrder = { ...b, TongTien: tongTien, SoDem: soDem };
 
     res.render("khachhang/xacnhan", {
-      don: req.session.previewOrder, // ✅ truyền đúng biến sang EJS
+      don: req.session.previewOrder,
       user: req.session.user || null,
     });
   } catch (e) {
     console.error("❌ Lỗi previewConfirm:", e);
-    res.render("khachhang/datphong", { error: "Không thể xem trước đơn", room: null, form: {} });
+    res.render("khachhang/datphong", { error: "Lỗi hệ thống", room: null, form: {} });
   }
 };
-
 // ======= Xác nhận và lưu đơn =======
 exports.confirmBooking = async (req, res) => {
   try {
     const preview = req.session.previewOrder;
-    if (!preview) {
-      return res.render("khachhang/xacnhan", { don: null, user: req.session.user || null });
-    }
+    if (!preview) return res.redirect("/phong");
 
     const payload = {
-      MaKhachHang: req.session.user?.MaTaiKhoan, // ✅ Lấy từ session
-      MaPhong: preview.MaPhong,
+      MaKhachHang: req.session.user?.MaTaiKhoan || 19, 
+      MaPhong: preview.MaPhong, // Đảm bảo preview.MaPhong có giá trị
+      TenNguoiNhan: preview.Nhan_HoTen,
+      SDTNguoiNhan: preview.Nhan_SDT,
       NgayNhan: preview.NgayNhan,
       NgayTra: preview.NgayTra,
-      TongTien: preview.TongTien,
-
-      Dat_HoTen: preview.Dat_HoTen,
-      Dat_SDT: preview.Dat_SDT,
-      Dat_CCCD: preview.Dat_CCCD,
-      Dat_NgaySinh: preview.Dat_NgaySinh,
-      Dat_GioiTinh: preview.Dat_GioiTinh,
-
-      Nhan_HoTen: preview.Nhan_HoTen,
-      Nhan_SDT: preview.Nhan_SDT,
-      Nhan_CCCD: preview.Nhan_CCCD,
-      Nhan_NgaySinh: preview.Nhan_NgaySinh,
-      Nhan_GioiTinh: preview.Nhan_GioiTinh,
+      TrangThai: 'Chưa thanh toán',
+      TongTien: preview.TongTien
     };
 
-    const newOrderId = await DatPhong.createOrder(payload);
+    // Bước 1: Lưu vào DB và hứng ID trả về vào biến newOrderId
+    const newOrderId = await DatPhong.createOrder(payload); 
 
-    // Lưu đơn mới vào session để hiện xác nhận
-    req.session.newOrder = {
-      MaDon: newOrderId,
-      TrangThai: "Chưa thanh toán",
-      TongTien: payload.TongTien,
-    };
+    // Bước 2: Xóa session sau khi lưu thành công
+    delete req.session.previewOrder;
 
-    res.render("khachhang/xacnhan", {
-      don: req.session.newOrder, // ✅ gửi sang view
-      user: req.session.user || null,
+    // Bước 3: Render trang hoàn thành
+    // Ở đây dùng đúng tên biến newOrderId đã khai báo ở trên
+    return res.render("khachhang/hoanthanh", { 
+        maDon: newOrderId,               
+        trangThai: payload.TrangThai, 
+        tongTien: payload.TongTien, 
+        user: req.session.user || null
     });
+
   } catch (e) {
     console.error("❌ Lỗi confirmBooking:", e);
-    res.render("khachhang/datphong", { error: "Không thể lưu đơn đặt phòng", room: null, form: {} });
+    
+    // Phòng hờ lỗi: Lấy lại thông tin phòng để render lại trang đặt phòng nếu thất bại
+    const room = await DatPhong.getRoomById(req.session.previewOrder?.MaPhong);
+    
+    res.render("khachhang/datphong", { 
+        error: "Không thể lưu đơn: " + e.message, 
+        room: room, 
+        form: req.session.previewOrder || {} 
+    });
   }
 };

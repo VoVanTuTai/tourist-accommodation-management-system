@@ -5,8 +5,14 @@ module.exports = (req, res, next) => {
   // ✅ Nếu chưa đăng nhập
   if (!user) {
     return res.redirect('/home', {
-      js: process.env.HOME_SCRIPTS,
-      css: process.env.HOME_STYLES
+      js: [
+        "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js",
+        "/js/home/timkiem.js"
+      ],
+      css: [
+          "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css",
+          "/css/home.css"
+      ]
     });
   }
 
@@ -18,8 +24,14 @@ module.exports = (req, res, next) => {
   if (role === 'KhachHang') {
     if (baseUrl.startsWith('/nha-cung-cap') || baseUrl.startsWith('/admin')) {
       return res.redirect('/home', {
-      js: process.env.HOME_SCRIPTS,
-      css: process.env.HOME_STYLES
+      js: [
+        "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js",
+        "/js/home/timkiem.js"
+      ],
+      css: [
+          "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css",
+          "/css/home.css"
+      ]
     });
     }
   }
@@ -28,8 +40,14 @@ module.exports = (req, res, next) => {
   if (role === 'NhaCungCap') {
     if (baseUrl.startsWith('/admin')) {
       return res.redirect('/home', {
-      js: process.env.HOME_SCRIPTS,
-      css: process.env.HOME_STYLES
+        js: [
+          "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js",
+          "/js/home/timkiem.js"
+        ],
+        css: [
+            "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css",
+            "/css/home.css"
+        ]
     });
     }
   }
@@ -38,8 +56,14 @@ module.exports = (req, res, next) => {
   if (role === 'Admin') {
     if (baseUrl.startsWith('/nha-cung-cap')) {
       return res.redirect('/home', {
-      js: process.env.HOME_SCRIPTS,
-      css: process.env.HOME_STYLES
+        js: [
+          "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js",
+          "/js/home/timkiem.js"
+        ],
+        css: [
+            "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css",
+            "/css/home.css"
+        ]
     });
     }
   }

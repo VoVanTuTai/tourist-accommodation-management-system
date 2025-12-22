@@ -1,120 +1,465 @@
 <div class="container my-5">
-  <div class="card shadow border-0">
-    <div class="card-header bg-info text-white text-center">
-      <h3 class="mb-0">⭐ Đánh giá đơn #<%= don?.MaDon || '' %></h3>
+
+  <div class="review-card shadow">
+    <div class="review-header">
+      <h3 class="mb-0">⭐ Đánh giá đơn #<%= don?.MaDon || "" %></h3>
     </div>
 
-    <div class="card-body p-4">
+    <div class="review-body">
+
       <% if (error) { %>
+
         <div class="alert alert-warning text-center"><%= error %></div>
-        <div class="text-center">
+        <div class="text-center mt-3">
           <a href="/khachhang/don-dat-phong" class="btn btn-secondary">⬅ Quay lại</a>
         </div>
+
       <% } else { %>
 
         <!-- 🔹 Thông tin đơn -->
-        <div class="mb-3">
-          <p class="mb-1"><strong>Chỗ ở / NCC:</strong> <%= don?.TenChoO || "Không rõ" %></p>
-          <p class="mb-1"><strong>Phòng đã đặt:</strong> <%= don?.DanhSachPhong || "Không rõ" %></p>
-          <p class="mb-1"><strong>Thời gian:</strong>
-            <%= don?.NgayNhan ? new Date(don.NgayNhan).toLocaleDateString("vi-VN") : "?" %> → 
+        <div class="order-info mb-3">
+          <p><strong>Chỗ ở / NCC:</strong> <%= don?.TenChoO || "Không rõ" %></p>
+          <p><strong>Phòng đã đặt:</strong> <%= don?.TenPhong || "Không rõ" %></p>
+          <p><strong>Thời gian:</strong>
+            <%= don?.NgayNhan ? new Date(don.NgayNhan).toLocaleDateString("vi-VN") : "?" %> →
             <%= don?.NgayTra ? new Date(don.NgayTra).toLocaleDateString("vi-VN") : "?" %>
           </p>
-          <p class="mb-0"><strong>Tổng tiền:</strong> <%= (don?.TongTien || 0).toLocaleString("vi-VN") %> ₫</p>
+          <p class="mb-0"><strong>Tổng tiền:</strong>
+            <%= (don?.TongTien || 0).toLocaleString("vi-VN") %> ₫
+          </p>
         </div>
 
         <hr>
 
         <% if (!daDanhGia || editMode) { %>
-          <!-- 📝 Form đánh giá -->
-          <form method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width:640px;">
 
-            <!-- 🔸 Chọn phòng cần đánh giá -->
+          <!-- 📝 FORM ĐÁNH GIÁ -->
+          <form method="POST" enctype="multipart/form-data" class="mx-auto review-form">
+
+            <!-- 🔸 Chọn phòng -->
             <div class="mb-3">
-              <label class="form-label fw-bold">Chọn phòng để đánh giá</label>
-              <select name="MaPhong" id="MaPhong" class="form-select" required>
-                <% if (danhSachPhong && danhSachPhong.length > 0) { %>
-                  <% danhSachPhong.forEach(phong => { %>
-                    <option value="<%= phong.MaPhong %>">
-                      <%= phong.TenPhong %> - <%= phong.Gia.toLocaleString("vi-VN") %> ₫
-                    </option>
-                  <% }) %>
-                <% } else { %>
-                  <option disabled>Không có phòng nào trong đơn</option>
-                <% } %>
-              </select>
+                <label class="form-label fw-bold">Chọn phòng để đánh giá</label>
+                <select name="MaPhong" class="form-select" required>
+                    <% danhSachPhong?.forEach(phong => { %>
+                        <option value="<%= phong.MaPhong %>" 
+                            <%= phong.MaPhong === selectedMaPhong ? "selected" : "" %>>
+                            <%= phong.TenPhong %> - <%= phong.Gia.toLocaleString("vi-VN") %> ₫
+                        </option>
+                    <% }) %>
+                </select>
             </div>
 
-            <!-- 🔸 Số sao -->
+            <!-- 🔸 số sao -->
             <div class="mb-3 text-center">
-              <label class="form-label fw-bold">Số sao</label><br>
-              <div id="rating" class="fs-3">
-                <% const sao = (danhGia?.SoSao) || 0; %>
-                <% for (let i = 1; i <= 5; i++) { %>
-                  <i class="bi bi-star-fill star <%= i <= sao ? 'text-warning' : 'text-secondary' %>" 
-                    data-value="<%= i %>" style="cursor:pointer;"></i>
-                <% } %>
-              </div>
-              <input type="hidden" name="SoSao" id="SoSao" value="<%= sao %>" required>
+                <label class="form-label fw-bold">Số sao</label><br>
+
+                <% const sao = danhGia?.SoSao || 0; %>
+
+                <div id="rating" class="rating-stars">
+                    <% for (let i = 1; i <= 5; i++) { %>
+                        <i class="bi bi-star-fill star <%= i <= sao ? 'text-warning' : 'text-secondary' %>" 
+                          data-value="<%= i %>"></i>
+                    <% } %>
+                </div>
+
+                <input type="hidden" name="SoSao" id="SoSao" value="<%= sao %>" required>
             </div>
 
-            <!-- 🔸 Nội dung -->
+            <!-- 🔸 Nội dung đánh giá -->
             <div class="mb-3">
-              <label class="form-label fw-bold">Nội dung</label>
-              <textarea name="NoiDung" rows="4" class="form-control" required><%= danhGia?.NoiDung || '' %></textarea>
+                <label class="form-label fw-bold">Nội dung đánh giá</label>
+                <textarea name="NoiDung" rows="4" class="form-control" required><%= danhGia?.NoiDung || '' %></textarea>
             </div>
 
             <!-- 🔸 Hình ảnh -->
             <div class="mb-3">
-              <label class="form-label fw-bold">Hình ảnh (tùy chọn)</label>
-              <input type="file" name="HinhAnh" accept="image/*" class="form-control">
-              <% if (danhGia?.HinhAnh) { %>
-                <div class="mt-2 text-center">
-                  <img src="/images/<%= danhGia.HinhAnh %>" class="img-thumbnail" style="max-width:160px;">
+                <label class="form-label fw-bold">Hình ảnh (tùy chọn)</label>
+
+                <input type="file" name="HinhAnh" accept="image/*" class="form-control" multiple>
+
+                <% if (danhGia?.HinhAnh && danhGia.HinhAnh.length > 0) { %>
+
+                <!-- 🖼️ GALLERY ẢNH -->
+                <div class="review-gallery mt-4">
+                    <% danhGia.HinhAnh.forEach(img => { %>
+                        <div class="review-img-wrapper">
+                            <img src="/images/danhgia/<%= img %>" class="review-img-item">
+                        </div>
+                    <% }) %>
                 </div>
-              <% } %>
+
+                <% } %>
             </div>
 
-            <!-- 🔸 Nút hành động -->
-            <div class="text-center">
-              <button class="btn btn-primary px-4"><%= daDanhGia ? "Cập nhật đánh giá" : "Gửi đánh giá" %></button>
-              <a href="/khachhang/don-dat-phong/<%= don.MaDon %>/danhgia" class="btn btn-secondary ms-2">Hủy</a>
+            <!-- 🔸 Nút -->
+            <div class="text-center mt-4">
+                <button class="btn btn-primary px-4">
+                    <%= daDanhGia ? "Cập nhật đánh giá" : "Gửi đánh giá" %>
+                </button>
+
+                <a href="/khachhang/don-dat-phong/<%= don.MaDon %>/danhgia"
+                    class="btn btn-secondary ms-2 px-4">
+                    Hủy
+                </a>
             </div>
+
           </form>
+
+
         <% } else { %>
-          <!-- ✅ Đã đánh giá -->
+
+          <!-- ⭐ Đã đánh giá -->
           <div class="text-center">
-            <div class="fs-4 text-warning mb-2">
+
+            <!-- Sao -->
+            <div class="rating-stars-display mb-3">
               <% for (let i = 1; i <= danhGia.SoSao; i++) { %>
                 <i class="bi bi-star-fill"></i>
               <% } %>
             </div>
-            <p><strong>Nội dung:</strong> <%= danhGia.NoiDung %></p>
-            <% if (danhGia.HinhAnh) { %>
-              <img src="/images/<%= danhGia.HinhAnh %>" class="img-thumbnail" style="max-width:300px;">
+
+            <p class="review-content"><strong>Nội dung:</strong> <%= danhGia.NoiDung %></p>
+
+            <!-- Ảnh đánh giá -->
+            <% if (danhGia?.HinhAnh && danhGia.HinhAnh.length > 0) { %>
+              <div class="review-gallery mt-4">
+
+                <% danhGia.HinhAnh.forEach(img => { %>
+                  <div class="review-img-wrapper">
+                    <img src="/images/danhgia/<%= img %>" class="review-img-item">
+                  </div>
+                <% }) %>
+
+              </div>
             <% } %>
-            <div class="mt-3">
-              <a href="/khachhang/don-dat-phong/<%= don.MaDon %>/danhgia?edit=true" class="btn btn-warning">✏️ Sửa đánh giá</a>
-              <a href="/khachhang/don-dat-phong" class="btn btn-secondary ms-2">⬅ Quay lại</a>
+            <!-- ⭐ Phản hồi từ Nhà cung cấp -->
+              <% if (phanHoi && phanHoi.NoiDung) { %>
+                <div class="provider-reply mt-4">
+                
+                    <div class="reply-header">
+                        <i class="bi bi-chat-left-quote"></i>
+                        Phản hồi từ nhà cung cấp
+                    </div>
+                
+                    <div class="reply-body">
+                        <p><%= phanHoi.NoiDung %></p>
+                        <span class="reply-date">
+                            <%= new Date(phanHoi.NgayPh).toLocaleDateString("vi-VN") %>
+                        </span>
+                    </div>
+                
+                </div>
+                <% } %>
+  
+            <div class="mt-4">
+              <a href="/khachhang/don-dat-phong/<%= don.MaDon %>/danhgia?edit=true"
+                class="btn btn-warning px-4">
+                ✏️ Sửa đánh giá
+              </a>
+
+              <a href="/khachhang/don-dat-phong"
+                class="btn btn-secondary ms-2 px-4">
+                ⬅ Quay lại
+              </a>
             </div>
           </div>
+        </div>
+
         <% } %>
 
       <% } %>
+
     </div>
   </div>
 </div>
 
+<style>
+/* ================================
+   GLASS REVIEW CARD
+================================ */
+.review-card {
+    border-radius: 20px;
+    overflow: hidden;
+
+    background: rgba(255,255,255,0.18);         /* Nền mờ */
+    backdrop-filter: blur(18px);                /* Hiệu ứng mờ */
+    -webkit-backdrop-filter: blur(18px);
+    
+    border: 1px solid rgba(255,255,255,0.35);   /* Viền trong suốt */
+    box-shadow: 
+        0 8px 25px rgba(0,0,0,0.25),            /* Đổ bóng */
+        inset 0 0 25px rgba(255,255,255,0.05);  /* Ánh sáng mờ bên trong */
+}
+
+/* ================================
+   HEADER — GLASS GRADIENT
+================================ */
+.review-header {
+    padding: 20px;
+    text-align: center;
+    color: #fff;
+
+    background: linear-gradient(135deg,
+        rgba(75, 46, 219, 0.45),
+        rgba(59, 50, 227, 0.45)
+    );
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    border-bottom: 1px solid rgba(255,255,255,0.35);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* ================================
+   BODY
+================================ */
+.review-body {
+    padding: 20px;
+    color: #222;
+}
+
+/* Thông tin đơn */
+.order-info p {
+    margin-bottom: 8px;
+    color: #222;
+    font-weight: 500;
+}
+
+/* ================================
+   FORM STYLE
+================================ */
+.review-form {
+    width: 95%;
+}
+
+/* Label đậm hơn */
+.form-label {
+    font-weight: 600;
+    color: #333;
+}
+
+/* Glass Input + Select + Textarea */
+input.form-control,
+select.form-select,
+textarea.form-control {
+    background: rgba(255,255,255,0.4);
+    border: 1px solid rgba(255,255,255,0.5);
+    backdrop-filter: blur(10px);
+
+    border-radius: 12px;
+    padding: 10px 14px;
+    transition: 0.2s ease;
+}
+
+input.form-control:focus,
+select.form-select:focus,
+textarea.form-control:focus {
+    background: rgba(255,255,255,0.65);
+    border-color: #8b7de8;
+    box-shadow: 0 0 12px rgba(139,125,232,0.35);
+}
+
+/* ================================
+   RATING STARS
+================================ */
+.rating-stars .star {
+    font-size: 2.2rem;
+    cursor: pointer;
+    transition: transform .2s, color .3s;
+}
+
+.rating-stars .star:hover {
+    transform: scale(1.22);
+}
+
+/* ================================
+   IMAGES
+================================ */
+.review-image {
+    max-width: 160px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.4);
+}
+
+.review-image-large {
+    max-width: 300px;
+    border-radius: 14px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,255,255,0.4);
+}
+
+
+/* ================================
+   BUTTONS — GRADIENT
+================================ */
+.btn-primary {
+    background: linear-gradient(135deg, #7691d1, #9d91e0);
+    border: none;
+    font-weight: 600;
+    transition: 0.25s ease;
+}
+
+.btn-primary:hover {
+    filter: brightness(1.15);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: rgba(255,255,255,0.35) !important;
+    color: #333 !important;
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.4) !important;
+}
+
+.btn-secondary:hover {
+    background: rgba(255,255,255,0.5) !important;
+}
+
+
+/* ================================
+   RESPONSIVE
+================================ */
+@media (max-width: 576px) {
+    .rating-stars .star {
+        font-size: 1.8rem;
+    }
+}
+
+/* ⭐ Hiển thị sao */
+.rating-stars-display i {
+    font-size: 2.1rem;
+    color: #ffcc33;
+    filter: drop-shadow(0 2px 6px rgba(255,200,0,0.35));
+}
+
+/* ⭐ Nội dung */
+.review-content {
+    font-size: 1.1rem;
+    color: #222;
+    opacity: 0.95;
+}
+
+/* 🖼️ Gallery container */
+.review-gallery {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 10px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.3);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 🖼️ Từng ảnh */
+.review-img-wrapper {
+    width: 340px;
+    height: 210px;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    transition: transform .3s ease, box-shadow .3s ease;
+}
+
+/* Ảnh bên trong */
+.review-img-item {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Hover sang trọng */
+.review-img-wrapper:hover {
+    transform: scale(1.08);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.35);
+}
+/* =====================
+   PROVIDER REPLY (GLASS)
+===================== */
+.provider-reply {
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.35);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    padding: 20px 25px;
+    border-radius: 18px;
+    width: 100%;
+    max-width: 680px;
+    margin: 0 auto;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.20);
+}
+
+/* Header */
+.reply-header {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.reply-header i {
+    font-size: 1.4rem;
+    color: #6a5acd;
+}
+
+/* Body */
+.reply-body {
+    padding: 12px 18px;
+    background: rgba(255,255,255,0.28);
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.35);
+}
+
+.reply-text {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    color: #222;
+    font-weight: 500;
+}
+
+/* Date */
+.reply-date {
+    margin-top: 10px;
+    font-size: 0.95rem;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    opacity: .85;
+}
+
+.reply-date i {
+    color: #7a70e0;
+}
+
+</style>
 <script>
-  // ⭐ Xử lý chọn sao đánh giá
-  document.querySelectorAll('.star').forEach(star => {
-    star.addEventListener('click', function () {
-      const value = Number(this.dataset.value);
-      document.getElementById('SoSao').value = value;
-      document.querySelectorAll('.star').forEach((s, i) => {
-        s.classList.toggle('text-warning', i < value);
-        s.classList.toggle('text-secondary', i >= value);
+  document.querySelectorAll(".rating-stars .star").forEach(star => {
+      star.addEventListener("click", function () {
+          let val = this.getAttribute("data-value");
+          document.getElementById("SoSao").value = val;
+  
+          document.querySelectorAll(".rating-stars .star").forEach((s, i) => {
+              if (i < val) {
+                  s.classList.add("text-warning");
+                  s.classList.remove("text-secondary");
+              } else {
+                  s.classList.add("text-secondary");
+                  s.classList.remove("text-warning");
+              }
+          });
       });
-    });
   });
-</script>
+  </script>
+  

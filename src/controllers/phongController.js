@@ -29,7 +29,14 @@ exports.renderDanhSachPhongCuaNhaCungCap = async (req, res) => {
     res.render("nhacungcap/phong/danhsach", {
       rooms: filteredRooms,
       currentFilter: filter,
-      ncc
+      ncc,
+      css: [
+        "/css/bootstrap.min.css",
+        "/css/header.css",
+        "/css/style.css",
+        "/css/ncc/phong.css"
+      ],
+      layout: "layout"
     });
   } catch (err) {
     console.error("❌ Lỗi renderDanhSachPhongCuaNhaCungCap:", err);
@@ -66,8 +73,14 @@ exports.renderPhongList = async (req, res) => {
       phongList,
       message: null,
       query: {},
-      js: process.env.HOME_SCRIPTS,
-      css: process.env.HOME_STYLES
+      js: [
+        "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js",
+        "/js/home/timkiem.js"
+      ],
+      css: [
+          "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css",
+          "/css/home.css"
+      ]
     });
   } catch (err) {
     console.error("❌ Lỗi renderPhongList:", err);
@@ -75,8 +88,14 @@ exports.renderPhongList = async (req, res) => {
       phongList: [],
       message: "Lỗi tải danh sách phòng.",
       query: {},
-      js: process.env.HOME_SCRIPTS,
-      css: process.env.HOME_STYLES
+      js: [
+        "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js",
+        "/js/home/timkiem.js"
+      ],
+      css: [
+          "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css",
+          "/css/home.css"
+      ]
     });
   }
 };
@@ -109,22 +128,50 @@ exports.handleThemPhong = async (req, res) => {
     if (!ncc) return res.status(401).send("⚠️ Vui lòng đăng nhập trước khi thêm phòng.");
 
     const { TenPhong, MaLoai, Gia, SucChua, MaXa, ChiTietDiaChi, MoTa } = req.body;
-    const image = req.file ? req.file.filename : null;
+    const images = req.files ? req.files.map(f => f.filename) : []; // 🔹 Nhiều ảnh
 
-    console.log("📋 Dữ liệu nhận từ form:", req.body);
+    // 🧩 KIỂM TRA DỮ LIỆU NHẬP
+    const errors = [];
 
-    if (!TenPhong || !MaLoai || !Gia || !SucChua || !MaXa || !ChiTietDiaChi) {
-      console.error("⚠️ Thiếu dữ liệu bắt buộc:", { TenPhong, MaLoai, Gia, SucChua, MaXa, ChiTietDiaChi });
-      return res.status(400).send("Vui lòng nhập đầy đủ thông tin phòng!");
+    if (!TenPhong || TenPhong.trim().length < 3)
+      errors.push("Tên phòng phải có ít nhất 3 ký tự.");
+
+    if (!MaLoai)
+      errors.push("Vui lòng chọn loại phòng.");
+
+    if (!Gia || isNaN(Gia) || Gia < 100000)
+      errors.push("Giá phòng phải là số lớn hơn 100.000 VND.");
+
+    if (!SucChua || isNaN(SucChua) || SucChua < 1)
+      errors.push("Sức chứa phải là số nguyên dương.");
+
+    if (!MaXa)
+      errors.push("Vui lòng chọn xã.");
+
+    if (!ChiTietDiaChi || ChiTietDiaChi.trim().length < 5)
+      errors.push("Chi tiết địa chỉ phải có ít nhất 5 ký tự.");
+
+    if (images.length === 0)
+      errors.push("Vui lòng tải lên ít nhất một hình ảnh.");
+
+    if (errors.length > 0) {
+      console.warn("⚠️ Lỗi nhập liệu:", errors);
+      const loaiPhongs = await LoaiPhong.getAll();
+      const [tinhs] = await db.execute("SELECT * FROM Tinh");
+      const [xas] = await db.execute("SELECT * FROM Xa");
+      return res.render("nhacungcap/phong/themphong", {
+        loaiPhongs,
+        tinhs,
+        xas,
+        ncc,
+        message: errors.join("<br>")
+      });
     }
 
+    // 🏠 Nếu dữ liệu hợp lệ → tạo địa chỉ
     const newMaDiaChi = await DiaChi.create({ ChiTiet: ChiTietDiaChi, MaXa });
 
-    if (!newMaDiaChi) {
-      console.error("❌ Không thể tạo địa chỉ:", { ChiTietDiaChi, MaXa });
-      return res.status(500).send("Không thể tạo địa chỉ mới cho phòng.");
-    }
-
+    // 🏡 Chuẩn bị dữ liệu thêm phòng
     const data = {
       TenPhong,
       MaLoai,
@@ -132,21 +179,20 @@ exports.handleThemPhong = async (req, res) => {
       Gia,
       SucChua,
       TinhTrang: 1,
-      HinhAnh: image ?? null,
+      HinhAnh: JSON.stringify(images), // 🔹 Lưu JSON ["img1.jpg", "img2.jpg"]
       MaDiaChi: newMaDiaChi,
       MaNhaCungCap: ncc.MaNCC ?? null
     };
 
-    console.log("📦 Chuẩn bị thêm phòng:", data);
-
     await Phong.addPhong(data);
-    console.log("✅ Thêm phòng thành công!");
+    console.log("Thêm phòng thành công!");
     res.redirect("/nhacungcap/phong");
   } catch (err) {
-    console.error("❌ Lỗi handleThemPhong:", err);
+    console.error("Lỗi handleThemPhong:", err);
     res.status(500).send("Lỗi khi thêm phòng mới");
   }
 };
+
 
 /* =====================================================
    ✅ 6. HIỂN THỊ FORM SỬA PHÒNG
@@ -172,64 +218,136 @@ exports.renderSuaPhong = async (req, res) => {
 /* =====================================================
    ✅ 7. XỬ LÝ CẬP NHẬT PHÒNG
 ===================================================== */
+
 exports.handleSuaPhong = async (req, res) => {
   try {
+    const ncc = req.session.user;
+    if (!ncc) return res.status(401).send("⚠️ Vui lòng đăng nhập trước khi sửa phòng.");
+
     const {
-      MaPhong, TenPhong, MaLoai, Gia, SucChua, TinhTrang,
-      MaTinh, MaXa, ChiTietDiaChi
-    } = req.body;
-
-    const newImage = req.file ? req.file.filename : null;
-    const oldPhong = await Phong.getPhongById(MaPhong);
-    if (!oldPhong) return res.status(404).send("Không tìm thấy phòng");
-
-    // 🖼️ Ảnh
-    let finalImage = oldPhong.HinhAnh;
-    if (newImage) {
-      if (oldPhong.HinhAnh) {
-        const oldPath = path.join(__dirname, "../public/images", oldPhong.HinhAnh);
-        fs.unlink(oldPath, (err) => {
-          if (err) console.warn("⚠️ Không thể xóa ảnh cũ:", err.message);
-        });
-      }
-      finalImage = newImage;
-    }
-
-    // 🧭 Địa chỉ
-    let finalMaDiaChi = oldPhong.MaDiaChi;
-    if (oldPhong.MaDiaChi) {
-      await DiaChi.update({
-        MaDiaChi: oldPhong.MaDiaChi,
-        ChiTiet: ChiTietDiaChi,
-        MaXa
-      });
-    } else {
-      const newId = await DiaChi.create({
-        ChiTiet: ChiTietDiaChi,
-        MaXa,
-        MaNhaCungCap: oldPhong.MaNhaCungCap
-      });
-      finalMaDiaChi = newId;
-    }
-
-    const updatedData = {
       MaPhong,
       TenPhong,
       MaLoai,
       Gia,
       SucChua,
       TinhTrang,
+      MaXa,
+      ChiTietDiaChi,
+      MoTa,
+    } = req.body;
+
+    const newImages = req.files ? req.files.map(f => f.filename) : []; // ⬅️ nhiều ảnh mới
+
+    // 🧩 Kiểm tra dữ liệu
+    const errors = [];
+
+    if (!TenPhong || TenPhong.trim().length < 3)
+      errors.push("Tên phòng phải có ít nhất 3 ký tự.");
+
+    if (!MaLoai) errors.push("Vui lòng chọn loại phòng.");
+
+    if (!Gia || isNaN(Gia) || Gia < 100000)
+      errors.push("Giá phòng phải là số lớn hơn 100.000 VND.");
+
+    if (!SucChua || isNaN(SucChua) || SucChua < 1)
+      errors.push("Sức chứa phải là số nguyên dương.");
+
+    const tinhTrangInt = parseInt(TinhTrang);
+    if (![0, 1, 2].includes(tinhTrangInt))
+      errors.push("Tình trạng không hợp lệ (0: Đã đặt, 1: Còn trống, 2: Bảo trì).");
+
+    if (!MaXa) errors.push("Vui lòng chọn xã.");
+
+    if (!ChiTietDiaChi || ChiTietDiaChi.trim().length < 5)
+      errors.push("Chi tiết địa chỉ phải có ít nhất 5 ký tự.");
+
+    // Lấy dữ liệu cũ
+    const phong = await Phong.getPhongById(MaPhong);
+    const loaiPhongs = await LoaiPhong.getAll();
+    const diaChiHienTai = phong?.MaDiaChi ? await DiaChi.getById(phong.MaDiaChi) : null;
+    const [tinhs] = await db.execute("SELECT * FROM Tinh");
+    const [xas] = await db.execute("SELECT * FROM Xa");
+
+    if (errors.length > 0) {
+      return res.render("nhacungcap/phong/suaphong", {
+        phong,
+        loaiPhongs,
+        diaChiHienTai,
+        tinhs,
+        xas,
+        ncc,
+        message: errors.join("<br>"),
+      });
+    }
+
+    // 🖼️ Ảnh
+    let finalImages = [];
+    if (phong.HinhAnh) {
+      try {
+        // Parse JSON nếu có
+        if (phong.HinhAnh.trim().startsWith("[")) {
+          finalImages = JSON.parse(phong.HinhAnh);
+        } else {
+          finalImages = [phong.HinhAnh];
+        }
+      } catch (err) {
+        finalImages = [phong.HinhAnh];
+      }
+    }
+
+    // Nếu upload ảnh mới → ghi đè toàn bộ (có thể tùy chỉnh thành “ghép thêm”)
+    if (newImages.length > 0) {
+      // Xoá ảnh cũ trên server
+      finalImages.forEach(img => {
+        const oldPath = path.join(__dirname, "../public/images", img);
+        fs.unlink(oldPath, err => {
+          if (err) console.warn("⚠️ Không thể xóa ảnh cũ:", err.message);
+        });
+      });
+
+      finalImages = newImages; // ghi đè toàn bộ
+    }
+
+    // 📍 Cập nhật địa chỉ
+    let finalMaDiaChi = phong.MaDiaChi;
+    if (finalMaDiaChi) {
+      await DiaChi.update({
+        MaDiaChi: finalMaDiaChi,
+        ChiTiet: ChiTietDiaChi,
+        MaXa,
+      });
+    } else {
+      finalMaDiaChi = await DiaChi.create({
+        ChiTiet: ChiTietDiaChi,
+        MaXa,
+      });
+    }
+
+    // 💾 Dữ liệu cập nhật
+    const updatedData = {
+      MaPhong,
+      TenPhong: TenPhong.trim(),
+      MaLoai,
+      Gia,
+      SucChua,
+      MoTa: MoTa || null,
+      TinhTrang: tinhTrangInt,
+      HinhAnh: JSON.stringify(finalImages), // ✅ lưu mảng JSON
       MaDiaChi: finalMaDiaChi,
-      HinhAnh: finalImage
     };
 
     await Phong.updatePhong(updatedData);
+
+    console.log("✅ Cập nhật phòng thành công!");
     res.redirect("/nhacungcap/phong");
   } catch (err) {
     console.error("❌ Lỗi handleSuaPhong:", err);
-    res.status(500).send("Lỗi khi cập nhật phòng");
+    res.status(500).send("Lỗi khi cập nhật phòng.");
   }
 };
+
+
+
 
 /* =====================================================
    ✅ 8. HIỂN THỊ FORM CẬP NHẬT TRẠNG THÁI PHÒNG

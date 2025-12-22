@@ -1,0 +1,74 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<style>
+  .notify-wrapper {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .notify-card {
+    max-width: 480px;
+    width: 100%;
+    padding: 35px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    animation: fadeIn 0.5s ease-in-out;
+    text-align: center;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .icon-success {
+    font-size: 70px;
+    color: #28a745;
+  }
+  .icon-fail {
+    font-size: 70px;
+    color: #dc3545;
+  }
+</style>
+
+<div class="notify-wrapper">
+  <div class="notify-card">
+
+    <% if (success) { %>
+      <i class="bi bi-check-circle-fill icon-success"></i>
+      <h2 class="mt-3 text-success fw-bold">Thanh toán thành công!</h2>
+
+      <p class="mt-3">Mã đơn hàng: <strong><%= orderId %></strong></p>
+      <p>Mã giao dịch VNPay: <strong><%= transactionNo %></strong></p>
+      <p>Thời gian thanh toán: <strong><%= payDate %></strong></p>
+
+      <div class="alert alert-success mt-3">
+        Hệ thống sẽ chuyển hướng sau vài giây...
+      </div>
+
+      <script>
+        setTimeout(() => {
+          window.location.href = "/khachhang/don-dat-phong";
+        }, 2000);
+      </script>
+
+    <% } else { %>
+
+      <i class="bi bi-x-circle-fill icon-fail"></i>
+      <h2 class="mt-3 text-danger fw-bold">Thanh toán thất bại!</h2>
+
+      <p class="mt-3"><%= message || 'Giao dịch không thành công.' %></p>
+
+      <a href="/" class="btn btn-secondary mt-3">
+        <i class="bi bi-arrow-left"></i> Quay lại trang chủ
+      </a>
+
+    <% } %>
+
+  </div>
+</div>
+
+
+  

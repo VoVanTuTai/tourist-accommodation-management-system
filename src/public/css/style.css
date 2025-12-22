@@ -1,339 +1,337 @@
+/* =======================
+   GLOBAL
+======================= */
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-  }
-  
-  header h1 {
-    color: #0066cc;
-  }
-  
-  nav a {
-    margin: 0 10px;
-    text-decoration: none;
-    color: #0077aa;
-  }
-  
-  table {
-    border-collapse: collapse;
-    width: 100%;
-  }
-  
-  th {
-    background-color: #f0f0f0;
-  }
-  
-  td, th {
-    border: 1px solid #ccc;
-    text-align: center;
-  }
-  
-  button {
-
-}
-
-header h1 {
-    color: #0066cc;
-}
-
-nav a {
-    margin: 0 10px;
-    text-decoration: none;
-    color: #0077aa;
-}
-
-table {
-    border-collapse: collapse;
-    width: 100%;
-}
-
-th {
-    background-color: #f0f0f0;
-}
-
-td,
-th {
-    border: 1px solid #ccc;
-    text-align: center;
-}
-
-button {
-
-    background-color: #0077aa;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    cursor: pointer;
-
-  }
-  
-  button:hover {
-    background-color: #005f8c;
-  }
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    margin: 0;
-    padding: 0;
-  }
-  .navbar {
-    background-color: #0078d4;
-    padding: 1rem;
-    color: white;
-  }
-  .nav-links {
-    list-style: none;
-    display: flex;
-    gap: 1rem;
-  }
-  .nav-links a {
-    color: white;
-    text-decoration: none;
-  }
-  .hero {
-    text-align: center;
-    padding: 3rem 1rem;
-    background-color: #eef6ff;
-  }
-  .btn-primary {
-
-}
-
-button:hover {
-    background-color: #005f8c;
-}
-body {
-    font-family: "Segoe UI", sans-serif;
-    margin: 0;
-    padding: 0;
-}
-.navbar {
-    background-color: #0078d4;
-    padding: 1rem;
-    color: white;
-}
-.nav-links {
-    list-style: none;
-    display: flex;
-    gap: 1rem;
-}
-.nav-links a {
-    color: white;
-    text-decoration: none;
-}
-.hero {
-    text-align: center;
-    padding: 3rem 1rem;
-    background-color: #eef6ff;
-}
-.btn-primary {
-
-    background-color: #0078d4;
-    color: white;
-    padding: 0.8rem 1.5rem;
-    border-radius: 5px;
-    text-decoration: none;
-
-  }
-  footer {
-
-}
-footer {
-
-    text-align: center;
-    background-color: #f5f5f5;
-    padding: 1rem 0;
-    margin-top: 2rem;
-
-  }
-  
-
-}
-.star {
-    cursor: pointer;
-    transition: transform 0.2s ease, color 0.2s ease;
-}
-.star:hover {
-    transform: scale(1.2);
-}
-body {
-    box-sizing: border-box;
+    
     margin: 0;
     padding: 0;
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #f3e7ff 0%, #e1d5ff 100%);
-    min-height: 100%;
+
+    background-image: url('/images/bg3.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+
+    padding-top: 90px; /* FIX header che hero */
 }
+
+
+/* =======================
+   HEADER & NAVBAR
+======================= */
 
 .header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
-    position: sticky;
+    position: fixed;
     top: 0;
-    z-index: 1000;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.35);  /* tăng opacity để không bị trong suốt quá mức */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+.nav-link-custom {
+    color: #ffffff !important;
+    font-weight: 600;
+}
+.navbar-brand {
+    color: #ffffff !important;
 }
 
+
+/* Navbar inner */
 nav.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    background-color: transparent !important;
+    width: 100%;
+    padding: 0.7rem 1.5rem;
 }
+
+/* Logo */
 .logo-inner {
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255,255,255,0.25);
     display: flex;
     align-items: center;
     justify-content: center;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(5px);
 }
 
-.logo:hover {
-    color: #f3e7ff;
-    transform: scale(1.05);
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+.navbar-brand span {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: rgb(130, 155, 205);
 }
 
-.logo-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(10px);
+/* Nav links */
+.header .nav-link {
+    color: white !important;
+    
+    padding: 0.5rem 1rem !important;
+    transition: 0.3s ease;
 }
 
-.nav-links {
-    display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    gap: 2rem;
-}
-
-.nav-links a {
-    text-decoration: none;
-    color: white;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
+.header .nav-link:hover {
+    background: rgba(255,255,255,0.2);
     border-radius: 8px;
-    transition: all 0.3s ease;
-    position: relative;
-}
-
-.nav-links a:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: #f3e7ff;
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
 }
 
-.user-menu {
-    display: flex;
-    align-items: center;
-    gap: 0;
+/* Toggler button (mobile fix) */
+.navbar-toggler {
+    border: none !important;
 }
 
+.navbar-toggler-icon {
+    filter: invert(100%) brightness(200%); /* Hiện icon trắng */
+}
+
+/* User menu */
 .username {
     color: white;
     font-weight: 500;
     padding: 0.5rem 1rem;
-    background: rgba(255, 255, 255, 0.2);
     border-radius: 20px;
-    backdrop-filter: blur(10px);
+    background: rgba(255,255,255,0.25);
+    backdrop-filter: blur(8px);
 }
 
+
+/* =======================
+   BUTTONS
+======================= */
 .btn {
-    text-decoration: none;
-    padding: 0.75rem 1.5rem;
     border-radius: 25px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 0.6rem 1.4rem;
+    border: none;
     cursor: pointer;
-    backdrop-filter: blur(10px);
+    font-weight: 500;
+
+    background: rgba(255,255,255,0.25);
+    color: white;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.3);
+
+    transition: 0.3s ease;
 }
 
 .btn:hover {
+    background: rgba(255,255,255,0.35);
     transform: translateY(-2px);
-    background: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.4);
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
 }
 
+/* Logout style */
 .btn-logout {
-    background: rgba(244, 67, 54, 0.8);
-    border-color: rgba(244, 67, 54, 0.5);
+    background: rgba(244, 67, 54, 0.85) !important;
+    border-color: rgba(244, 67, 54, 0.5) !important;
 }
 
 .btn-logout:hover {
-    background: rgba(244, 67, 54, 0.9);
-    box-shadow: 0 8px 25px rgba(244, 67, 54, 0.3);
+    background: rgba(244, 67, 54, 1) !important;
 }
 
-.gradient-bg {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+/* =======================
+   HERO SECTION
+======================= */
+.hero {
+    text-align: center;
+    color: white;
+    padding: 4rem 1rem;
 }
 
+
+/* =======================
+   EFFECTS
+======================= */
 .card-hover {
-    transition: all 0.3s ease;
+    transition: 0.3s;
 }
 
 .card-hover:hover {
     transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
 }
 
-.booking-badge {
-    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+.star {
+    cursor: pointer;
+    transition: transform 0.2s ease;
 }
 
-.glass-effect {
-    backdrop-filter: blur(10px);
-    background: rgba(255, 255, 255, 0.9);
+.star:hover {
+    transform: scale(1.2);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .navbar {
-        flex-direction: column;
-        gap: 1rem;
+
+/* =======================
+   RESPONSIVE
+======================= */
+@media (max-width: 992px) {
+    .navbar-collapse {
+        background: rgba(0,0,0,0.4);
+        backdrop-filter: blur(8px);
+        border-radius: 10px;
         padding: 1rem;
     }
 
-    .nav-links {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 1rem;
-    }
-
-    .user-menu {
-        flex-wrap: wrap;
-        justify-content: center;
+    .nav-link {
+        padding: 0.7rem !important;
     }
 }
 
 @media (max-width: 480px) {
-    .nav-links {
-        flex-direction: column;
-        text-align: center;
-        gap: 0.5rem;
-    }
-
-    .user-menu {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
     .btn {
         padding: 0.5rem 1rem;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
     }
+}
+/* =======================
+   FOOTER
+======================= */
+footer {
+    background: rgba(255, 255, 255, 0.08); /* độ mờ nhẹ */
+    backdrop-filter: blur(12px);
+    background: rgba(0, 0, 0, 0.35);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+footer a, 
+footer p, 
+footer span,
+footer h3 {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+footer svg {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+footer a:hover {
+    color: #fff !important;
+}
+
+/* Custom Detail Page Styles */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 20px !important;
+}
+
+.main-room-img {
+    width: 100%;
+    height: 100%;
+    min-height: 500px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.detail-card:hover .main-room-img {
+    transform: scale(1.02);
+}
+
+.price-badge-overlay {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    background: rgba(13, 110, 253, 0.9);
+    color: white;
+    padding: 10px 25px;
+    border-radius: 50px;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.text-dark-blue { color: #1a237e; }
+
+/* Soft Badges */
+.bg-success-soft { background-color: #d1e7dd; color: #0f5132; }
+.bg-danger-soft { background-color: #f8d7da; color: #842029; }
+.bg-warning-soft { background-color: #fff3cd; color: #664d03; }
+
+.btn-booking-main {
+    background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+    color: white;
+    border: none;
+    font-weight: 700;
+    border-radius: 12px;
+    letter-spacing: 1px;
+    transition: 0.3s;
+}
+
+.btn-booking-main:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(37, 117, 252, 0.4);
+    color: white;
+}
+
+/* Giao diện Chi tiết Phòng Nâng cao */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 25px !important;
+}
+
+.main-room-img {
+    max-width: 100%;
+    max-height: 500px;
+    object-fit: cover;
+    transition: 0.5s ease;
+}
+
+.price-tag-floating {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: #0d6efd;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 15px rgba(13, 110, 253, 0.3);
+}
+
+.thumbnail-bar {
+    position: absolute;
+    bottom: 20px;
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 12px;
+}
+
+.thumb-img {
+    width: 60px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 5px;
+    cursor: pointer;
+    opacity: 0.6;
+    border: 2px solid transparent;
+}
+
+.thumb-img.active {
+    opacity: 1;
+    border-color: white;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 15px;
+}
+
+/* Badge màu nhẹ nhàng */
+.bg-success-light { background-color: #d1e7dd; }
+.bg-warning-light { background-color: #fff3cd; }
+.bg-danger-light { background-color: #f8d7da; }
+
+.detail-card:hover .main-room-img {
+    transform: scale(1.05);
 }

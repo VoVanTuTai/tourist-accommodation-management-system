@@ -1,88 +1,142 @@
 <% const f = formData || {}; %>
-<div class="partner-register-container bg-white">
+<div class="partner-register bg-white">
     <div class="wrap-register"
         style="max-width: 700px; margin: 0 auto; padding: 50px 0;">
         <div class="partner-register-container py-3 px-4 border rounded-3"
             style="box-shadow: 0px 15px 14px 0px #0000004a;">
-            <h2 class="modal-title text-uppercase text-center"
-                style="font-size: 32px;">Thông Tin Đăng Ký</h2>
+            <h2 class="h3 mb-2 text-capitalize text-center" style="color: #0077b6;">Đăng ký tài khoản NCC</h2>
             <form
                 action="/nhacungcap/dangky" method="POST"
                 id="partner-register-form" class="py-3 px-3"
                 enctype="multipart/form-data">
-                <div class="row mb-3">
-                    <div class="col-3">
-                        <label for="TenNCC" class="form-label">Tên NCC</label>
+                <div class="row">
+                    <div class="col-lg-6 col-md-12">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label for="TenNCC" class="form-label">Họ và tên:</label>
+                            </div>
+                            <div class="col-12">
+                                <input type="text" class="form-control" name="TenNCC" id="TenNCC" value="<%= f.TenNCC || '' %>" />
+                                <span class="text-danger d-block text-error-TenNCC">
+                                    <% if (errors) { %>
+                                        <%= errors.TenNCC %>
+                                    <% } %>
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-9">
-                        <input type="text" class="form-control" name="TenNCC" id="TenNCC" value="<%= f.TenNCC || '' %>" />
-                        <span class="text-danger d-block text-error-TenNCC">
-                            <% if (errors) { %>
-                                <%= errors.TenNCC %>
-                            <% } %>
-                        </span>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label for="Email" class="form-label">Email (Tài khoản):</label>
+                            </div>
+                            <div class="col-12">
+                                <input type="text" class="form-control" name="Email" id="Email" value="<%= f.Email || '' %>" />
+                                <span class="text-danger d-block text-error-email">
+                                    <% if (errors) { %>
+                                        <%= errors.Email %>
+                                    <% } %>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-6 col-md-12">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label for="Phone" class="form-label">Số điện thoại:</label>
+                            </div>
+                            <div class="col-12">
+                                <input type="text" class="form-control" name="Phone" id="Phone" value="<%= f.Phone || '' %>" />
+                                <span class="text-danger d-block text-error-phone">
+                                    <% if (errors) { %>
+                                        <%= errors.Phone %>
+                                    <% } %>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label for="LoaiHinh" class="form-label">Loại Hình</label>
+                            </div>
+                            <div class="col-12">
+                                <% const types = {"NhaNghi": "Nhà Nghỉ", "Homestay": "Homestay", "Hotel": "Khách Sạn", "Villa": "Villa"}; %>
+                                <select
+                                    class="form-select form-select-md"
+                                    name="LoaiHinh"
+                                    id="LoaiHinh"
+                                >
+                                    <option value="" selected>Select one</option>
+                                    <% Object.entries(types).forEach(([key, value]) => { %>
+                                        <option value="<%= key %>" <%= f?.LoaiHinh === key ? 'selected' : '' %>>
+                                            <%= value %>
+                                        </option>
+                                    <% }) %>
+                                </select>
+                                <span class="text-danger d-block text-error-LoaiHinh">
+                                    <% if (errors) { %>
+                                        <%= errors.LoaiHinh %>
+                                    <% } %>
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="row mb-3">
-                    <div class="col-3">
-                        <label for="Email" class="form-label">Email</label>
+                <div class="row">
+                    <div class="col-lg-6 col-md-12">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label for="Tinh" class="form-label">Tỉnh/Thành phố:</label>
+                            </div>
+                            <div class="col-12">
+                                <select class="form-select" name="Tinh" id="Tinh">
+                                    <option value="">Select one</option>
+                                    <% tinhs.forEach(t => { %>
+                                        <option value="<%= t.MaTinh %>"><%= t.TenTinh %></option>
+                                    <% }) %>
+                                </select>
+                                <span class="text-danger d-block text-error-Tinh">
+                                    <% if (errors) { %>
+                                        <%= errors.Tinh %>
+                                    <% } %>
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-9">
-                        <input type="text" class="form-control" name="Email" id="Email" value="<%= f.Email || '' %>" />
-                        <span class="text-danger d-block text-error-email">
-                            <% if (errors) { %>
-                                <%= errors.Email %>
-                            <% } %>
-                        </span>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label for="Xa" class="form-label">Xã/Phường:</label>
+                            </div>
+                            <div class="col-12">
+                                <select class="form-select" name="Xa" id="Xa" disabled>
+                                    <option value="">Select one</option>
+                                </select>
+                                <span class="text-danger d-block text-error-Xa">
+                                    <% if (errors) { %>
+                                        <%= errors.Xa %>
+                                    <% } %>
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-3">
-                        <label for="Phone" class="form-label">SDT</label>
-                    </div>
-                    <div class="col-9">
-                        <input type="text" class="form-control" name="Phone" id="Phone" value="<%= f.Phone || '' %>" />
-                        <span class="text-danger d-block text-error-phone">
-                            <% if (errors) { %>
-                                <%= errors.Phone %>
-                            <% } %>
-                        </span>
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-3">
-                        <label for="DiaChi" class="form-label">Địa chỉ</label>
-                    </div>
-                    <div class="col-9">
-                        <select class="form-select" name="Tinh" id="Tinh">
-                            <option value="">Select one</option>
-                            <% tinhs.forEach(t => { %>
-                                <option value="<%= t.MaTinh %>"><%= t.TenTinh %></option>
-                            <% }) %>
-                        </select>
-                        <span class="text-danger d-block text-error-Tinh">
-                            <% if (errors) { %>
-                                <%= errors.Tinh %>
-                            <% } %>
-                        </span>
-                        <select class="form-select mt-3" name="Xa" id="Xa" disabled>
-                            <option value="">Select one</option>
-                        </select>
-                        <span class="text-danger d-block text-error-Xa">
-                            <% if (errors) { %>
-                                <%= errors.Xa %>
-                            <% } %>
-                        </span>
-                        <input type="text" class="form-control mt-3" name="DiaChiChiTiet" id="DiaChiChiTiet" 
-                            placeholder="e.g: 12 Nguyen Van Bảo" value="<%= f.DiaChiChiTiet || '' %>"/>
-                        <span class="text-danger d-block text-error-DiaChiChiTiet">
-                            <% if (errors) { %>
-                                <%= errors.DiaChiChiTiet %>
-                            <% } %>
-                        </span>
+                    <div class="col-12">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <input type="text" class="form-control" name="DiaChiChiTiet" id="DiaChiChiTiet" 
+                                    placeholder="Địa chỉ chi tiết, e.g: 12 Nguyễn Văn Bảo, P. Hạnh Thông, Thành phố Hồ Chí Minh" value="<%= f.DiaChiChiTiet || '' %>"/>
+                                <span class="text-danger d-block text-error-DiaChiChiTiet">
+                                    <% if (errors) { %>
+                                        <%= errors.DiaChiChiTiet %>
+                                    <% } %>
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -110,32 +164,6 @@
                         <span class="text-danger d-block text-error-ThongTinThanhToan">
                             <% if (errors) { %>
                                 <%= errors.ThongTinThanhToan %>
-                            <% } %>
-                        </span>
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-3">
-                        <label for="LoaiHinh" class="form-label">Loại Hình</label>
-                    </div>
-                    <div class="col-9">
-                        <% const types = {"NhaNghi": "Nhà Nghỉ", "Homestay": "Homestay", "Hotel": "Khách Sạn", "Villa": "Villa"}; %>
-                        <select
-                            class="form-select form-select-md"
-                            name="LoaiHinh"
-                            id="LoaiHinh"
-                        >
-                            <option value="" selected>Select one</option>
-                            <% Object.entries(types).forEach(([key, value]) => { %>
-                                <option value="<%= key %>" <%= f?.LoaiHinh === key ? 'selected' : '' %>>
-                                    <%= value %>
-                                </option>
-                            <% }) %>
-                        </select>
-                        <span class="text-danger d-block text-error-LoaiHinh">
-                            <% if (errors) { %>
-                                <%= errors.LoaiHinh %>
                             <% } %>
                         </span>
                     </div>
@@ -186,7 +214,6 @@
                     <button
                         type="submit"
                         class="btn btn-register-partner"
-                        style="background-color: #897fe8;"
                         id="btn-register-partner">Đăng Ký</button>
                     <a href="/" class="btn btn-register-partner" style="background-color: #dc3545;">Huỷ</a>
                 </div>
@@ -197,9 +224,23 @@
 
 <style>
     .btn-register-partner {
-        min-width: 100px;
-        text-align: center;
-        font-size: 24px;
-        width: 30%;
+        width: 100%;
+        background: #0077b6;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.2s ease-in-out;
+    }
+
+    .btn-register-partner:hover {
+        background: #005f8a;
+        color: #fff;
+    }
+
+    .partner-register .form-label {
+        font-weight: 500;
     }
 </style>

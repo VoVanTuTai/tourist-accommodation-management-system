@@ -1,78 +1,413 @@
-<h2>➕ Thêm phòng mới</h2>
 
-<form action="/nhacungcap/phong/them" method="POST" enctype="multipart/form-data">
+  <style>
+    
 
-  <!-- 🔹 Tên phòng -->
-  <label for="TenPhong">Tên phòng:</label>
-  <input type="text" id="TenPhong" name="TenPhong" required>
+    /* Căn giữa nội dung chính */
+    .content-wrapper {
+      display: flex;
+      justify-content: center;     /* Căn giữa ngang */
+      align-items: flex-start;     /* Giữ form bắt đầu từ trên xuống */
+      min-height: calc(100vh - 160px); /* Trừ header/footer, có thể điều chỉnh */
+      padding: 20px 20px 20px;    /* Chừa chỗ cho header và footer */
+    }
 
-  <!-- 🔹 Loại phòng -->
-  <label for="MaLoai">Loại phòng:</label>
-  <select id="MaLoai" name="MaLoai" required>
-    <option value="">-- Chọn loại phòng --</option>
-    <% loaiPhongs.forEach(loai => { %>
-      <option value="<%= loai.MaLoai %>"><%= loai.TenLoai %></option>
-    <% }) %>
-  </select>
+    /* Form hiển thị đẹp, có giới hạn chiều rộng */
+    .form-container {
+      background: white;
+      padding: 25px 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 900px;
+    }
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-  <!-- 🔹 Giá -->
-  <label for="Gia">Giá (VND):</label>
-  <input type="number" id="Gia" name="Gia" min="0" required>
+    h2 {
+      color: #667eea;
+      font-size: 32px;
+      margin-bottom: 30px;
+      text-align: center;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
 
-  <!-- 🔹 Sức chứa -->
-  <label for="SucChua">Sức chứa:</label>
-  <input type="number" id="SucChua" name="SucChua" min="1" required>
+    .section-title {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 16px;
+      margin: 30px 0 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-  <!-- 🔹 Mô tả -->
-  <label for="MoTa">Mô tả:</label>
-  <textarea id="MoTa" name="MoTa" rows="4"
-    placeholder="Nhập mô tả chi tiết về phòng, tiện nghi, hướng view..."
-    required></textarea>
+    .section-title:first-of-type {
+      margin-top: 0;
+    }
 
-  <hr>
+    label {
+      display: block;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 8px;
+      margin-top: 20px;
+      font-size: 14px;
+    }
 
-  <!-- 🔹 Địa chỉ -->
-  <label for="MaTinh">Tỉnh:</label>
-  <select id="MaTinh" name="MaTinh" required onchange="filterXa()">
-    <option value="">-- Chọn tỉnh --</option>
-    <% tinhs.forEach(t => { %>
-      <option value="<%= t.MaTinh %>"><%= t.TenTinh %></option>
-    <% }) %>
-  </select>
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 15px;
+      font-family: inherit;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+    }
 
-  <label for="MaXa">Xã:</label>
-  <select id="MaXa" name="MaXa" required>
-    <option value="">-- Chọn xã --</option>
-    <% xas.forEach(x => { %>
-      <option value="<%= x.MaXa %>" data-tinh="<%= x.MaTinh %>"><%= x.TenXa %></option>
-    <% }) %>
-  </select>
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
 
-  <label for="ChiTietDiaChi">Chi tiết địa chỉ:</label>
-  <input type="text" id="ChiTietDiaChi" name="ChiTietDiaChi"
-    placeholder="Số nhà, đường, thôn/xóm..." required>
+    input[type="text"]:hover,
+    input[type="number"]:hover,
+    select:hover,
+    textarea:hover {
+      border-color: #b8c5f2;
+    }
 
-  <!-- 🔹 Hình ảnh -->
-  <label for="HinhAnh">Hình ảnh:</label>
-  <input type="file" id="HinhAnh" name="HinhAnh" accept="image/*" required>
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
 
-  <div style="margin-top: 20px; text-align: center;">
-    <button type="submit">💾 Lưu phòng</button>
-    <a href="/nhacungcap/phong">⬅️ Quay lại</a>
-  </div>
-</form>
+    input[type="file"] {
+      width: 100%;
+      padding: 14px;
+      border: 2px dashed #667eea;
+      border-radius: 10px;
+      background: #f0f4ff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
 
-<script>
-  function filterXa() {
-    const maTinh = document.getElementById('MaTinh').value;
-    const xaSelect = document.getElementById('MaXa');
-    const options = xaSelect.querySelectorAll('option');
+    input[type="file"]:hover {
+      background: #e6edff;
+      border-color: #764ba2;
+    }
 
-    options.forEach(opt => {
-      if (!opt.value) return; // bỏ qua dòng đầu
-      opt.style.display = (opt.dataset.tinh === maTinh) ? 'block' : 'none';
+    input[type="file"]::file-selector-button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-right: 12px;
+      transition: transform 0.2s ease;
+    }
+
+    input[type="file"]::file-selector-button:hover {
+      transform: scale(1.05);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 35px;
+      flex-wrap: wrap;
+    }
+
+    button[type="submit"] {
+      flex: 1;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      min-width: 200px;
+    }
+
+    button[type="submit"]:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    button[type="submit"]:active {
+      transform: translateY(0);
+    }
+
+    .button-group a {
+      flex: 1;
+      background: white;
+      color: #667eea;
+      border: 2px solid #667eea;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      text-decoration: none;
+      text-align: center;
+      transition: all 0.3s ease;
+      min-width: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .button-group a:hover {
+      background: #667eea;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      body {
+        padding: 20px 15px;
+      }
+
+      .form-container {
+        padding: 30px 20px;
+      }
+
+      h2 {
+        font-size: 26px;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      button[type="submit"],
+      .button-group a {
+        width: 100%;
+        min-width: auto;
+      }
+    }
+
+    /* Validation styles */
+    input:invalid:not(:placeholder-shown),
+    select:invalid:not(:placeholder-shown),
+    textarea:invalid:not(:placeholder-shown) {
+      border-color: #ff6b6b;
+    }
+
+    input:valid,
+    select:valid,
+    textarea:valid {
+      border-color: #51cf66;
+    }
+
+    ::placeholder {
+      color: #adb5bd;
+    }
+
+    select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <main class="content-wrapper">
+    <div class="form-container">
+      <h2>➕ Thêm phòng mới</h2>
+
+      <!-- Hiển thị lỗi tổng quát nếu có -->
+      <div id="error-summary" style="color:red; text-align:center; margin-bottom:10px;"></div>
+
+      <form id="formThemPhong" action="/nhacungcap/phong/them" method="POST" enctype="multipart/form-data" novalidate>
+        <!-- 🔹 Thông tin phòng -->
+        <div class="section-title">Thông tin phòng</div>
+
+        <label for="TenPhong">Tên phòng:</label>
+        <input type="text" id="TenPhong" name="TenPhong" placeholder="Nhập tên phòng..." required minlength="3">
+        <small class="error-message" style="color:red"></small>
+
+        <label for="MaLoai">Loại phòng:</label>
+        <select id="MaLoai" name="MaLoai" required>
+          <option value="">-- Chọn loại phòng --</option>
+          <% loaiPhongs.forEach(loai => { %>
+            <option value="<%= loai.MaLoai %>"><%= loai.TenLoai %></option>
+          <% }) %>
+        </select>
+        <small class="error-message" style="color:red"></small>
+
+        <label for="Gia">Giá (VND):</label>
+        <input type="number" id="Gia" name="Gia" min="100000" placeholder="VD: 500000" required>
+        <small class="error-message" style="color:red"></small>
+
+        <label for="SucChua">Sức chứa:</label>
+        <input type="number" id="SucChua" name="SucChua" min="1" max="50" placeholder="VD: 4" required>
+        <small class="error-message" style="color:red"></small>
+
+        <label for="MoTa">Mô tả:</label>
+        <textarea id="MoTa" name="MoTa" rows="4" placeholder="Nhập mô tả chi tiết về phòng, tiện nghi, hướng view..." required></textarea>
+        <small class="error-message" style="color:red"></small>
+
+        <!-- 🔹 Địa chỉ -->
+        <div class="section-title">Địa chỉ</div>
+
+        <label for="MaTinh">Tỉnh:</label>
+        <select id="MaTinh" name="MaTinh" required onchange="filterXa()">
+          <option value="">-- Chọn tỉnh --</option>
+          <% tinhs.forEach(t => { %>
+            <option value="<%= t.MaTinh %>"><%= t.TenTinh %></option>
+          <% }) %>
+        </select>
+        <small class="error-message" style="color:red"></small>
+
+        <label for="MaXa">Xã:</label>
+        <select id="MaXa" name="MaXa" required>
+          <option value="">-- Chọn xã --</option>
+          <% xas.forEach(x => { %>
+            <option value="<%= x.MaXa %>" data-tinh="<%= x.MaTinh %>"><%= x.TenXa %></option>
+          <% }) %>
+        </select>
+        <small class="error-message" style="color:red"></small>
+
+        <label for="ChiTietDiaChi">Chi tiết địa chỉ:</label>
+        <input type="text" id="ChiTietDiaChi" name="ChiTietDiaChi" placeholder="Số nhà, đường, thôn/xóm..." required minlength="5">
+        <small class="error-message" style="color:red"></small>
+
+        <!-- 🔹 Hình ảnh -->
+        <div class="section-title">Hình ảnh</div>
+
+        <label for="HinhAnh">Tải lên hình ảnh:</label>
+        
+        <input type="file" id="HinhAnh" name="HinhAnh" accept="image/*" multiple required>
+        <div id="previewContainer" class="d-flex flex-wrap gap-2 mt-3"></div>
+        <small class="error-message" style="color:red"></small>
+
+        <div class="button-group" style="margin-top: 20px; text-align: center;">
+          <button type="submit">💾 Lưu phòng</button>
+          <a href="/nhacungcap/phong">⬅️ Quay lại</a>
+        </div>
+      </form>
+    </div>
+  </main>
+  <script>
+    // Ẩn / hiện xã theo tỉnh
+    function filterXa() {
+      const maTinh = document.getElementById('MaTinh').value;
+      const xaSelect = document.getElementById('MaXa');
+      const options = xaSelect.querySelectorAll('option');
+      xaSelect.value = '';
+      options.forEach(option => {
+        if (!option.value) return;
+        const optionTinh = option.getAttribute('data-tinh');
+        option.style.display = (optionTinh === maTinh) ? 'block' : 'none';
+      });
+    }
+    // 🔹 Preview ảnh mới
+    const input = document.getElementById("HinhAnh");
+    const previewContainer = document.getElementById("previewContainer");
+
+    input.addEventListener("change", () => {
+      previewContainer.innerHTML = "";
+      Array.from(input.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const img = document.createElement("img");
+          img.src = e.target.result;
+          img.width = 150;
+          img.className = "rounded border shadow-sm";
+          previewContainer.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
     });
+    // Kiểm tra form trước khi submit
+    // 🔹 Validation client-side
+    document.getElementById("formThemPhong").addEventListener("submit", function(e) {
+    let isValid = true;
+    let firstInvalidField = null; // ✅ Lưu input đầu tiên bị lỗi
 
-    xaSelect.value = ''; // reset khi chọn tỉnh khác
-  }
-</script>
+    const errorSummary = document.getElementById("error-summary");
+    errorSummary.innerHTML = "";
+    document.querySelectorAll(".error-message").forEach(el => el.innerText = "");
+
+    const tenPhong = document.getElementById("TenPhong").value.trim();
+    const maLoai = document.getElementById("MaLoai").value;
+    const gia = parseFloat(document.getElementById("Gia").value);
+    const sucChua = parseInt(document.getElementById("SucChua").value);
+    const moTa = document.getElementById("MoTa").value.trim();
+    const maTinh = document.getElementById("MaTinh").value;
+    const maXa = document.getElementById("MaXa").value;
+    const diaChi = document.getElementById("ChiTietDiaChi").value.trim();
+
+    function setError(id, message) {
+      const input = document.getElementById(id);
+      const errorEl = input.nextElementSibling; // small.error-message
+      if (errorEl) errorEl.innerText = message;
+
+      // ✅ Lưu input đầu tiên bị lỗi
+      if (!firstInvalidField) firstInvalidField = input;
+    }
+
+    // ======= KIỂM TRA DỮ LIỆU =======
+    if (tenPhong.length < 3) { setError("TenPhong", "Tên phòng phải có ít nhất 3 ký tự."); isValid = false; }
+    if (!maLoai) { setError("MaLoai", "Vui lòng chọn loại phòng."); isValid = false; }
+    if (isNaN(gia) || gia < 100000) { setError("Gia", "Giá phòng phải >= 100.000 VND."); isValid = false; }
+    if (isNaN(sucChua) || sucChua < 1) { setError("SucChua", "Sức chứa phải >= 1."); isValid = false; }
+    if (moTa.length < 10) { setError("MoTa", "Mô tả cần ít nhất 10 ký tự."); isValid = false; }
+    if (!maTinh) { setError("MaTinh", "Vui lòng chọn tỉnh."); isValid = false; }
+    if (!maXa) { setError("MaXa", "Vui lòng chọn xã."); isValid = false; }
+    if (diaChi.length < 5) { setError("ChiTietDiaChi", "Địa chỉ phải có ít nhất 5 ký tự."); isValid = false; }
+
+    // ======= NẾU LỖI =======
+    if (!isValid) {
+      e.preventDefault();
+      errorSummary.innerHTML = "⚠️ Vui lòng kiểm tra lại các trường bị lỗi.";
+      errorSummary.scrollIntoView({ behavior: "smooth", block: "center" }); // cuộn lên phần báo lỗi
+      if (firstInvalidField) {
+        firstInvalidField.focus(); // ✅ focus vào input lỗi đầu tiên
+        firstInvalidField.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  });
+  </script>
+</body>
+

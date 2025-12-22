@@ -1,0 +1,241 @@
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3" style="color: aliceblue;"> 
+            <i class="fas fa-clipboard-list me-2"></i> Chi tiết Đơn đặt phòng #<%= data.MaDon %>
+        </h1>
+        <a href="/nhacungcap/don-dat-phong" class="btn btn-info text-white"> 
+            <i class="fas fa-arrow-left me-2"></i> Quay lại Danh sách
+        </a>
+    </div>
+    <% if (messages.error) { %>
+        <div class="alert alert-danger" role="alert">
+            <%= messages.error %>
+        </div>
+    <% } %>
+    <% if (messages.success) { %>
+        <div class="alert alert-success" role="alert">
+            <%= messages.success %>
+        </div>
+    <% } %>
+
+    <div class="row">
+        
+        <div class="col-lg-5">
+            <div class="card shadow-sm mb-4 glass-card">
+                <div class="card-header bg-primary text-white">
+                    Thông tin Chung
+                </div>
+                <div class="card-body">
+                    <p><strong>Mã Đơn:</strong> <%= data.MaDon %></p>
+                    <p><strong>Ngày Đặt:</strong> <%= data.NgayDat %></p>
+                    <p><strong>Ngày Nhận (Check-in):</strong> <span class="fw-bold" style="color: rgb(59, 255, 59);"><%= data.NgayNhan %></span></p>
+                    <p><strong>Ngày Trả (Check-out):</strong> <span class="text-danger fw-bold"><%= data.NgayTra %></span></p>
+                    <p>
+                        <strong>Trạng Thái:</strong>
+                        <span class="badge bg-<%= 
+                            data.TrangThai === 2 ? 'success' :      // Đã Hoàn Tất
+                            data.TrangThai === 1 ? 'primary' :      // Đang Sử Dụng
+                            data.TrangThai === 0 ? 'warning' :      // Chờ Xác Nhận
+                            'danger'                                // Đã Hủy (hoặc giá trị không xác định)
+                        %> fs-6">
+                            <%= getStatusText(data.TrangThai) %>
+                        </span>
+                    </p>
+                    <hr>
+                    <h5 class="mt-4">Tổng Thanh Toán</h5>
+                    <p class="fs-4 fw-bold" style="color: rgb(0, 0, 104);"><%= data.TongTien.toLocaleString('vi-VN') %> VNĐ</p>
+                    
+                    <% if (data.SoTienThanhToan) { %>
+                        <p class="text-muted small">Đã thanh toán: <%= data.SoTienThanhToan.toLocaleString('vi-VN') %> VNĐ</p>
+                    <% } else { %>
+                        <p class="small" style="color: yellow;">Chưa ghi nhận thanh toán.</p>
+                    <% } %>
+                </div>
+            </div>
+
+            <div class="card shadow-sm glass-card">
+                <div class="card-header bg-info text-white">
+                    Cập nhật Trạng Thái
+                </div>
+                <div class="card-body">
+                    <% 
+                      
+                        const currentStatus = Number(data.TrangThai); 
+                
+                        
+                        const canUpdate = currentStatus === 0 || currentStatus === 1;
+                    %>
+                
+                    <% if (canUpdate) { %>
+                        <form action="/nhacungcap/don-dat-phong/capnhat-trangthai/<%= data.MaDon %>" method="POST">
+                            <div class="mb-3">
+                                <label for="newStatus" class="form-label">Chọn Trạng Thái Mới:</label>
+                                <select name="newStatus" id="newStatus" class="form-select">
+                                    
+                                    <option value="<%= currentStatus %>" selected>
+                                        [Hiện tại: <%= getStatusText(currentStatus) %>]
+                                    </option>
+                                    
+                                    <option disabled>--- Chuyển đổi sang ---</option>
+                                    
+                                    <% if (currentStatus === 0) { %>
+                                        <option value="1">Đang Sử Dụng</option>
+                                    <% } %>
+                                    
+                                    <% if (currentStatus === 1) { %>
+                                        <option value="2">Đã Hoàn Tất (Check-out)</option>
+                                    <% } %>
+
+                                    <option value="3">Hủy Đơn</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-sync-alt me-2"></i> Xác nhận Cập nhật
+                            </button>
+                        </form>
+                    <% } else { %>
+                        <div class="alert alert-secondary text-center fw-bold">
+                            <i class="fas fa-lock me-2"></i> Đơn hàng đã <%= getStatusText(currentStatus) %> (Đã khóa thao tác).
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card shadow-sm mb-4 glass-card">
+                <div class="card-header bg-success text-white">
+                    Thông tin Khách hàng
+                </div>
+                <div class="card-body">
+                    <p><strong>Tên Người Đặt:</strong> <%= data.TenKH %></p>
+                    <p><strong>Email:</strong> <%= data.Email %></p>
+                    <p><strong>Điện thoại:</strong> <%= data.SDT %></p>
+                    <hr>
+                    <p><strong>Người Nhận Phòng:</strong> <%= data.TenNguoiNhan %></p>
+                    <p><strong>SĐT Người Nhận:</strong> <%= data.SDTNguoiNhan %></p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm glass-card">
+                <div class="card-header bg-dark text-white">
+                    Chi tiết Các Phòng Đã Đặt (<%= chiTietPhong.length %> phòng)
+                </div>
+                <ul class="list-group list-group-flush">
+                    <% chiTietPhong.forEach((phong, index) => { %>
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0"><%= index + 1 %>. <%= phong.TenPhong %></h6>
+                                    <small class="text-muted"><%= phong.LoaiPhong %> | Sức chứa: <%= phong.SucChua %> người</small>
+                                </div>
+                                <span class="fw-bold">
+                                    <%= phong.Gia.toLocaleString('vi-VN') %> VNĐ/đêm
+                                </span>
+                            </div>
+                            
+                            <% if (phong.HinhAnh) { %>
+                                <div class="mt-2 d-flex flex-wrap gap-2">
+                                    <% 
+                                        let hinhAnhArray = [];
+                                        try {
+            
+                                            hinhAnhArray = JSON.parse(phong.HinhAnh);
+                                        } catch (e) {
+                                            
+                                            hinhAnhArray = [phong.HinhAnh]; 
+                                        }
+
+                                       
+                                        const imagesToShow = Array.isArray(hinhAnhArray) ? hinhAnhArray.slice(0, 3) : [];
+                                    %>
+                                
+                                    <% if (imagesToShow.length > 0) { %>
+                                        <% imagesToShow.forEach(imageName => { %>
+                                            <% if (imageName) { %>
+                                                <img src="/images/<%= imageName %>" 
+                                                     alt="<%= phong.TenPhong %>" 
+                                                     class="img-thumbnail" 
+                                                     style="max-height: 80px; width: auto; object-fit: cover;">
+                                            <% } %>
+                                        <% }); %>
+                                    <% } %>
+                                </div>
+                            <% } %>
+                        </li>
+                    <% }) %>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    body {
+        font-size: 1.3rem; 
+        color: #000; /* Màu chữ đen */
+        font-weight: 700;
+    }
+    /* 2. Định nghĩa phong cách Glassmorphism cho các Card */
+    .glass-card {
+        /* Nền trong suốt: Sử dụng rgba hoặc hsla */
+        background-color: rgba(255, 255, 255, 0.2); 
+        /* Hiệu ứng mờ (Blur) - Đây là phần quan trọng nhất của glassmorphism */
+        backdrop-filter: blur(10px); 
+        -webkit-backdrop-filter: blur(10px); /* Hỗ trợ trình duyệt Webkit (Safari) */
+        /* Viền mỏng, trong suốt để tạo cảm giác "thủy tinh" */
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        /* Hiệu ứng đổ bóng nhẹ để tăng chiều sâu */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+        /* Bo góc nhẹ nhàng */
+        border-radius: 15px; 
+        /* Đảm bảo nội dung bên trong vẫn dễ đọc */
+        color: #333;
+    }
+    
+    /* 3. Tùy chỉnh các phần Card Header để phù hợp với phong cách mờ */
+    .card-header {
+        /* Tăng độ trong suốt một chút cho Header */
+        background-color: rgba(0, 123, 255, 0.7) !important; /* Ví dụ cho primary */
+        color: white !important;
+        border-bottom: none; /* Loại bỏ đường viền mặc định */
+        border-radius: 15px 15px 0 0 !important; /* Giữ bo góc phía trên */
+        font-weight: bold;
+    }
+    
+    /* Áp dụng cho từng loại header để duy trì màu sắc */
+    .card-header.bg-primary {
+        background-color: rgba(0, 123, 255, 0.7) !important;
+    }
+    .card-header.bg-info {
+        background-color: rgba(23, 162, 184, 0.7) !important;
+    }
+    .card-header.bg-success {
+        background-color: rgba(40, 167, 69, 0.7) !important;
+    }
+    .card-header.bg-dark {
+        background-color: rgba(52, 58, 64, 0.7) !important;
+    }
+    
+    /* 4. Tùy chỉnh danh sách chi tiết (List Group) */
+    .list-group-item {
+        background-color: transparent !important; /* Làm nền trong suốt */
+        border-color: rgba(255, 255, 255, 0.3); /* Viền mỏng, mờ */
+    }
+    
+    /* 5. Tùy chỉnh nút "Quay lại" */
+    .btn-outline-secondary {
+        border-color: rgba(0, 0, 0, 0.5);
+        color: #000000;
+    }
+    
+    .btn-outline-secondary:hover {
+        background-color: rgba(108, 117, 125, 0.1);
+    }
+    
+    /* 6. Tùy chỉnh input/select trong form */
+    .form-select {
+        background-color: rgba(255, 255, 255, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+    </style>

@@ -1,4 +1,4 @@
-const { NhaCungCap, addNhaCungCap } = require("../models/NhaCungCap") // Model phòng
+const NhaCungCap = require("../models/NhaCungCap") // Model phòng
 const bcrypt = require("bcryptjs")
 const TaiKhoan = require("../models/taikhoan")
 const db = require("../../config/db");
@@ -30,6 +30,17 @@ exports.renderDangKyNhaCungCap = async (req, res) => {
         formData: {},
         tinhs
     })
+}
+exports.renderDashboard = async (req, res) => {
+  // 🧭 Lấy danh sách tỉnh và xã (để hiển thị select)
+  
+  res.render("nhacungcap/dashboard", {
+    data: { tongPhong: 120, phongHoatDong: 75, phongBaoTri: 10, tongDon: 50, doanhThu: 1000 },
+    title: "Dashboard Nhà Cung Cấp",
+    errors: {},
+    formData: {},
+    // layout: false // Sử dụng layout khác cho dashboard
+  })
 }
 
 exports.registerNhaCungCap = async (req, res) => {
@@ -94,7 +105,7 @@ exports.registerNhaCungCap = async (req, res) => {
         const giayPhepKD = req.file ? req.file.originalname : ""
 
         if (!giayPhepKD) {
-            errors.giayPhepKD = "Vui lòng tải giấy phép kinh doanh."
+            errors.GiayPhepKD = "Vui lòng cung cấp giấy phép kinh doanh."
         }
 
         if (Object.keys(errors).length > 0) {
@@ -151,18 +162,18 @@ exports.registerNhaCungCap = async (req, res) => {
         data.MaDiaChi = maDiaChi
         data.MaTaiKhoan = maTaiKhoan
         // Tạo tài khoản cho nhà cung cấp
-        const result = await addNhaCungCap(data)
+        const result = await NhaCungCap.create(data)
 
         await db.query("COMMIT;");
         res.send(`
-        <html>
-            <body style="font-family: sans-serif; text-align:center; margin-top:100px;">
-            <h2 style="color: green;">Đăng ký thành công!</h2>
-            <p>Chờ xác nhận tài khoản...</p>
-            <p><a href="/">Trở về trang chủ</a></p>
-            </body>
-        </html>
-    `)
+            <html>
+                <body style="font-family: sans-serif; text-align:center; margin-top:100px;">
+                <h2 style="color: green;">Đăng ký thành công!</h2>
+                <p>Chờ xác nhận tài khoản...</p>
+                <p><a href="/">Trở về trang chủ</a></p>
+                </body>
+            </html>
+        `)
     } catch (error) {
         console.error("Xảy ra lỗi trong khi đăng ký nhà cung cấp:", error)
         await db.query("ROLLBACK;");
@@ -208,18 +219,17 @@ exports.loginNhaCungCap = async (req, res) => {
           formData: req.body,
         });
       }
-  
-      // 2️⃣ Truy vấn tài khoản và thông tin nhà cung cấp (JOIN)
+      // 2️⃣ Truy vấn tài khoản và thông tin nhà cung cấp (LEFT JOIN)
       const [rows] = await db.execute(
-        `SELECT 
-            tk.MaTaiKhoan, tk.TaiKhoan, tk.MatKhau, tk.PhanQuyen, tk.TrangThai,
-            ncc.MaNCC, ncc.TenNCC
-         FROM TaiKhoan tk
-         JOIN NhaCungCap ncc ON tk.MaTaiKhoan = ncc.MaTaiKhoan
-         WHERE tk.TaiKhoan = ?`,
-        [Email]
+          `SELECT 
+              tk.MaTaiKhoan, tk.TaiKhoan, tk.MatKhau, tk.PhanQuyen, tk.TrangThai,
+              ncc.MaNCC, ncc.TenNCC
+          FROM TaiKhoan tk
+          LEFT JOIN NhaCungCap ncc ON tk.MaTaiKhoan = ncc.MaTaiKhoan 
+          WHERE tk.TaiKhoan = ?`,
+          [Email]
       );
-  
+
       const account = rows[0];
       if (!account) {
         errors.Email = "Tài khoản Email không tồn tại";
@@ -230,7 +240,15 @@ exports.loginNhaCungCap = async (req, res) => {
           formData: req.body,
         });
       }
-  
+      // BỔ SUNG KIỂM TRA QUYỀN VÀ MA_NCC sau khi lấy account
+      if (account && account.PhanQuyen === 'NhaCungCap' && !account.MaNCC) {
+        // Nếu tài khoản là NCC nhưng MaNCC là NULL/undefined (do LEFT JOIN không khớp)
+        errors.Global = "Tài khoản NCC này chưa được liên kết hoặc chưa được duyệt.";
+        return res.status(400).render("nhacungcap/dangnhap", {
+            // ... (render lỗi)
+        });
+      }  
+      
       // 3️⃣ Kiểm tra mật khẩu
       const passwordMatch = await bcrypt.compare(Password, account.MatKhau);
       if (!passwordMatch) {
@@ -271,14 +289,14 @@ exports.loginNhaCungCap = async (req, res) => {
         TaiKhoan: account.TaiKhoan,
         PhanQuyen: account.PhanQuyen,
         TrangThai: account.TrangThai,
-        MaNCC: account.MaNCC, // ✅ Lấy từ bảng nhacungcap
-        TenNCC: account.TenNCC, // ✅ Tên NCC để hiển thị
+        MaNCC: account.MaNCC, 
+        TenNCC: account.TenNCC, 
       };
   
       console.log("✅ NCC đăng nhập:", req.session.user);
   
       // 7️⃣ Chuyển hướng đến danh sách phòng
-      res.redirect("/nhacungcap/phong");
+      res.redirect("/nhacungcap/");
     } catch (err) {
       console.error("❌ Lỗi trong loginNhaCungCap:", err);
       res.status(500).render("nhacungcap/dangnhap", {

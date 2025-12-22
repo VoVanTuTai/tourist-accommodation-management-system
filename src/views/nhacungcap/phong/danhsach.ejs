@@ -1,96 +1,261 @@
-<h2>🏨 Danh sách phòng của <%= ncc.TenNCC %></h2>
+<style>
 
-<!-- Thanh hành động đầu trang -->
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-  <!-- Bộ lọc tình trạng -->
-  <form method="GET" action="/nhacungcap/phong" style="margin: 0;">
-    <label for="filter"><strong>Lọc theo tình trạng:</strong></label>
-    <select name="filter" id="filter" onchange="this.form.submit()">
-      <option value="all" <%= currentFilter === 'all' ? 'selected' : '' %>>Tất cả</option>
-      <option value="1" <%= currentFilter === '1' ? 'selected' : '' %>>🟢 Còn trống</option>
-      <option value="0" <%= currentFilter === '0' ? 'selected' : '' %>>🔴 Đã đặt</option>
-      <option value="2" <%= currentFilter === '2' ? 'selected' : '' %>>🟠 Bảo trì</option>
-    </select>
-  </form>
+.sidebar-nav {
+    background-color: rgba(255, 255, 255, 0.25) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px; 
+    border: 1px solid rgba(255, 255, 255, 0.4); 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
 
-  <!-- Nút thêm phòng -->
-  <a href="/nhacungcap/phong/them" 
-     style="background: #28a745; color: white; padding: 8px 14px; border-radius: 6px; text-decoration: none; font-weight: 500;">
-    ➕ Thêm phòng
-  </a>
-</div>
+.sidebar-nav h5 {
+    
+    color: #172b4d !important; 
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 0.5rem;
+}
+.sidebar-nav .nav-link {
+    color: #2d3748 !important; 
+    font-weight: 500;
+    transition: background-color 0.2s, transform 0.2s;
+    border-radius: 8px;
+}
+.sidebar-nav .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.6);
+    transform: translateX(2px);
+}
+.sidebar-nav .nav-link.active {
+    
+    background-color: #5d59c5 !important;
+    color: white !important; 
+    font-weight: 600 !important;
+}
+.main-content-panel {
+    
+    background-color: rgba(255, 255, 255, 0.35) !important; 
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    
+    border-radius: 12px; 
+    border: 1px solid rgba(255, 255, 255, 0.5); 
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    min-height: 85vh; 
+}
+.main-content-panel .page-header h2 {
+    color: #172b4d !important;
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
+    border-bottom-color: rgba(0, 0, 0, 0.1) !important;
+}
+.main-content-panel .table-container {
+    overflow-x: auto;
+    background-color: rgba(255, 255, 255, 0.9) !important; 
+    border: none;
+}
+.main-content-panel .table thead {
+    
+    background-color: #f8f9fa !important; 
+}
+.table-container {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6; 
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+    overflow: hidden; 
+}
 
-<!-- Bảng danh sách -->
-<table border="1" cellspacing="0" cellpadding="8" style="width: 100%; border-collapse: collapse; text-align: center;">
-  <thead style="background-color: #f2f2f2;">
-    <tr>
-      <th>Mã phòng</th>
-      <th>Tên phòng</th>
-      <th>Loại phòng</th>
-      <th>Giá (VNĐ)</th>
-      <th>Sức chứa</th>
-      <th>Tình trạng</th>
-      <th>Địa chỉ</th>
-      <th>Hình ảnh</th>
-      <th>Hành động</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% if (rooms.length === 0) { %>
-      <tr>
-        <td colspan="9" style="text-align:center;">Không có phòng nào</td>
-      </tr>
-    <% } else { %>
-      <% rooms.forEach(p => { %>
-        <tr>
-          <td><%= p.MaPhong %></td>
-          <td><%= p.TenPhong %></td>
-          <td><%= p.TenLoai %></td>
-          <td><%= Number(p.Gia).toLocaleString() %></td>
-          <td><%= p.SucChua %></td>
+.table {
+    margin-bottom: 0; 
+}
 
-          <td>
-            <% if (p.TinhTrang === 1) { %> 🟢 Còn trống
-            <% } else if (p.TinhTrang === 0) { %> 🔴 Đã đặt
-            <% } else { %> 🟠 Bảo trì <% } %>
-          </td>
 
-          <td>
-            <% if (p.ChiTiet && p.TenXa && p.TenTinh) { %>
-              <%= p.ChiTiet %>, <%= p.TenXa %>, <%= p.TenTinh %>
-            <% } else { %>
-              <span style="color:#888;">—</span>
-            <% } %>
-          </td>
+.status-badge {
+    display: inline-block;
+    padding: 0.3em 0.6em;
+    border-radius: 0.25rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    transition: background-color 0.3s;
+}
 
-          <td>
-            <% if (p.HinhAnh) { %>
-              <img src="/images/<%= p.HinhAnh %>" width="80" style="border-radius:5px;">
-            <% } else { %>
-              —
-            <% } %>
-          </td>
+.status-available {
+    color: #0f5132;
+    background-color: #d1e7dd; 
+    border: 1px solid #badbcc;
+}
 
-          <td>
-            <!-- 👁️ Nút xem chi tiết -->
-            <a href="/nhacungcap/phong/chitiet/<%= p.MaPhong %>">👁️ Xem</a>
+.status-booked {
+    color: #842029;
+    background-color: #f8d7da; 
+    border: 1px solid #f5c2c7;
+}
 
-            <% if (p.TinhTrang === 0) { %>
-              <!-- 🔴 ĐÃ ĐẶT: Không thể thao tác -->
-              | <span style="color: gray;">🚫 Không thể thao tác</span>
+.status-maintenance {
+    color: #664d03;
+    background-color: #fff3cd; 
+    border: 1px solid #ffecb5;
+}
 
-            <% } else if (p.TinhTrang === 1) { %>
-              <!-- 🟢 CÒN TRỐNG: chỉ có nút cập nhật -->
-              | <a href="/nhacungcap/phong/trangthai/<%= p.MaPhong %>">🔄 Cập nhật trạng thái</a>
 
-            <% } else if (p.TinhTrang === 2) { %>
-              <!-- 🟠 BẢO TRÌ: có cả 2 nút -->
-              | <a href="/nhacungcap/phong/suaphong/<%= p.MaPhong %>">✏️ Sửa</a>
-              | <a href="/nhacungcap/phong/trangthai/<%= p.MaPhong %>">🔄 Cập nhật</a>
-            <% } %>
-          </td>
-        </tr>
-      <% }) %>
-    <% } %>
-  </tbody>
-</table>
+.price {
+    font-size: 1.1rem;
+    font-weight: 700 !important;
+    color: #dc3545 !important; 
+}
+
+
+.room-image {
+    width: 80px; 
+    height: 60px;
+    object-fit: cover; 
+    border-radius: 0.25rem;
+    border: 1px solid #e9ecef;
+}
+
+
+.action-detail-btn {
+    width: 100%;
+    color: #0d6efd; 
+    background-color: #e9ecef; 
+    border-color: #e9ecef;
+    transition: all 0.2s;
+}
+
+.action-detail-btn:hover {
+    color: #fff;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+</style>
+
+<div class="container-fluid py-4 mt-3">
+
+    <div class="row"> 
+
+        <div class="col-lg-3 mb-4">
+            <div class="sidebar-nav bg-white rounded shadow-sm p-3">
+                <ul class="nav flex-column gap-1">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark active-nav fw-semibold" href="/nhacungcap/">
+                            <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark active" href="/nhacungcap/phong">
+                            <i class="bi bi-house-door me-2"></i>Danh sách phòng
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="/nhacungcap/don-dat-phong">
+                            <i class="bi bi-calendar-check me-2"></i> Đơn đặt phòng
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-lg-9">
+            
+          <div class="main-content-panel bg-white rounded p-4 shadow-sm">
+              
+              <div class="page-header mb-4">
+                  <h2 id="pageTitle" class="text-primary fw-bold">🏨 Danh sách phòng của <%= ncc.TenNCC %></h2>
+              </div>
+      
+              <div class="action-bar mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                  <form method="GET" action="/nhacungcap/phong" class="filter-form d-flex align-items-center gap-2">
+                          <label for="filter" id="filterLabel" class="me-2 fw-bold">Lọc theo tình trạng:</label>
+                          <select name="filter" id="filter" class="form-select form-select-sm" onchange="this.form.submit()" style="width: 150px;">
+                                  <option value="all" <%= currentFilter === 'all' ? 'selected' : '' %>>Tất cả</option>
+                                  <option value="1" <%= currentFilter === '1' ? 'selected' : '' %>>🟢 Còn trống</option>
+                                  <option value="0" <%= currentFilter === '0' ? 'selected' : '' %>>🔴 Đã đặt</option>
+                                  <option value="2" <%= currentFilter === '2' ? 'selected' : '' %>>🟠 Bảo trì</option>
+                          </select>
+                      </form>
+      
+                      <a href="/nhacungcap/phong/them" class="add-button btn shadow-sm">
+                          ➕ <span style="color: black;"><strong>Thêm phòng</strong></span>
+                      </a>
+              </div>
+      
+              <div class="table-container bg-white border rounded shadow-sm">
+                  <table class="table table-striped table-hover align-middle mb-0">
+                      <thead class="table-light">
+                          <tr>
+                              <th>Mã phòng</th>
+                              <th>Tên phòng</th>
+                              <th>Loại phòng</th>
+                              <th>Giá (VNĐ)</th>
+                              <th>Sức chứa</th>
+                              <th>Tình trạng</th>
+                              <th style="min-width: 100px;">Hình ảnh</th>
+                              <th style="min-width: 150px;">Hành động</th>
+                          </tr>
+                      </thead>
+      
+                      <tbody>
+                      <% if (rooms && rooms.length === 0) { %>
+                          <tr><td colspan="9" class="text-center text-muted py-3">Không có phòng nào</td></tr>
+                      <% } else if (rooms) { %>
+                          <% rooms.forEach(p => { %>
+                          <tr>
+      
+                              <td><strong><%= p.MaPhong %></strong></td>
+                              <td><%= p.TenPhong %></td>
+                              <td><%= p.TenLoai %></td>
+                              <td class="price fw-semibold text-danger"><%= Number(p.Gia).toLocaleString('vi-VN') %></td>
+                              <td><%= p.SucChua %> người</td>
+      
+                              <td>
+                                  <% if (p.TinhTrang === 1) { %>
+                                      <span class="status-badge status-available">🟢 Còn trống</span>
+                                  <% } else if (p.TinhTrang === 0) { %>
+                                      <span class="status-badge status-booked">🔴 Đã đặt</span>
+                                  <% } else { %>
+                                      <span class="status-badge status-maintenance">🟠 Bảo trì</span>
+                                  <% } %>
+                              </td>
+                              <td>
+                                  <% 
+                                      let firstImage = "";
+                                      try {
+                                          if (p.HinhAnh && p.HinhAnh.trim().startsWith("[")) {
+                                              const arr = JSON.parse(p.HinhAnh);
+                                              if (arr.length > 0) firstImage = arr[0];
+                                          } else if (p.HinhAnh) {
+                                              firstImage = p.HinhAnh;
+                                          }
+                                      } catch (err) { 
+                                          firstImage = p.HinhAnh; 
+                                      }
+                                  %>
+      
+                                  <% if (firstImage && typeof firstImage === 'string' && firstImage.trim() !== '') { %>
+                                      <img src="/images/<%= firstImage %>" class="room-image" alt="<%= p.TenPhong %>">
+                                  <% } else { %>
+                                      <span class="text-muted">—</span>
+                                  <% } %>
+                              </td>
+      
+                              <td>
+                                  <div class="action-links d-flex flex-column gap-2">
+      
+                                    <a href="/nhacungcap/phong/chitiet/<%= p.MaPhong %>" 
+                                      class="btn fs-6 action-detail-btn fw-bolder">Chi tiết</a>
+                                  </div>
+                              </td>
+      
+                          </tr>
+                          <% }) %>
+                      <% } %>
+                      </tbody>
+                  </table>
+              </div>
+      
+          </div>
+        </div>
+        </div>
+    </div>
