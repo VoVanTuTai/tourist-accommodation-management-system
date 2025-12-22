@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const TaiKhoan = require('../models/taikhoan');
+const NhaCungCap = require('../models/NhaCungCap');
 
 // ===============================
 // 🔹 Hàm kiểm tra định dạng email
@@ -45,8 +46,8 @@ exports.login = async (req, res) => {
     if (!account)
       return res.render('khachhang/dangnhap', { error: 'Email hoặc mật khẩu không đúng!', old, success: null });
 
-    if (account.TrangThai === 'Khoa')
-      return res.render('khachhang/dangnhap', { error: 'Tài khoản đã bị khóa hoặc tạm ngưng!', old, success: null });
+    if (account.TrangThai === 'Khoa' || account.TrangThai === 'ChoDuyet')
+      return res.render('khachhang/dangnhap', { error: 'Tài khoản đã bị khóa hoặc đang chờ duyệt!', old, success: null });
 
     const match = await bcrypt.compare(MatKhau, account.MatKhau);
     if (!match)
@@ -78,7 +79,13 @@ exports.login = async (req, res) => {
     if (req.session.user.PhanQuyen === 'Admin') {
       return res.redirect('/admin/dashboard');
     } else if (req.session.user.PhanQuyen === 'NhaCungCap') {
-      return res.redirect('/nhacungcap/phong');
+      const ncc = await NhaCungCap.getByTaiKhoan(account.MaTaiKhoan);
+      if (!ncc) {
+        return res.redirect('/nhacungcap/dangky');
+      }
+      req.session.user.MaNCC = ncc.MaNCC;
+      req.session.user.TenNCC = ncc.TenNCC;
+      return res.redirect('/nhacungcap/');
     } else {
       return res.redirect('/');
     }

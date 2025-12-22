@@ -3,17 +3,23 @@ const bcrypt = require("bcryptjs")
 const TaiKhoan = require("../models/taikhoan")
 const db = require("../../config/db");
 const DiaChi = require("../models/DiaChi");
+const Phong = require("../models/phong");
 
 const {
     isValidFullname,
     isValidEmail,
     isValidVietnamPhone,
     isValidPassword,
+    isValidDate
 } = require("../middlewares/validate")
 const fs = require("fs")
 const path = require("path")
 const e = require("express")
-const { error } = require("console")
+const { error } = require("console");
+const dayjs=require("dayjs");
+const customParseFormat = require("dayjs/plugin/customParseFormat");
+dayjs.extend(customParseFormat);
+
 const jsLibraries = [
     "https://cdn-script.com/ajax/libs/jquery/3.7.1/jquery.min.js",
     "/js/nhacungcap/dangky.js",
@@ -33,12 +39,59 @@ exports.renderDangKyNhaCungCap = async (req, res) => {
 }
 exports.renderDashboard = async (req, res) => {
   // 🧭 Lấy danh sách tỉnh và xã (để hiển thị select)
-  
+  const maNCC = req.session.user.MaNCC;
+  if (!maNCC) return res.status(401).send("⚠️ Vui lòng đăng nhập trước khi sửa phòng.");
+
+  let dateErrors = {};
+  let statsByYear = req.query.statsByYear || new Date().getFullYear();
+  let statsByMonth = req.query.statsByMonth || (new Date().getMonth() + 1) + '/' + new Date().getFullYear();
+
+  if (statsByYear) {
+    const testDate = `01/01/${statsByYear}`;
+    if (!isValidDate(testDate)) {
+      return res.status(400).send("⚠️ Năm không hợp lệ.");
+    }
+  }
+  if (statsByMonth) {
+    const [month, year] = statsByMonth.split('/');
+    const testDate = `01/${month}/${year}`;
+    if (!isValidDate(testDate)) {
+      return res.status(400).send("⚠️ Tháng/năm không hợp lệ.");
+    }
+  }
+
+  const tongPhong = await NhaCungCap.getTongSoPhong(maNCC);
+  const tongDonDatPhong = await NhaCungCap.getTongSoDonDatPhong(maNCC);
+  const tongDoanhThu = await NhaCungCap.getTongDoanhThu(maNCC);
+
+  const currentDate = new Date();
+  const maxDoanhThuTheoNam = await NhaCungCap.getMaxDoanhThuTheoNam(maNCC, statsByYear);
+  const doanhThuThangTheoNam = await NhaCungCap.getDoanhThuThangTheoNam(maNCC, statsByYear);
+  const thongKePhong = await NhaCungCap.getThongKePhong(maNCC);
+  const thongKeDonDatPhong = await NhaCungCap.getThongKeDonDatPhong(maNCC);
+  const maxDoanhThuTheoThang = await NhaCungCap.getMaxDoanhThuTheoThang(maNCC, dayjs(statsByMonth, 'MM/YYYY').month() + 1, dayjs(statsByMonth, 'MM/YYYY').year());
+  const doanhThuTheoThang = await NhaCungCap.getDoanhThuThangTheoThang(maNCC, dayjs(statsByMonth, 'MM/YYYY').month() + 1, dayjs(statsByMonth, 'MM/YYYY').year());
+
   res.render("nhacungcap/dashboard", {
-    data: { tongPhong: 120, phongHoatDong: 75, phongBaoTri: 10, tongDon: 50, doanhThu: 1000 },
+    data: {
+      tongPhong: tongPhong,
+      tongDonDatPhong: tongDonDatPhong,
+      phongBaoTri: 10,
+      tongDoanhThu: tongDoanhThu,
+      doanhThuThangTheoNam: doanhThuThangTheoNam,
+      maxDoanhThuTheoNam: maxDoanhThuTheoNam,
+      thongKePhong: thongKePhong,
+      thongKeDonDatPhong: thongKeDonDatPhong,
+      doanhThuTheoThang: doanhThuTheoThang,
+      maxDoanhThuTheoThang: maxDoanhThuTheoThang,
+    },
     title: "Dashboard Nhà Cung Cấp",
-    errors: {},
+    errors: {
+      dateErrors
+    },
     formData: {},
+    statsByYear: currentDate.getFullYear(),
+    statsByMonth: (currentDate.getMonth() + 1) + '/' + currentDate.getFullYear(),
     // layout: false // Sử dụng layout khác cho dashboard
   })
 }
@@ -195,6 +248,46 @@ exports.renderDangNhapNhaCungCap = (req, res) => {
         formData: req.body,
     })
 }
+
+exports.getChartMonthData = async (req, res) => {
+    try {
+      const maNCC = req.session.user.MaNCC;
+      const { statsByMonth } = req.params;
+      if (!statsByMonth) {
+        return res.status(400).send("⚠️ Không có thông tin tháng/năm.");
+      }
+      const [month, year] = statsByMonth.split('-');
+      const testDate = `01/${month}/${year}`;
+      if (!isValidDate(testDate)) {
+        return res.status(400).send("⚠️ Tháng/năm không hợp lệ.");
+      }
+      const maxDoanhThuTheoThang = await NhaCungCap.getMaxDoanhThuTheoThang(maNCC, parseInt(month), parseInt(year));
+      const doanhThuTheoThang = await NhaCungCap.getDoanhThuThangTheoThang(maNCC, parseInt(month), parseInt(year));
+      return res.status(200).json({ maxDoanhThuTheoThang, doanhThuTheoThang });
+    } catch (error) {
+      console.error("Lỗi lấy dữ liệu biểu đồ:", error);
+      res.status(500).json({ error: "Lỗi máy chủ" });
+    }
+};
+exports.getChartYearData = async (req, res) => {
+    try {
+      const maNCC = req.session.user.MaNCC;
+      const { statsByYear } = req.params;
+      if (!statsByYear) {
+        return res.status(400).send("⚠️ Không có thông tin năm.");
+      }
+      const testDate = `01/01/${statsByYear}`;
+      if (!isValidDate(testDate)) {
+        return res.status(400).send("⚠️ Năm không hợp lệ.");
+      }
+      const maxDoanhThuTheoNam = await NhaCungCap.getMaxDoanhThuTheoNam(maNCC, parseInt(statsByYear));
+      const doanhThuThangTheoNam = await NhaCungCap.getDoanhThuThangTheoNam(maNCC, parseInt(statsByYear));
+      return res.status(200).json({ maxDoanhThuTheoNam, doanhThuThangTheoNam });
+    } catch (error) {
+      console.error("Lỗi lấy dữ liệu biểu đồ:", error);
+      res.status(500).json({ error: "Lỗi máy chủ" });
+    }
+};
 
 exports.loginNhaCungCap = async (req, res) => {
     try {
