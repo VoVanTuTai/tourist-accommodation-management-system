@@ -33,6 +33,9 @@ router.post(
   nhaCungCapController.registerNhaCungCap
 );
 router.get("/",nhaCungCapController.renderDashboard)
+router.get("/statsByMonth/:statsByMonth",nhaCungCapController.getChartMonthData)
+router.get("/statsByYear/:statsByYear",nhaCungCapController.getChartYearData)
+
 
 router.get("/dangnhap", nhaCungCapController.renderDangNhapNhaCungCap);
 router.post("/dangnhap", nhaCungCapController.loginNhaCungCap);

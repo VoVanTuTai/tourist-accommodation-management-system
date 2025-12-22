@@ -1,5 +1,7 @@
 // views/utils/validator.js
-
+const dayjs = require('dayjs');
+const customParseFormat = require("dayjs/plugin/customParseFormat");
+dayjs.extend(customParseFormat);
 /**
  * Kiểm tra họ tên: ít nhất 5 ký tự, không toàn số, không ký tự đặc biệt.
  */
@@ -41,9 +43,25 @@ function isValidPassword(password) {
   return regex.test(password);
 }
 
+function isValidDate(dateString) {
+  try {
+      console.log("isValidDate dateString:", dayjs(dateString).format("DD/MM/YYYY"));
+      const formatedDate = dayjs(dateString, "DD/MM/YYYY", true).format("YYYY-MM-DD");
+      const isValid = dayjs(formatedDate, "YYYY-MM-DD", true).isValid();
+      if (isValid && (dayjs().isAfter(formatedDate, "day") || dayjs().isSame(formatedDate, "day"))) {
+        return true;
+      }
+      return false;
+  } catch (error) {
+      console.error("isValidDate error:", error);
+      return false;
+  }
+}
+
 module.exports = {
   isValidFullname,
   isValidEmail,
   isValidVietnamPhone,
-  isValidPassword
+  isValidPassword,
+  isValidDate,
 };

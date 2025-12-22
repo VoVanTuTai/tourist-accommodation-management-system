@@ -3,10 +3,24 @@
     window.location.href = "/"
 </script>
 <% } else { %>
-<div id="layoutSidenav_content">
+<div id="layoutSidenav_content" class="partner-dashboard pb-5" style="background-color: transparent;">
     <main>
         <div class="container-fluid px-4">
-            <h1 class="pt-5 pb-2 h1 text-white">Dashboard</h1>
+            <div class="row pt-5 mb-3">
+                <div class="col-md-6 col-12">
+                    <h1 class="h1 text-white mb-0">Dashboard</h1>
+                </div>
+                <!-- Filter -->
+                <div class="col-md-6 col-12">
+                    <div class="input-group">
+                        <!-- <label for="fromDate" class="input-group-text">From</label>
+                        <input type="text" id="fromDate" name="fromDate" class="form-control" autocomplete="off">
+                        <label for="toDate" class="input-group-text">to</label>
+                        <input type="text" id="toDate" name="toDate" class="form-control" autocomplete="off">
+                        <button type="button" class="input-group-text" id="btnFilter">Search</button> -->
+                    </div>
+                </div>
+            </div>
             <!-- <ol class="breadcrumb mb-4">
                 <li class="breadcrumb-item active">Dashboard</li>
             </ol> -->
@@ -33,7 +47,7 @@
                     <div class="card bg-warning text-white">
                         <div class="card-body text-center">
                             <h5 class="text-white h5 mb-0">Tổng đơn đặt</h5>
-                            <div class="value"><%= data.tongDon %></div>
+                            <div class="value"><%= data.tongDonDatPhong %></div>
                         </div>
                         <div
                             class="card-footer d-flex align-items-center justify-content-between"
@@ -50,9 +64,9 @@
                 <div class="col-xl-4 col-md-6 mb-4">
                     <div class="card bg-success text-white text-center h-100">
                         <div class="card-body text-center">
-                            <h5 class="text-white h5 mb-0">Doanh thu</h5>
+                            <h5 class="text-white h5 mb-0">Tổng Doanh thu</h5>
                             <div class="value">
-                                <%= Number(data.doanhThu).toLocaleString() %> VND
+                                <%= Number(data.tongDoanhThu).toLocaleString() %> VND
                             </div>
                         </div>
                     </div>
@@ -78,7 +92,7 @@
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-chart-pie me-1"></i>
-                            Tình trạng booking
+                            Tình trạng đặt phòng
                         </div>
                         <div class="card-body">
                             <canvas
@@ -93,7 +107,14 @@
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-chart-area me-1"></i>
-                            Area Chart Example
+                            Doanh thu tháng: 
+                            <span id="statsByMonthDatepicker" class="input-group-sm">
+                                <input
+                                name="statsByMonth" id="statsByMonth"
+                                class="date-picker"
+                                placeholder="E.g: December 2025" data-date="<%= statsByMonth ? statsByMonth : (new Date().getMonth() + 1) + '/' + new Date().getFullYear() %>"
+                                style="display: inline-block; max-width: 150px; text-align: center;"/>
+                            </span>
                         </div>
                         <div class="card-body">
                             <canvas
@@ -108,7 +129,14 @@
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-chart-bar me-1"></i>
-                            Bar Chart Example
+                            Doanh thu năm: 
+                            <span id="statsByYearDatepicker" class="input-group-sm">
+                                <input name="statsByYear"
+                                    id="statsByYear" class="date-picker"
+                                    placeholder="E.g: 2025"
+                                    data-date="<%= statsByYear ? statsByYear : new Date().getFullYear() %>"
+                                    style="display: inline-block; max-width: 50px; text-align: center;" />
+                            </span>
                         </div>
                         <div class="card-body">
                             <canvas
@@ -120,7 +148,7 @@
                     </div>
                 </div>
             </div>
-            <div class="card mb-4">
+            <!-- <div class="card mb-4">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
                     DataTable Example
@@ -607,23 +635,9 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </div> -->
         </div>
     </main>
-    <footer class="py-4 bg-light mt-auto">
-        <div class="container-fluid px-4">
-            <div
-                class="d-flex align-items-center justify-content-between small"
-            >
-                <div class="text-muted">Copyright &copy; Your Website 2023</div>
-                <div>
-                    <a href="#">Privacy Policy</a>
-                    &middot;
-                    <a href="#">Terms &amp; Conditions</a>
-                </div>
-            </div>
-        </div>
-    </footer>
 </div>
 <%- contentFor('style') %>
 <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
@@ -635,22 +649,9 @@
     .dashboard-container {
         padding: 2rem;
     }
-    .card {
-        border: none;
-        border-radius: 15px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    }
-    .card h5 {
-        color: #6c757d;
-    }
     .value {
         font-size: 1.9rem;
         font-weight: 700;
-    }
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 1.5rem;
     }
     .chart-container {
         margin-top: 3rem;
@@ -662,18 +663,384 @@
     .welcome {
         margin-bottom: 2rem;
     }
-
+    #ui-datepicker-div {
+        display: none;
+    }
+    .ui-datepicker-calendar {
+        display: none !important;
+    }
 </style>
 
 <%- contentFor('head-scripts') %>
 <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css" media="screen" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/base/jquery-ui.css">
+<!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.js"></script> -->
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+<!-- <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script> -->
 
 <%- contentFor('footer-scripts') %>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-<script src="/js/nhacungcap/chart-area.js"></script>
-<script src="/js/nhacungcap/chart-bar.js"></script>
-<script src="/js/nhacungcap/chart-pie.js"></script>
+
+<!--  -->
+
+<script>
+// Set new default font family and font color to mimic Bootstrap's default styling
+Chart.defaults.global.defaultFontFamily =
+    '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif'
+Chart.defaults.global.defaultFontColor = "#292b2c"
+
+// Area Chart 
+var ctx = document.getElementById("myAreaChart")
+const doanhThuTheoThang = <%- JSON.stringify(data.doanhThuTheoThang) %>;
+const maxDoanhThuTheoThang = <%- data.maxDoanhThuTheoThang %>;
+
+const myLineChart = new Chart(ctx, {
+    type: "line",
+    data: {
+        labels: Object.keys(doanhThuTheoThang),
+        datasets: [
+            {
+                label: "Sessions",
+                lineTension: 0.3,
+                backgroundColor: "rgba(2,117,216,0.2)",
+                borderColor: "rgba(2,117,216,1)",
+                pointRadius: 5,
+                pointBackgroundColor: "rgba(2,117,216,1)",
+                pointBorderColor: "rgba(255,255,255,0.8)",
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: "rgba(2,117,216,1)",
+                pointHitRadius: 50,
+                pointBorderWidth: 2,
+                data: Object.values(doanhThuTheoThang),
+            },
+        ],
+    },
+    options: {
+        scales: {
+            xAxes: [
+                {
+                    time: {
+                        unit: "date",
+                    },
+                    gridLines: {
+                        display: false,
+                    },
+                    ticks: {
+                        maxTicksLimit: 7,
+                    },
+                },
+            ],
+            yAxes: [
+                {
+                    ticks: {
+                        min: 0,
+                        max: maxDoanhThuTheoThang || 60000,
+                        maxTicksLimit: 5,
+                    },
+                    gridLines: {
+                        color: "rgba(0, 0, 0, .125)",
+                    },
+                },
+            ],
+        },
+        legend: {
+            display: false,
+        },
+    },
+})
+</script>
+
+<script>
+// Set new default font family and font color to mimic Bootstrap's default styling
+Chart.defaults.global.defaultFontFamily =
+    '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif'
+Chart.defaults.global.defaultFontColor = "#292b2c"
+
+// Bar Chart Example
+const ctxBarCart = document.getElementById("myBarChart")
+const doanhThuThangTheoNam = <%- JSON.stringify(data.doanhThuThangTheoNam) %>;
+const barCharlabels = Object.keys(doanhThuThangTheoNam);
+const dataChart = Object.values(doanhThuThangTheoNam);
+const maxDoanhThu = <%= data.maxDoanhThuTheoNam %> || 60000;
+
+const myBarChart = new Chart(ctxBarCart, {
+    type: "bar",
+    data: {
+        labels: barCharlabels,
+        datasets: [
+            {
+                label: "Revenue",
+                backgroundColor: "rgba(2,117,216,1)",
+                borderColor: "rgba(2,117,216,1)",
+                data: dataChart,
+            },
+        ],
+    },
+    options: {
+        scales: {
+            xAxes: [
+                {
+                    time: {
+                        unit: "month",
+                    },
+                    gridLines: {
+                        display: false,
+                    },
+                    ticks: {
+                        maxTicksLimit: 6,
+                    },
+                },
+            ],
+            yAxes: [
+                {
+                    ticks: {
+                        min: 0,
+                        max: maxDoanhThu || 60000,
+                        maxTicksLimit: 5,
+                    },
+                    gridLines: {
+                        display: true,
+                    },
+                },
+            ],
+        },
+        legend: {
+            display: false,
+        },
+    },
+})
+</script>
+
+<script>
+// Room Pie Chart
+const thongKePhong = <%- JSON.stringify(data.thongKePhong) %>;
+
+const dataRoom = {
+    labels: Object.keys(thongKePhong),
+    datasets: [
+        {
+            backgroundColor: ["#37a2eb", "#ff6384", "#4cc0c0"],
+            // backgroundColor: ["#37a2eb", "#ff6384", "#ff9e40", "#4cc0c0", "#ffcd56"],
+            data: Object.values(thongKePhong),
+        },
+    ],
+}
+
+const ctxRoomPieChart = document.getElementById("myRoomPieChart").getContext("2d");
+const configRoomPieChart = {
+    type: "pie",
+    data: dataRoom,
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: "top",
+            },
+            title: {
+                display: true,
+                text: "Chart.js Pie Chart",
+            },
+        },
+        onClick: function (evt) {
+            console.log("Chart.js Pie Chart click event:", evt);
+            const activePoints = myChartRoomPieChart.getElementsAtEventForMode(evt, 'nearest', {
+                intersect: true
+            }, false);
+            if (activePoints.length > 0) {
+                const index = activePoints[0]._index;
+                const label = myChartRoomPieChart.data.labels[index];
+                const value = myChartRoomPieChart.data.datasets[0].data[index];
+                const newWindow = window.open('', '_blank');
+                newWindow.location.href = `/nhacungcap/phong?filter=${index}`;
+            }
+        },
+    },
+}
+const myChartRoomPieChart = new Chart(ctxRoomPieChart, configRoomPieChart)
+
+
+// Booking Pie Chart
+const thongKeDonDatPhong = <%- JSON.stringify(data.thongKeDonDatPhong) %>;
+
+const dataBooking = {
+    labels: Object.keys(thongKeDonDatPhong),
+    datasets: [
+        {
+            backgroundColor: ["#ff6384", "#4bc0c0", "#ff9e40"],
+            data: Object.values(thongKeDonDatPhong),
+        },
+    ],
+}
+
+const ctxBooking = document.getElementById("myBookingPieChart").getContext("2d")
+const configBooking = {
+    type: "pie",
+    data: dataBooking,
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: "top",
+            },
+            title: {
+                display: true,
+                text: "Chart.js Pie Chart",
+            },
+        },
+        onClick: function (evt) {
+            console.log("Chart.js Pie Chart click event:", evt);
+            const activePoints = myBookingChart.getElementsAtEventForMode(evt, 'nearest', {
+                intersect: true
+            }, false);
+            if (activePoints.length > 0) {
+                const index = activePoints[0]._index;
+                const label = myBookingChart.data.labels[index];
+                const value = myBookingChart.data.datasets[0].data[index];
+                const newWindow = window.open('', '_blank');
+                newWindow.location.href = `/nhacungcap/don-dat-phong?trangThai=${index}`;
+            }
+        },
+    },
+}
+const myBookingChart = new Chart(ctxBooking, configBooking);
+</script>
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
 <script src="/js/nhacungcap/datatables.js"></script>
 
+<script>
+    $(function () {
+        var myDate = $('#statsByMonth').attr('data-date');
+        $('#statsByMonth').datepicker({
+            maxDate: new Date(),
+            changeMonth: true,
+            changeYear: true,
+            setDate: myDate,
+            showButtonPanel: false,
+            dateFormat: 'MM yy',
+            onClose: function (dateText, inst) {
+                var monthValue = $('#ui-datepicker-div .ui-datepicker-month :selected').val();
+                var yearValue = $('#ui-datepicker-div .ui-datepicker-year :selected').val();
+                const newDate = new Date(yearValue, monthValue, 1);
+                $(this).datepicker('setDate', newDate);
+                const month = (newDate.getMonth() + 1).toString().padStart(2, '0');
+                const url = `/nhacungcap/statsByMonth/${month}-${newDate.getFullYear()}`;
+                fetch(url, { // Replace with your backend endpoint
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    console.log(myLineChart)
+                    const {maxDoanhThuTheoThang, doanhThuTheoThang } = data;
+                    const labels = Object.keys(doanhThuTheoThang);
+                    const values = Object.values(doanhThuTheoThang);
+                    updateDataChart(myLineChart, labels, values);
+                    updateMaxChart(myLineChart, maxDoanhThuTheoThang, "line");
+                    // Optionally, update the chart with new data here
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    // alert('An error occurred while fetching data for the selected month.');
+                    alert(error.message);
+                });
+            },
+        });
+        $('#statsByMonth').datepicker('setDate', myDate);
+        $('#statsByMonth').focus(function () {
+            $(".ui-datepicker-calendar").hide();
+        });
+
+        var myDate = $('#statsByYear').attr('data-date');
+        $('#statsByYear').datepicker({
+            maxDate: new Date(),
+            changeMonth: false,
+            changeYear: true,
+            setDate: myDate,
+            showButtonPanel: false,
+            dateFormat: 'yy',
+            onClose: function (dateText, inst) {
+                var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+                $(this).datepicker('setDate', new Date(year, 1));
+                const url = `/nhacungcap/statsByYear/${year}`;
+                fetch(url, { // Replace with your backend endpoint
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    console.log(myBarChart)
+                    const {maxDoanhThuTheoNam, doanhThuThangTheoNam } = data;
+                    const labels = Object.keys(doanhThuThangTheoNam);
+                    const values = Object.values(doanhThuThangTheoNam);
+                    updateDataChart(myBarChart, labels, values);
+                    updateMaxChart(myBarChart, maxDoanhThuTheoNam, "bar");
+                    // Optionally, update the chart with new data here
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert(error.message);
+                });
+            },
+        });
+        $('#statsByYear').datepicker('setDate', myDate);
+        $('#statsByYear').focus(function () {
+            $(".ui-datepicker-month").hide();
+            $(".ui-datepicker-calendar").hide();
+        });
+    });
+    function updateDataChart(chart, label, data) {
+        chart.data.labels = label;
+        chart.data.datasets.forEach((dataset) => {
+            dataset.data = data;
+        });
+        chart.update();
+    }
+
+    function updateMaxChart(chart, maxValue, type = "bar") {
+        let xScale = chart.scales.x;
+        let yScale = chart.scales.y;
+        chart.options = {
+            scales: {
+                xAxes: [
+                    {
+                        time: {
+                            unit: type == "bar" ? "month" : "date",
+                        },
+                        gridLines: {
+                            display: false,
+                        },
+                        ticks: {
+                            maxTicksLimit: type == "bar" ? 6 : 7,
+                        },
+                    },
+                ],
+                yAxes: [
+                    {
+                        ticks: {
+                            min: 0,
+                            max: maxValue || 60000,
+                            maxTicksLimit: 5,
+                        },
+                        gridLines: type == "bar" ? {
+                            display: true,
+                        } : {
+                            color: "rgba(0, 0, 0, .125)"    
+                        },
+                    },
+                ],
+            },
+            legend: {
+                display: false,
+            },
+        }
+        chart.update();
+    }
+</script>
 <% } %>

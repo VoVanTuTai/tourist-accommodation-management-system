@@ -212,3 +212,11 @@ exports.getTopBookedRooms = async () => {
     throw err;
   }
 };
+
+exports.getTrangThaiPhong = () => {
+  return {
+    0: "Đã đặt",
+    1: "Còn trống",
+    2: "Bảo trì",
+  };
+}

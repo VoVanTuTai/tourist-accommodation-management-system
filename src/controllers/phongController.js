@@ -14,7 +14,9 @@ exports.renderDanhSachPhongCuaNhaCungCap = async (req, res) => {
     console.log("📘 NCC trong session:", req.session.user);
 
     const ncc = req.session.user; // Lấy thông tin NCC đăng nhập
-    if (!ncc) return res.status(401).send("Vui lòng đăng nhập");
+    if (!ncc) {
+      return res.redirect("/khachhang/dangnhap");
+    };
 
     const filter = req.query.filter || "all"; // Lấy filter từ query (nếu có)
     const rooms = await Phong.getPhongByNCC(ncc.MaNCC);

@@ -1,6 +1,6 @@
 const DanhGia = require("../models/DanhGia");
 const DonDatPhong = require("../models/DonDatPhong");
-const KhachHang = require("../models/khachhang");
+const KhachHang = require("../models/KhachHang");
 
 // [GET] /khachhang/don-dat-phong/:maDon/danhgia
 // [GET] /khachhang/don-dat-phong/:maDon/danhgia
