@@ -1,10 +1,11 @@
-const db = require("../../config/db");
+const db = require("../../config/db")
+const {getTrangThaiPhong}=require("./phong")
 
 const DonDatPhong = {
-  // 🧾 Danh sách đơn theo khách hàng; gộp tên chỗ ở theo đơn
-  async getAllByUser(maKhachHang, trangThai) {
-    try {
-      let sql = `
+    // 🧾 Danh sách đơn theo khách hàng; gộp tên chỗ ở theo đơn
+    async getAllByUser(maKhachHang, trangThai) {
+        try {
+            let sql = `
         SELECT 
           dp.MaDon,
           dp.NgayDat,
@@ -18,30 +19,30 @@ const DonDatPhong = {
         LEFT JOIN Phong p                ON ctdp.MaPhong = p.MaPhong
         LEFT JOIN NhaCungCap ncc         ON p.MaNhaCungCap = ncc.MaNCC
         WHERE dp.MaKhachHang = ?
-      `;
-      const params = [maKhachHang];
+      `
+            const params = [maKhachHang]
 
-      if (trangThai !== undefined && trangThai !== "") {
-        sql += ` AND dp.TrangThai = ?`;
-        params.push(Number(trangThai));
-      }
+            if (trangThai !== undefined && trangThai !== "") {
+                sql += ` AND dp.TrangThai = ?`
+                params.push(Number(trangThai))
+            }
 
-      sql += `
+            sql += `
         GROUP BY dp.MaDon
         ORDER BY dp.NgayDat DESC
-      `;
+      `
 
-      const [rows] = await db.execute(sql, params);
-      return rows;
-    } catch (err) {
-      console.error("❌ Lỗi SQL DonDatPhong.getAllByUser:", err.message);
-      throw err;
-    }
-  },
+            const [rows] = await db.execute(sql, params)
+            return rows
+        } catch (err) {
+            console.error("❌ Lỗi SQL DonDatPhong.getAllByUser:", err.message)
+            throw err
+        }
+    },
 
-  // 📋 Chi tiết đơn & thông tin phòng
-  async getDonVaPhong(maDon) {
-    const sql = `
+    // 📋 Chi tiết đơn & thông tin phòng
+    async getDonVaPhong(maDon) {
+        const sql = `
       SELECT 
         dp.MaDon,
         dp.MaKhachHang,
@@ -87,62 +88,60 @@ const DonDatPhong = {
   
       WHERE dp.MaDon = ?
       LIMIT 1;
-    `;
-  
-    const [rows] = await db.execute(sql, [maDon]);
-    console.log("📦 getDonVaPhong result (FULL):", rows[0]); 
-    return rows.length > 0 ? rows[0] : null;
-  },
-  
+    `
 
-  // 📑 Một đơn → nhiều dòng (mỗi dòng là 1 phòng trong đơn)
-  // 📑 Một đơn → nhiều dòng (mỗi dòng 1 phòng)
-  // async getChiTietDon(maDon) {
-  //   const sql = `
-  //     SELECT 
-  //       dp.MaDon,
-  //       dp.NgayDat,
-  //       dp.NgayNhan,
-  //       dp.NgayTra,
-  //       dp.TrangThai,
-  //       dp.TongTien,
-  //       kh.HoTen AS TenKH,
-  //       kh.Email,
-  //       kh.SoDienThoai AS SDT,
-  //       p.MaPhong,
-  //       p.TenPhong,
-  //       p.Gia AS GiaApDung,
-  //       lp.TenLoai AS LoaiPhong,
-  //       ncc.TenNCC
-  //     FROM DonDatPhong dp
-  //     JOIN KhachHang kh ON dp.MaKhachHang = kh.MaKhachHang
-  //     JOIN chitietdondatphong ctdp ON dp.MaDon = ctdp.MaDon
-  //     JOIN Phong p ON ctdp.MaPhong = p.MaPhong
-  //     LEFT JOIN LoaiPhong lp ON p.MaLoai = lp.MaLoai
-  //     LEFT JOIN NhaCungCap ncc ON p.MaNhaCungCap = ncc.MaNCC
-  //     WHERE dp.MaDon = ?
-  //     ORDER BY p.MaPhong ASC
-  //   `;
-  //   const [rows] = await db.execute(sql, [maDon]);
-  //   return rows;
-  // },
-  updateTrangThai: async (maDon, trangThai) => {
-    const sql = `
+        const [rows] = await db.execute(sql, [maDon])
+        console.log("📦 getDonVaPhong result (FULL):", rows[0])
+        return rows.length > 0 ? rows[0] : null
+    },
+
+    // 📑 Một đơn → nhiều dòng (mỗi dòng là 1 phòng trong đơn)
+    // 📑 Một đơn → nhiều dòng (mỗi dòng 1 phòng)
+    // async getChiTietDon(maDon) {
+    //   const sql = `
+    //     SELECT
+    //       dp.MaDon,
+    //       dp.NgayDat,
+    //       dp.NgayNhan,
+    //       dp.NgayTra,
+    //       dp.TrangThai,
+    //       dp.TongTien,
+    //       kh.HoTen AS TenKH,
+    //       kh.Email,
+    //       kh.SoDienThoai AS SDT,
+    //       p.MaPhong,
+    //       p.TenPhong,
+    //       p.Gia AS GiaApDung,
+    //       lp.TenLoai AS LoaiPhong,
+    //       ncc.TenNCC
+    //     FROM DonDatPhong dp
+    //     JOIN KhachHang kh ON dp.MaKhachHang = kh.MaKhachHang
+    //     JOIN chitietdondatphong ctdp ON dp.MaDon = ctdp.MaDon
+    //     JOIN Phong p ON ctdp.MaPhong = p.MaPhong
+    //     LEFT JOIN LoaiPhong lp ON p.MaLoai = lp.MaLoai
+    //     LEFT JOIN NhaCungCap ncc ON p.MaNhaCungCap = ncc.MaNCC
+    //     WHERE dp.MaDon = ?
+    //     ORDER BY p.MaPhong ASC
+    //   `;
+    //   const [rows] = await db.execute(sql, [maDon]);
+    //   return rows;
+    // },
+    updateTrangThai: async (maDon, trangThai) => {
+        const sql = `
       UPDATE dondatphong 
       SET TrangThai = ? 
       WHERE MaDon = ?
-    `;
-  
-    const [result] = await db.execute(sql, [trangThai, maDon]);
-  
-    // result.affectedRows == 0 → đơn không tồn tại
-    return result.affectedRows > 0;
-  },
-  
+    `
 
-  // 🏨 Danh sách phòng thuộc 1 đơn (gọn để dùng cho dropdown đánh giá)
-  async getDanhSachPhongTheoDon(maDon) {
-    const sql = `
+        const [result] = await db.execute(sql, [trangThai, maDon])
+
+        // result.affectedRows == 0 → đơn không tồn tại
+        return result.affectedRows > 0
+    },
+
+    // 🏨 Danh sách phòng thuộc 1 đơn (gọn để dùng cho dropdown đánh giá)
+    async getDanhSachPhongTheoDon(maDon) {
+        const sql = `
       SELECT 
         p.MaPhong,
         p.TenPhong,
@@ -157,14 +156,14 @@ const DonDatPhong = {
       LEFT JOIN NhaCungCap ncc ON p.MaNhaCungCap = ncc.MaNCC
       WHERE ctdp.MaDon = ?
       ORDER BY p.MaPhong ASC
-    `;
-    const [rows] = await db.execute(sql, [maDon]);
-    return rows;
-  },
+    `
+        const [rows] = await db.execute(sql, [maDon])
+        return rows
+    },
 
-  // 💳 Gộp thông tin thanh toán/địa chỉ theo đơn (nếu cần dùng riêng)
-  async getThongTinThanhToan(maDon) {
-    const sql = `
+    // 💳 Gộp thông tin thanh toán/địa chỉ theo đơn (nếu cần dùng riêng)
+    async getThongTinThanhToan(maDon) {
+        const sql = `
       SELECT 
         dp.MaDon,
         dp.NgayDat,
@@ -185,17 +184,18 @@ const DonDatPhong = {
       WHERE dp.MaDon = ?
       GROUP BY dp.MaDon
       LIMIT 1
-    `;
-    const [rows] = await db.execute(sql, [maDon]);
-    return rows[0];
-  },
-  // models/DonDatPhong.js (BỔ SUNG)
+    `
+        const [rows] = await db.execute(sql, [maDon])
+        return rows[0]
+    },
+    // models/DonDatPhong.js (BỔ SUNG)
 
-  // models/DonDatPhong.js (Phương thức GỘP MỚI)
-  async getAllByNCC(maNCC, trangThai, searchMaDon) { // ✅ Bổ sung tham số searchMaDon
-    try {
-        // Câu lệnh SQL cơ bản, lọc theo MaNCC (là điều kiện bắt buộc)
-        let sql = `
+    // models/DonDatPhong.js (Phương thức GỘP MỚI)
+    async getAllByNCC(maNCC, trangThai, searchMaDon) {
+        // ✅ Bổ sung tham số searchMaDon
+        try {
+            // Câu lệnh SQL cơ bản, lọc theo MaNCC (là điều kiện bắt buộc)
+            let sql = `
             SELECT 
                 dp.MaDon, dp.NgayDat, dp.NgayNhan, dp.NgayTra, 
                 dp.TrangThai, dp.TongTien, dp.TenNguoiNhan, dp.SDTNguoiNhan,
@@ -207,47 +207,47 @@ const DonDatPhong = {
             JOIN Phong p ON ctdp.MaPhong = p.MaPhong
             JOIN KhachHang kh ON dp.MaKhachHang = kh.MaKhachHang
             WHERE p.MaNhaCungCap = ? 
-        `;
-        
-        const params = [maNCC]; // Khởi tạo mảng tham số với maNCC bắt buộc
+        `
 
-        // ⭐ 1. LOGIC LỌC THEO TRẠNG THÁI (trangThai)
-        // Kiểm tra nếu tham số trangThai tồn tại và không phải là chuỗi rỗng
-        if (trangThai !== undefined && trangThai !== "") {
-            sql += ` AND dp.TrangThai = ?`;
-            // Chuyển sang kiểu số trước khi thêm vào tham số
-            params.push(Number(trangThai)); 
-        }
+            const params = [maNCC] // Khởi tạo mảng tham số với maNCC bắt buộc
 
-        // ⭐ 2. LOGIC TÌM KIẾM THEO MÃ ĐƠN (searchMaDon)
-        // Kiểm tra nếu tham số searchMaDon tồn tại và có thể chuyển thành số
-        if (searchMaDon && !isNaN(Number(searchMaDon))) { 
-            sql += ` AND dp.MaDon = ?`;
-            params.push(Number(searchMaDon));
-        }
+            // ⭐ 1. LOGIC LỌC THEO TRẠNG THÁI (trangThai)
+            // Kiểm tra nếu tham số trangThai tồn tại và không phải là chuỗi rỗng
+            if (trangThai !== undefined && trangThai !== "") {
+                sql += ` AND dp.TrangThai = ?`
+                // Chuyển sang kiểu số trước khi thêm vào tham số
+                params.push(Number(trangThai))
+            }
 
-        // Đóng câu lệnh SQL với GROUP BY và ORDER BY
-        sql += `
+            // ⭐ 2. LOGIC TÌM KIẾM THEO MÃ ĐƠN (searchMaDon)
+            // Kiểm tra nếu tham số searchMaDon tồn tại và có thể chuyển thành số
+            if (searchMaDon && !isNaN(Number(searchMaDon))) {
+                sql += ` AND dp.MaDon = ?`
+                params.push(Number(searchMaDon))
+            }
+
+            // Đóng câu lệnh SQL với GROUP BY và ORDER BY
+            sql += `
             GROUP BY dp.MaDon
             ORDER BY dp.NgayDat DESC
-        `;
-        
-        // Thực thi truy vấn với mảng tham số được xây dựng động
-        const [rows] = await db.execute(sql, params); 
-        return rows;
-    } catch (err) {
-        console.error("❌ Lỗi SQL DonDatPhong.getAllByNCC:", err.message);
-        throw err;
-    }
-},
-// 🔎 Chi tiết đơn đặt phòng và các phòng trong đơn, kiểm tra MaNCC
-  // src/models/DonDatPhong.js (SỬA LẠI HÀM)
+        `
+
+            // Thực thi truy vấn với mảng tham số được xây dựng động
+            const [rows] = await db.execute(sql, params)
+            return rows
+        } catch (err) {
+            console.error("❌ Lỗi SQL DonDatPhong.getAllByNCC:", err.message)
+            throw err
+        }
+    },
+    // 🔎 Chi tiết đơn đặt phòng và các phòng trong đơn, kiểm tra MaNCC
+    // src/models/DonDatPhong.js (SỬA LẠI HÀM)
 
     // src/models/DonDatPhong.js (Trong hàm getChiTietDonVaPhongChoNCC)
 
-async getChiTietDonVaPhongChoNCC(maDon, maNCC) {
-  try {
-      const sqlDon = `
+    async getChiTietDonVaPhongChoNCC(maDon, maNCC) {
+        try {
+            const sqlDon = `
           SELECT
               dp.*, 
               kh.HoTen AS TenKH, 
@@ -266,25 +266,38 @@ async getChiTietDonVaPhongChoNCC(maDon, maNCC) {
               WHERE ctdp.MaDon = dp.MaDon AND p.MaNhaCungCap = ?
           )
           LIMIT 1;
-      `;
-      
-      const [donDat] = await db.execute(sqlDon, [maDon, maNCC]);
+      `
 
-      if (donDat.length === 0) return null;
+            const [donDat] = await db.execute(sqlDon, [maDon, maNCC])
 
-      // TRUY VẤN 2: Lấy danh sách chi tiết các phòng
-      const chiTietPhong = await this.getDanhSachPhongTheoDon(maDon); 
+            if (donDat.length === 0) return null
 
-      // Gộp kết quả
-      return {
-          donDat: donDat[0],
-          chiTietPhong: chiTietPhong
-      };
-  } catch (err) {
-      console.error("❌ Lỗi SQL DonDatPhong.getChiTietDonVaPhongChoNCC:", err.message);
-      throw err;
-  }
+            // TRUY VẤN 2: Lấy danh sách chi tiết các phòng
+            const chiTietPhong = await this.getDanhSachPhongTheoDon(maDon)
+
+            // Gộp kết quả
+            return {
+                donDat: donDat[0],
+                chiTietPhong: chiTietPhong,
+            }
+        } catch (err) {
+            console.error(
+                "❌ Lỗi SQL DonDatPhong.getChiTietDonVaPhongChoNCC:",
+                err.message
+            )
+            throw err
+        }
+    },
+    getTrangThaiDonDatPhong() {
+        return {
+            0: "Đã Đặt",
+            1: "Đang Sử Dụng",
+            2: "Đã Hoàn Tất",
+            3: "Đã Hủy",
+            4: "Chờ xác nhận", // Chờ thanh toán
+            5: "Đã Thanh Toán",
+        };
+    }
 }
-};
 
-module.exports = DonDatPhong;
+module.exports = DonDatPhong

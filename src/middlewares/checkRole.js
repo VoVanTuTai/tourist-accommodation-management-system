@@ -1,7 +1,8 @@
 // src/middlewares/checkRole.js
 module.exports = (req, res, next) => {
   const user = req.session.user;
-
+  console.log("check role");
+  
   // ✅ Nếu chưa đăng nhập
   if (!user) {
     return res.redirect('/home', {
