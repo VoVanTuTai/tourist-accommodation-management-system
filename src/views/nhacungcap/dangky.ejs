@@ -188,7 +188,7 @@
                         <label for="Password" class="form-label">Password</label>
                     </div>
                     <div class="col-9">
-                        <input type="password" class="form-control" name="Password" id="Password" value="Abcd@123" />
+                        <input type="password" class="form-control" name="Password" id="Password" autocomplete="off"/>
                         <span class="text-danger d-block text-error-Password">
                             <% if (errors) { %>
                                 <%= errors.Password %>
@@ -202,7 +202,7 @@
                         <label for="ConfirmPassword" class="form-label">Confirm Password</label>
                     </div>
                     <div class="col-9">
-                        <input type="password" class="form-control" name="ConfirmPassword" id="ConfirmPassword" value="Abcd@123" />
+                        <input type="password" class="form-control" name="ConfirmPassword" id="ConfirmPassword" autocomplete="off" />
                         <span class="text-danger d-block text-error-ConfirmPassword">
                             <% if (errors) { %>
                                 <%= errors.ConfirmPassword %>
