@@ -8,6 +8,7 @@ const danhGiaController = require("../controllers/danhGiaController");
 const donDatPhongController = require("../controllers/donDatPhongController");
 const dangkyController = require("../controllers/dangkyController");
 const dangnhapController = require("../controllers/dangnhapController");
+const datPhongController = require('../controllers/datPhongController');
 // =====================================================
 // 🔐 XÁC THỰC NGƯỜI DÙNG (ĐĂNG KÝ / ĐĂNG NHẬP / ĐĂNG XUẤT)
 // =====================================================
@@ -22,6 +23,8 @@ router.get("/dangxuat", dangnhapController.logout);
 router.get("/don-dat-phong", ensureKhachHang, donDatPhongController.danhSachDonDatPhong);
 // 2️⃣ Chi tiết đơn
 router.get("/don-dat-phong/:id", ensureKhachHang, donDatPhongController.chiTietDonDatPhong);
+// Thêm dòng này
+router.post('/dat-phong/confirm', datPhongController.confirmBooking);
 // 3️⃣ Hủy đơn (POST để tránh lỗi GET reload)
 router.post("/don-dat-phong/huy/:id", ensureKhachHang, donDatPhongController.huyDonDatPhong);
 // Hiển thị trang thanh toán
