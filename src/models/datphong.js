@@ -17,45 +17,32 @@ exports.getRoomById = async (maPhong) => {
 
 // ===== Tạo đơn đặt phòng =====
 exports.createOrder = async (payload) => {
+  // SQL chỉ sử dụng những cột thực sự tồn tại trong DB của bạn
   const sql = `
-    INSERT INTO DonDatPhong
-    (MaKhachHang, MaPhong, NgayDat, NgayNhan, NgayTra, TrangThai, TongTien,
-     Dat_HoTen, Dat_SDT, Dat_CCCD, Dat_NgaySinh, Dat_GioiTinh,
-     Nhan_HoTen, Nhan_SDT, Nhan_CCCD, Nhan_NgaySinh, Nhan_GioiTinh)
-    VALUES (?, ?, NOW(), ?, ?, 'Chưa thanh toán', ?,
-            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO DonDatPhong 
+    (MaKhachHang, MaPhong, TenNguoiNhan, SDTNguoiNhan, NgayDat, NgayNhan, NgayTra, TrangThai, TongTien) 
+    VALUES (?, ?, ?, ?, NOW(), ?, ?, ?, ?)
   `;
 
-  // ⚙️ Chèn dữ liệu khớp với 17 dấu hỏi trong VALUES
+  // Chuẩn bị tham số khớp với các cột trên
   const params = [
-    payload.MaKhachHang || null,
-    payload.MaPhong || null,
-    payload.NgayNhan || null,
-    payload.NgayTra || null,
-    payload.TongTien || null,
-
-    payload.Dat_HoTen || null,
-    payload.Dat_SDT || null,
-    payload.Dat_CCCD || null,
-    payload.Dat_NgaySinh || null,
-    payload.Dat_GioiTinh || null,
-
-    payload.Nhan_HoTen || null,
-    payload.Nhan_SDT || null,
-    payload.Nhan_CCCD || null,
-    payload.Nhan_NgaySinh || null,
-    payload.Nhan_GioiTinh || null
+    payload.MaKhachHang || null,     // MaKhachHang
+    payload.MaPhong || null,         // MaPhong (Đảm bảo bảng đã có cột này)
+    payload.TenNguoiNhan || null,    // Map từ Nhan_HoTen sang TenNguoiNhan
+    payload.SDTNguoiNhan || null,    // Map từ Nhan_SDT sang SDTNguoiNhan
+    payload.NgayNhan || null,        // NgayNhan
+    payload.NgayTra || null,         // NgayTra
+    'Chưa thanh toán',               // TrangThai
+    payload.TongTien || 0            // TongTien
   ];
 
-  // 🧩 Kiểm tra kỹ giá trị đầu vào (tránh undefined)
-  console.log("🟢 Dữ liệu truyền xuống MySQL:", params);
+  console.log("🟢 Dữ liệu chuẩn bị lưu xuống MySQL:", params);
 
   try {
     const [result] = await db.execute(sql, params);
-    console.log("✅ Đã lưu đơn đặt phòng thành công, Mã đơn:", result.insertId);
     return result.insertId;
   } catch (err) {
-    console.error("❌ Lỗi MySQL khi tạo đơn đặt phòng:", err.message);
+    console.error("❌ Lỗi MySQL:", err.message);
     throw err;
   }
 };

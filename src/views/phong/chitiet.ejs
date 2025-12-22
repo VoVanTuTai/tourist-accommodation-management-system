@@ -1,94 +1,91 @@
-<div class="container py-5">
+<div class="container py-5 mt-5">
     <% if (error) { %>
-    <div class="alert alert-danger text-center"><%= error %></div>
+        <div class="alert alert-danger text-center shadow-sm"><%= error %></div>
     <% } else { %>
-    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-        <div class="row g-0">
-            <div class="col-md-6">
-                <img
-                    src="/images/<%= phong.HinhAnh %>"
-                    alt="<%= phong.TenPhong %>"
-                    class="img-fluid h-100 object-fit-cover"
-                />
-            </div>
-            <div class="col-md-6 p-5">
-                <h2 class="fw-bold text-primary mb-3"><%= phong.TenPhong %></h2>
+        <div class="card detail-card border-0 shadow-lg overflow-hidden glass-effect">
+            <div class="row g-0">
+                <div class="col-lg-7 position-relative bg-dark d-flex align-items-center justify-content-center" style="min-height: 500px;">
+                    <% 
+                        let dsAnh = [];
+                        try {
+                            dsAnh = JSON.parse(phong.HinhAnh); 
+                        } catch(e) {
+                            dsAnh = [phong.HinhAnh];
+                        }
+                    %>
+                    <img src="/images/<%= dsAnh[0] %>" alt="<%= phong.TenPhong %>" class="main-room-img" id="mainImg">
+                    
+                    <div class="price-tag-floating">
+                        <span class="fs-3 fw-bold"><%= Number(phong.Gia).toLocaleString('vi-VN') %></span>
+                        <small>VNĐ/đêm</small>
+                    </div>
 
-                <p><strong>Loại phòng:</strong> <%= phong.TenLoai %></p>
-                <p><strong>Sức chứa:</strong> <%= phong.SucChua %> người</p>
-                <p>
-                    <strong>Giá:</strong>
-                    <span class="text-danger fw-bold fs-5">
-                        <%= phong.Gia.toLocaleString() %> VND/đêm
-                    </span>
-                </p>
-                <p>
-                    <strong>Địa chỉ:</strong>
-                    <%= phong.DiaChiChiTiet %>, <%= phong.TenXa %>, <%=
-                    phong.TenTinh %>
-                </p>
-
-                <p>
-                    <strong>Trạng thái:</strong>
-                    <% if (phong.TinhTrang === 1) { %>
-                    <span class="badge bg-success">Còn phòng</span>
-                    <% } else if (phong.TinhTrang === 2) { %>
-                    <span class="badge bg-danger">Hết phòng</span>
-                    <% } else { %>
-                    <span class="badge bg-warning text-dark">Đang bảo trì</span>
+                    <% if (dsAnh.length > 1) { %>
+                    <div class="thumbnail-bar">
+                        <% dsAnh.forEach((anh, index) => { %>
+                            <img src="/images/<%= anh %>" class="thumb-img <%= index===0?'active':'' %>" 
+                                 onclick="document.getElementById('mainImg').src=this.src; document.querySelectorAll('.thumb-img').forEach(i=>i.classList.remove('active')); this.classList.add('active')">
+                        <% }) %>
+                    </div>
                     <% } %>
-                </p>
+                </div>
 
-                <hr />
-                <p><strong>Mô tả:</strong></p>
-                <p class="text-muted"><%= phong.MoTa || "Không có mô tả." %></p>
+                <div class="col-lg-5 p-4 p-md-5 d-flex flex-column">
+                    <div class="mb-4">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-2">
+                                <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-muted">Trang chủ</a></li>
+                                <li class="breadcrumb-item active fw-bold text-primary"><%= phong.TenLoai %></li>
+                            </ol>
+                        </nav>
+                        <h1 class="fw-bold text-dark mb-2"><%= phong.TenPhong %></h1>
+                        <p class="text-muted"><i class="bi bi-geo-alt-fill text-danger me-2"></i><%= phong.DiaChiChiTiet %>, <%= phong.TenXa %>, <%= phong.TenTinh %></p>
+                    </div>
 
-                <!-- ✅ Nút hành động -->
-                <div class="mt-5 d-flex gap-3">
-                    <a
-                        href="/"
-                        class="btn fw-semibold px-4 py-2 rounded-pill shadow-lg text-white"
-                        style="
-                            background: linear-gradient(
-                                90deg,
-                                #764ba2 0%,
-                                #667eea 100%
-                            );
-                            border: none;
-                            letter-spacing: 0.3px;
-                            transition: all 0.3s ease;
-                        "
-                        onmouseover="this.style.background='linear-gradient(90deg, #6a11cb 0%, #2575fc 100%)'; this.style.transform='scale(1.05)';"
-                        onmouseout="this.style.background='linear-gradient(90deg, #764ba2 0%, #667eea 100%)'; this.style.transform='scale(1)';"
-                    >
-                        ← Quay lại trang chủ
-                    </a>
+                    <div class="info-grid mb-4">
+                        <div class="info-item">
+                            <small class="text-muted d-block">Sức chứa</small>
+                            <span class="fw-bold"><i class="bi bi-people me-2"></i><%= phong.SucChua %> Người</span>
+                        </div>
+                        <div class="info-item">
+                            <small class="text-muted d-block">Trạng thái</small>
+                            <% if (phong.TinhTrang === 1) { %>
+                                <span class="badge rounded-pill bg-success-light text-success"><i class="bi bi-check-circle-fill me-1"></i>Còn phòng</span>
+                            <% } else if (phong.TinhTrang === 2) { %>
+                                <span class="badge rounded-pill bg-warning-light text-warning"><i class="bi bi-tools me-1"></i>Bảo trì</span>
+                            <% } else { %>
+                                <span class="badge rounded-pill bg-danger-light text-danger"><i class="bi bi-x-circle-fill me-1"></i>Hết phòng</span>
+                            <% } %>
+                        </div>
+                    </div>
 
-                    <% if (phong.TinhTrang === 1) { %>
-                    <a
-                        href="/khachhang/dat-phong/<%= phong.MaPhong %>"
-                        class="btn text-white fw-semibold px-4 py-2 rounded-pill shadow-sm"
-                        style="
-                            background: linear-gradient(
-                                90deg,
-                                #6a11cb 0%,
-                                #2575fc 100%
-                            );
-                        "
-                    >
-                        <i class="fas fa-bed me-2"></i> Đặt phòng
-                    </a>
-                    <% } else { %>
-                    <button
-                        class="btn btn-secondary px-4 py-2 rounded-pill shadow-sm"
-                        disabled
-                    >
-                        Không khả dụng
-                    </button>
-                    <% } %>
+                    <div class="amenities mb-4">
+                        <h6 class="fw-bold text-uppercase small mb-3">Tiện nghi có sẵn</h6>
+                        <div class="row g-3">
+                            <div class="col-6 small"><i class="bi bi-wifi text-primary me-2"></i>Wi-Fi miễn phí</div>
+                            <div class="col-6 small"><i class="bi bi-snow text-primary me-2"></i>Điều hòa</div>
+                            <div class="col-6 small"><i class="bi bi-tv text-primary me-2"></i>TV màn hình phẳng</div>
+                            <div class="col-6 small"><i class="bi bi-cup-hot text-primary me-2"></i>Bữa sáng miễn phí</div>
+                        </div>
+                    </div>
+
+                    <div class="description mb-5">
+                        <h6 class="fw-bold mb-2">Mô tả phòng</h6>
+                        <p class="text-muted small" style="line-height: 1.6;"><%= phong.MoTa || "Không có mô tả chi tiết cho phòng này." %></p>
+                    </div>
+
+                    <div class="mt-auto d-grid gap-2">
+                        <% if (phong.TinhTrang === 1) { %>
+                            <a href="/khachhang/dat-phong/<%= phong.MaPhong %>" class="btn btn-primary btn-lg py-3 rounded-3 fw-bold shadow">
+                                <i class="bi bi-calendar2-check me-2"></i>ĐẶT PHÒNG NGAY
+                            </a>
+                        <% } else { %>
+                            <button class="btn btn-secondary btn-lg py-3 rounded-3" disabled>PHÒNG KHÔNG KHẢ DỤNG</button>
+                        <% } %>
+                        <a href="/" class="btn btn-link text-muted">Quay lại trang chủ</a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     <% } %>
 </div>
