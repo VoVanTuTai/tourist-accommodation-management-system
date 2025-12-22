@@ -3,7 +3,7 @@ module.exports = (req, res, next) => {
   // Nếu chưa đăng nhập → quay về trang đăng nhập
   if (!req.session.user) {
     req.session.redirectAfterLogin = req.originalUrl;
-    return res.redirect("/dangnhap?error=Vui lòng đăng nhập trước!");
+    return res.redirect("/khachhang/dangnhap?error=Vui lòng đăng nhập trước!");
   }
 
   // Nếu không phải admin → hiển thị trang lỗi ngay tại /admin

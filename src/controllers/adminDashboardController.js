@@ -6,8 +6,9 @@ const { ChartJSNodeCanvas } = require("chartjs-node-canvas");
 
 const Customer = require("../models/QLcustomerModel");
 const Provider = require("../models/providerModel");
+const reportModel = require("../models/reportModel");
 
-// ==================== FONT HỖ TRỢ TIẾNG VIỆT ====================
+// ================= FONT TIẾNG VIỆT =================
 const fonts = {
   Arial: {
     normal: "C:\\Windows\\Fonts\\arial.ttf",
@@ -17,17 +18,15 @@ const fonts = {
   }
 };
 
-// ==================== HÀM SINH TIMESTAMP ====================
+// ================= TIMESTAMP =================
 function getTimestamp() {
   const now = new Date();
   return now.toISOString().replace(/[-:T.Z]/g, "").slice(0, 14);
 }
 
-// ==================== HÀM TẠO ẢNH BIỂU ĐỒ BASE64 ====================
+// ================= CHART BASE64 =================
 async function createChartBase64(type, labels, data, colors, title) {
-  const width = 600;
-  const height = 400;
-  const chartJSNodeCanvas = new ChartJSNodeCanvas({ width, height });
+  const chartJSNodeCanvas = new ChartJSNodeCanvas({ width: 650, height: 400 });
 
   const config = {
     type,
@@ -35,16 +34,18 @@ async function createChartBase64(type, labels, data, colors, title) {
       labels,
       datasets: [
         {
-          label: title,
           data,
-          backgroundColor: colors,
-          borderWidth: 1
+          backgroundColor: colors
         }
       ]
     },
     options: {
       plugins: {
-        title: { display: true, text: title, font: { size: 16 } },
+        title: {
+          display: true,
+          text: title,
+          font: { size: 16 }
+        },
         legend: { position: "bottom" }
       }
     }
@@ -54,7 +55,7 @@ async function createChartBase64(type, labels, data, colors, title) {
   return buffer.toString("base64");
 }
 
-// ==================== TRANG DASHBOARD HIỂN THỊ ====================
+// ================= DASHBOARD =================
 exports.viewDashboard = async (req, res) => {
   try {
     const customers = await Customer.getAllCustomers();
@@ -73,142 +74,228 @@ exports.viewDashboard = async (req, res) => {
       pending: providers.filter(p => p.TrangThai === "ChoDuyet").length
     };
 
-    res.render("admin/dashboard", { customerStats, providerStats });
+    // 💰 chỉ hiển thị trên dashboard
+    const commissionRows = await reportModel.getCommissionData();
+    const totalCommission = commissionRows.reduce(
+      (sum, r) => sum + Number(r.TongHoaHong || 0),
+      0
+    );
+
+    res.render("admin/dashboard", {
+      customerStats,
+      providerStats,
+      totalCommission
+    });
   } catch (err) {
-    console.error("❌ Lỗi hiển thị dashboard:", err);
-    res.status(500).send("Không thể tải trang thống kê!");
+    console.error("Dashboard error:", err);
+    res.status(500).send("Lỗi dashboard");
   }
 };
 
-// ==================== XUẤT PDF (CÓ BIỂU ĐỒ) ====================
+// ================= EXPORT PDF (BÁO CÁO TỔNG) =================
 exports.exportPDF = async (req, res) => {
   try {
     const customers = await Customer.getAllCustomers();
     const providers = await Provider.getAllProviders();
 
-    const stats = {
-      customer: {
-        total: customers.length,
-        active: customers.filter(c => c.TrangThai === "HoatDong").length,
-        locked: customers.filter(c => c.TrangThai === "Khoa").length
-      },
-      provider: {
-        total: providers.length,
-        active: providers.filter(p => p.TrangThai === "HoatDong").length,
-        locked: providers.filter(p => p.TrangThai === "Khoa").length,
-        pending: providers.filter(p => p.TrangThai === "ChoDuyet").length
-      }
+    // ====== THỐNG KÊ ======
+    const customerStats = {
+      total: customers.length,
+      active: customers.filter(c => c.TrangThai === "HoatDong").length,
+      locked: customers.filter(c => c.TrangThai === "Khoa").length
     };
 
-    // === TẠO HÌNH BIỂU ĐỒ ===
+    const providerStats = {
+      total: providers.length,
+      active: providers.filter(p => p.TrangThai === "HoatDong").length,
+      locked: providers.filter(p => p.TrangThai === "Khoa").length,
+      pending: providers.filter(p => p.TrangThai === "ChoDuyet").length
+    };
+
+    // ====== BIỂU ĐỒ ======
     const chartCustomer = await createChartBase64(
       "doughnut",
-      ["Đang hoạt động", "Đã khóa"],
-      [stats.customer.active, stats.customer.locked],
+      ["Hoạt động", "Khóa"],
+      [customerStats.active, customerStats.locked],
       ["#28a745", "#dc3545"],
-      "Thống kê khách hàng"
+      "Khách hàng"
     );
 
     const chartProvider = await createChartBase64(
       "bar",
-      ["Đang hoạt động", "Đã khóa", "Chờ duyệt"],
-      [stats.provider.active, stats.provider.locked, stats.provider.pending],
+      ["Hoạt động", "Khóa", "Chờ duyệt"],
+      [providerStats.active, providerStats.locked, providerStats.pending],
       ["#28a745", "#dc3545", "#ffc107"],
-      "Thống kê nhà cung cấp"
+      "Nhà cung cấp"
     );
 
-    // === TẠO FILE PDF ===
     const printer = new PdfPrinter(fonts);
+
+    // ====== NỘI DUNG PDF ======
     const docDefinition = {
-      defaultStyle: { font: "Arial" },
+      defaultStyle: { font: "Arial", fontSize: 11 },
+      pageMargins: [40, 60, 40, 60],
       content: [
-        { text: "BÁO CÁO THỐNG KÊ HỆ THỐNG DU LỊCH", style: "header" },
-        { text: `Ngày xuất: ${new Date().toLocaleString("vi-VN")}`, alignment: "right", margin: [0, 5, 0, 10] },
+        // ===== HEADER =====
+        { text: "HỆ THỐNG QUẢN LÝ LƯU TRÚ DU LỊCH", style: "header" },
+        { text: "BÁO CÁO TỔNG HỢP DASHBOARD", style: "subheader" },
+        {
+          text: `Ngày xuất: ${new Date().toLocaleString("vi-VN")}`,
+          alignment: "right",
+          margin: [0, 0, 0, 10]
+        },
 
-        { image: `data:image/png;base64,${chartCustomer}`, width: 400, alignment: "center", margin: [0, 10, 0, 20] },
-        { image: `data:image/png;base64,${chartProvider}`, width: 450, alignment: "center", margin: [0, 10, 0, 20] },
+        // ===== THỐNG KÊ TỔNG =====
+        { text: "I. THỐNG KÊ TỔNG QUAN", style: "section" },
+        {
+          columns: [
+            {
+              width: "50%",
+              table: {
+                widths: ["*", "auto"],
+                body: [
+                  ["Tổng khách hàng", customerStats.total],
+                  ["Khách hàng hoạt động", customerStats.active],
+                  ["Khách hàng bị khóa", customerStats.locked]
+                ]
+              }
+            },
+            {
+              width: "50%",
+              table: {
+                widths: ["*", "auto"],
+                body: [
+                  ["Tổng nhà cung cấp", providerStats.total],
+                  ["Nhà cung cấp hoạt động", providerStats.active],
+                  ["Nhà cung cấp chờ duyệt", providerStats.pending],
+                  ["Nhà cung cấp bị khóa", providerStats.locked]
+                ]
+              }
+            }
+          ],
+          margin: [0, 5, 0, 15]
+        },
 
-        { text: "BẢNG TỔNG HỢP THỐNG KÊ", style: "subheader" },
+        // ===== BIỂU ĐỒ =====
+        { text: "II. BIỂU ĐỒ THỐNG KÊ", style: "section" },
+        {
+          image: `data:image/png;base64,${chartCustomer}`,
+          width: 300,
+          alignment: "center",
+          margin: [0, 10, 0, 20]
+        },
+        {
+          image: `data:image/png;base64,${chartProvider}`,
+          width: 420,
+          alignment: "center",
+          margin: [0, 10, 0, 20]
+        },
+
+        // ===== BẢNG CHI TIẾT =====
+        { text: "III. DANH SÁCH NHÀ CUNG CẤP", style: "section" },
         {
           table: {
-            widths: ["*", "auto", "auto"],
+            headerRows: 1,
+            widths: ["auto", "*", "*", "auto"],
             body: [
-              ["Loại", "Số lượng", "Trạng thái"],
-              ["Khách hàng (hoạt động)", stats.customer.active, "Hoạt động"],
-              ["Khách hàng (khóa)", stats.customer.locked, "Khóa"],
-              ["Nhà cung cấp (hoạt động)", stats.provider.active, "Hoạt động"],
-              ["Nhà cung cấp (chờ duyệt)", stats.provider.pending, "Chờ duyệt"],
-              ["Nhà cung cấp (khóa)", stats.provider.locked, "Khóa"]
+              ["Mã NCC", "Tên NCC", "Loại hình", "Trạng thái"],
+              ...providers.map(p => [
+                p.MaNCC,
+                p.TenNCC,
+                p.LoaiHinh,
+                p.TrangThai
+              ])
             ]
-          }
+          },
+          layout: "lightHorizontalLines"
         },
-        { text: "\nTổng số khách hàng: " + stats.customer.total },
-        { text: "Tổng số nhà cung cấp: " + stats.provider.total },
-        { text: "\n\n© 2025 Tourist Accommodation Management System", alignment: "center", italics: true }
+
+        // ===== FOOTER =====
+        {
+          text: "\nNgười lập báo cáo\n(Ký & ghi rõ họ tên)",
+          alignment: "right",
+          margin: [0, 30, 0, 0]
+        }
       ],
+
       styles: {
-        header: { fontSize: 18, bold: true, alignment: "center", margin: [0, 10, 0, 20] },
-        subheader: { fontSize: 14, bold: true, margin: [0, 10, 0, 10] }
+        header: {
+          fontSize: 18,
+          bold: true,
+          alignment: "center",
+          margin: [0, 0, 0, 5]
+        },
+        subheader: {
+          fontSize: 14,
+          bold: true,
+          alignment: "center",
+          margin: [0, 0, 0, 15]
+        },
+        section: {
+          fontSize: 13,
+          bold: true,
+          margin: [0, 10, 0, 8]
+        }
       }
     };
 
+    // ====== GHI FILE ======
     const reportsDir = path.join(__dirname, "../public/reports");
     if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
 
-    const fileName = `baocao_thongke_${getTimestamp()}.pdf`;
+    const fileName = `baocao_dashboard_${getTimestamp()}.pdf`;
     const filePath = path.join(reportsDir, fileName);
 
     const pdfDoc = printer.createPdfKitDocument(docDefinition);
-    const stream = fs.createWriteStream(filePath);
-    pdfDoc.pipe(stream);
+    pdfDoc.pipe(fs.createWriteStream(filePath));
     pdfDoc.end();
 
-    stream.on("finish", () => res.download(filePath, fileName));
+    pdfDoc.on("end", () => res.download(filePath, fileName));
   } catch (err) {
-    console.error("❌ Lỗi xuất PDF:", err);
-    res.status(500).send("Không thể xuất PDF!");
+    console.error("❌ PDF error:", err);
+    res.status(500).send("Không thể xuất PDF");
   }
 };
 
-// ==================== XUẤT EXCEL ====================
+
+// ================= EXPORT EXCEL (BÁO CÁO TỔNG) =================
 exports.exportExcel = async (req, res) => {
   try {
     const customers = await Customer.getAllCustomers();
     const providers = await Provider.getAllProviders();
 
     const workbook = new ExcelJS.Workbook();
-    const sheet1 = workbook.addWorksheet("Khách hàng");
-    const sheet2 = workbook.addWorksheet("Nhà cung cấp");
 
-    // --- Sheet khách hàng ---
-    sheet1.columns = [
-      { header: "Mã KH", key: "MaKhachHang", width: 10 },
+    // ===== SHEET KHÁCH HÀNG =====
+    const sheetCustomer = workbook.addWorksheet("Khách hàng");
+    sheetCustomer.columns = [
+      { header: "Mã KH", key: "MaKhachHang", width: 12 },
       { header: "Họ tên", key: "HoTen", width: 25 },
       { header: "Email", key: "Email", width: 25 },
-      { header: "SĐT", key: "SoDienThoai", width: 15 },
-      { header: "Trạng thái", key: "TrangThai", width: 20 }
+      { header: "Trạng thái", key: "TrangThai", width: 15 }
     ];
-    sheet1.addRows(customers);
+    sheetCustomer.addRows(customers);
 
-    // --- Sheet nhà cung cấp ---
-    sheet2.columns = [
-      { header: "Mã NCC", key: "MaNCC", width: 10 },
-      { header: "Tên NCC", key: "TenNCC", width: 25 },
+    // ===== SHEET NHÀ CUNG CẤP =====
+    const sheetProvider = workbook.addWorksheet("Nhà cung cấp");
+    sheetProvider.columns = [
+      { header: "Mã NCC", key: "MaNCC", width: 12 },
+      { header: "Tên NCC", key: "TenNCC", width: 30 },
       { header: "Loại hình", key: "LoaiHinh", width: 20 },
-      { header: "Trạng thái", key: "TrangThai", width: 20 }
+      { header: "Trạng thái", key: "TrangThai", width: 15 }
     ];
-    sheet2.addRows(providers);
+    sheetProvider.addRows(providers);
 
     const reportsDir = path.join(__dirname, "../public/reports");
     if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
 
-    const fileName = `baocao_thongke_${getTimestamp()}.xlsx`;
+    const fileName = `dashboard_${getTimestamp()}.xlsx`;
     const filePath = path.join(reportsDir, fileName);
 
     await workbook.xlsx.writeFile(filePath);
     res.download(filePath, fileName);
   } catch (err) {
-    console.error("❌ Lỗi xuất Excel:", err);
-    res.status(500).send("Không thể xuất Excel!");
+    console.error("Excel error:", err);
+    res.status(500).send("Không thể xuất Excel");
   }
 };

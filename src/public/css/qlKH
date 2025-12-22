@@ -1,0 +1,61 @@
+/* === Bảng & tìm kiếm === */
+body { font-family: "Segoe UI", sans-serif; background: #f8f9fa; margin: 0; color: #222; }
+header { background: #0d6efd; color: #fff; padding: 14px 18px; }
+.container { width: min(1100px, 94%); margin: 18px auto; }
+
+.search-form { display: flex; gap: 10px; margin-bottom: 15px; }
+.search-form input { flex: 1; padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; }
+.search-form button { background: #0d6efd; color: #fff; border: none; border-radius: 6px; padding: 6px 14px; cursor: pointer; }
+.search-form button:hover { opacity: 0.9; }
+
+.admin-table { width: 100%; border-collapse: collapse; }
+.admin-table th, .admin-table td { border: 1px solid #dee2e6; padding: 8px 10px; text-align: center; }
+.admin-table tr:hover { background: #eef2ff; cursor: pointer; }
+
+/* === Trạng thái === */
+.status { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 6px; font-weight: 600; }
+.status-HoatDong { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.status-Khoa { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+.btn-view { background: #0d6efd; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
+.btn-view:hover { opacity: 0.9; }
+
+/* === Modal popup === */
+.modal {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: none; justify-content: center; align-items: center;
+  z-index: 999;
+}
+.modal.show { display: flex; animation: fadeIn 0.3s ease-in-out; }
+@keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 600px;
+  position: relative;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+  animation: slideUp 0.3s ease;
+}
+@keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 22px;
+  cursor: pointer;
+  color: #555;
+}
+.close:hover { color: red; }
+
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 20px; margin-top: 10px; }
+.actions { margin-top: 15px; display: flex; gap: 10px; justify-content: center; }
+
+button { border: none; border-radius: 6px; padding: 8px 12px; color: #fff; cursor: pointer; }
+button[value="Khoa"] { background: #dc3545; }
+button[value="HoatDong"] { background: #28a745; }
+button:hover { opacity: 0.9; }

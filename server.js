@@ -3,7 +3,6 @@ const path = require("path");
 const expressLayouts = require("express-ejs-layouts");
 const session = require("express-session");
 const MySQLStore = require("express-mysql-session")(session);
-const adminRoutes = require('./src/routes/adminRoutes')
 
 const app = express();
 
@@ -18,6 +17,8 @@ const diachiRoutes = require("./src/routes/diachiRoutes");
 const loaiphongRoutes = require("./src/routes/loaiphongRoutes");
 const nhaCungCapRoutes = require("./src/routes/nhaCungCapRoutes");
 const datPhongRoutes = require("./src/routes/datPhongRoutes");
+const adminRoutes = require('./src/routes/adminRoutes')
+const reportRoutes = require("./src/routes/reportRoutes");
 
 /* =====================================================
    ✅ THIẾT LẬP EJS + LAYOUT
@@ -85,6 +86,11 @@ app.use((req, res, next) => {
    ✅ ĐỊNH NGHĨA ROUTES
 ===================================================== */
 app.use("/", homeRoutes);
+// ✅ Sử dụng routes
+app.use('/admin', adminRoutes);
+
+app.use('/khachhang', khachhangRoutes);
+// Routes
 app.use("/phong", phongRoutes);
 app.use("/timkiem", timkiemRoutes);
 app.use("/api", diachiRoutes);
@@ -99,6 +105,8 @@ app.use("/nhacungcap", nhaCungCapRoutes);
 
 // 🛠️ Route admin
 app.use('/admin', adminRoutes);
+
+app.use("/api/reports", reportRoutes);
 
 /* =====================================================
    ✅ KHỞI ĐỘNG SERVER
