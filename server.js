@@ -52,7 +52,7 @@ app.use("/images/danhgia", express.static(path.join(__dirname, "src/public/image
 const dbConfig = {
   host: "localhost",
   user: "root",
-  password: "",
+  password: "root@123",
   database: "quanlidatphong",
 };
 
