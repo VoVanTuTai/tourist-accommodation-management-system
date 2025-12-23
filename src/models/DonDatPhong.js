@@ -2,44 +2,35 @@ const db = require("../../config/db")
 const {getTrangThaiPhong}=require("./phong")
 
 const DonDatPhong = {
-    // 🧾 Danh sách đơn theo khách hàng; gộp tên chỗ ở theo đơn
+    // 🧾 Danh sách đơn theo khách hàng
     async getAllByUser(maKhachHang, trangThai) {
         try {
             let sql = `
-        SELECT 
-          dp.MaDon,
-          dp.NgayDat,
-          dp.NgayNhan,
-          dp.NgayTra,
-          dp.TrangThai,
-          dp.TongTien,
-          COALESCE(GROUP_CONCAT(DISTINCT ncc.TenNCC SEPARATOR ', '), 'Chưa rõ') AS TenChoO
-        FROM DonDatPhong dp
-        LEFT JOIN chitietdondatphong ctdp ON dp.MaDon = ctdp.MaDon
-        LEFT JOIN Phong p                ON ctdp.MaPhong = p.MaPhong
-        LEFT JOIN NhaCungCap ncc         ON p.MaNhaCungCap = ncc.MaNCC
-        WHERE dp.MaKhachHang = ?
-      `
-            const params = [maKhachHang]
-
+                SELECT 
+                    dp.MaDon, dp.NgayDat, dp.NgayNhan, dp.NgayTra, 
+                    dp.TrangThai, dp.TongTien,
+                    COALESCE(ncc.TenNCC, 'Phòng đã đặt') AS TenChoO 
+                FROM dondatphong dp
+                LEFT JOIN chitietdondatphong ctdp ON dp.MaDon = ctdp.MaDon
+                LEFT JOIN phong p                ON ctdp.MaPhong = p.MaPhong
+                LEFT JOIN nhacungcap ncc         ON p.MaNhaCungCap = ncc.MaNCC
+                WHERE dp.MaKhachHang = ?
+            `;
+            
+            const params = [maKhachHang];
             if (trangThai !== undefined && trangThai !== "") {
-                sql += ` AND dp.TrangThai = ?`
-                params.push(Number(trangThai))
+                sql += ` AND dp.TrangThai = ?`;
+                params.push(trangThai);
             }
-
-            sql += `
-        GROUP BY dp.MaDon
-        ORDER BY dp.NgayDat DESC
-      `
-
-            const [rows] = await db.execute(sql, params)
-            return rows
+            sql += ` GROUP BY dp.MaDon ORDER BY dp.MaDon DESC`;
+    
+            const [rows] = await db.execute(sql, params);
+            return rows;
         } catch (err) {
-            console.error("❌ Lỗi SQL DonDatPhong.getAllByUser:", err.message)
-            throw err
+            console.error("❌ Lỗi Model:", err.message);
+            throw err;
         }
     },
-
     // 📋 Chi tiết đơn & thông tin phòng
     async getDonVaPhong(maDon) {
         const sql = `
@@ -77,9 +68,9 @@ const DonDatPhong = {
         END AS TrangThaiThanhToan
   
       FROM DonDatPhong dp
-      JOIN KhachHang kh ON dp.MaKhachHang = kh.MaKhachHang
-      JOIN chitietdondatphong ctdp ON dp.MaDon = ctdp.MaDon
-      JOIN Phong p ON ctdp.MaPhong = p.MaPhong
+      LEFT JOIN KhachHang kh ON dp.MaKhachHang = kh.MaKhachHang
+      LEFT JOIN chitietdondatphong ctdp ON dp.MaDon = ctdp.MaDon
+      LEFT JOIN Phong p ON ctdp.MaPhong = p.MaPhong
       LEFT JOIN LoaiPhong lp ON p.MaLoai = lp.MaLoai
       LEFT JOIN NhaCungCap ncc ON p.MaNhaCungCap = ncc.MaNCC
   

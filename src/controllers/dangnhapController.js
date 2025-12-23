@@ -2,6 +2,9 @@ const bcrypt = require('bcryptjs');
 const TaiKhoan = require('../models/taikhoan');
 const NhaCungCap = require('../models/NhaCungCap');
 
+//
+const dbPromise = require('../../config/db'); 
+
 // ===============================
 // 🔹 Hàm kiểm tra định dạng email
 // ===============================
@@ -59,19 +62,24 @@ exports.login = async (req, res) => {
       req.session.cookie.expires = false;
     }
 
+    // ✅ BỔ SUNG: Lấy thông tin HoTen từ bảng khachhang
+    const db = await dbPromise; // Chờ kết nối database như nhóm bạn đang làm
+    const [khachRows] = await db.execute('SELECT HoTen, SoDienThoai FROM khachhang WHERE MaTaiKhoan = ?', [account.MaTaiKhoan]);
+    const thongTinKhach = khachRows.length > 0 ? khachRows[0] : {};
+
     // ✅ Lưu session người dùng
     req.session.user = {
       MaTaiKhoan: account.MaTaiKhoan,
       TaiKhoan: account.TaiKhoan,
       PhanQuyen: account.PhanQuyen,
-      TrangThai: account.TrangThai
+      TrangThai: account.TrangThai,
+      HoTen: thongTinKhach.HoTen || '', 
+      SoDienThoai: thongTinKhach.SoDienThoai || ''
     };
 
-    // ✅ Kiểm tra nếu có URL trước đó (ví dụ: người dùng bị redirect do chưa đăng nhập)
     const redirectUrl = req.session.redirectAfterLogin || null;
     delete req.session.redirectAfterLogin;
 
-    // ✅ Điều hướng thông minh theo quyền
     if (redirectUrl) {
       return res.redirect(redirectUrl);
     }
