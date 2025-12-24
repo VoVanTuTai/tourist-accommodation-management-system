@@ -79,7 +79,11 @@
                 }
             })()
         </script>
+        <!-- Trước link JS riêng -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <!-- Link JS riêng (nếu có) -->
+
+         
         <% if (typeof js !=='undefined' && js && js.length) { %>
         <% js.forEach(function(file) { %>
         <script src="<%= file %>"></script>

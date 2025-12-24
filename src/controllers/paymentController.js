@@ -53,6 +53,7 @@ exports.createPayment = async (req, res) => {
     const createDate = moment(now).format('YYYYMMDDHHmmss');
     const expireDate = moment(now).add(15, 'minutes').format('YYYYMMDDHHmmss');
     const ipAddr     = normalizeIp(req);
+    
 
     // Nội dung không dấu
     const orderInfoText = `Thanh toan don ${orderId} cho NCC ${removeVietnameseTones(supplier.TenNCC)}`;

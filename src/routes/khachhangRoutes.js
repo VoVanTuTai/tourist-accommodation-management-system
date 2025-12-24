@@ -35,9 +35,26 @@ router.post("/don-dat-phong/thanhtoan", ensureKhachHang, donDatPhongController.h
 // ⭐ ĐÁNH GIÁ PHÒNG
 // =====================================================
 // ✅ CẤU HÌNH MULTER CHO ẢNH ĐÁNH GIÁ
-const storage = multer.diskStorage({
+// Cấu hình cho ảnh đánh giá (Ví dụ đặt trong file route hoặc file config riêng)
+const storageDanhGia = multer.diskStorage({
   destination: (req, file, cb) => cb(null, path.join(__dirname, "../public/images/danhgia")),
   filename: (req, file, cb) => cb(null, Date.now() + "_" + file.originalname),
+});
+
+const uploadDanhGia = multer({ 
+  storage: storageDanhGia,
+  limits: { fileSize: 2 * 1024 * 1024 }, // Đánh giá thường chỉ cần ảnh nhẹ (2MB)
+  fileFilter: (req, file, cb) => {
+    const allowed = /jpeg|jpg|png|gif|webp/;
+    const ext = path.extname(file.originalname).toLowerCase();
+    const mime = file.mimetype;
+    
+    if (allowed.test(ext) && allowed.test(mime)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Chỉ chấp nhận file hình ảnh!'));
+    }
+  }
 });
 const upload = multer({ storage });
 router.get("/don-dat-phong/:maDon/danhgia", ensureKhachHang, danhGiaController.renderDanhGia);
