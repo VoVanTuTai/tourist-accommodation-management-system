@@ -73,6 +73,36 @@ slider.noUiSlider.on("update", values => {
     minLabel.textContent = minVal.toLocaleString()
     maxLabel.textContent = maxVal.toLocaleString()
 })
+// Ràng buộc ngày checkin / checkout (jQuery)
+$(document).ready(function () {
+    const $checkin = $("#checkin")
+    const $checkout = $("#checkout")
+
+    if ($checkin.length && $checkout.length) {
+
+        $checkin.on("change", function () {
+            const checkinVal = this.value
+            if (!checkinVal) return
+
+            $checkout.attr("min", checkinVal)
+
+            if ($checkout.val() && $checkout.val() < checkinVal) {
+                $checkout.val("")
+            }
+        })
+
+        $checkout.on("change", function () {
+            const checkoutVal = this.value
+            if (!checkoutVal) return
+
+            $checkin.attr("max", checkoutVal)
+
+            if ($checkin.val() && $checkin.val() > checkoutVal) {
+                $checkin.val("")
+            }
+        })
+    }
+})
 
 // --- Khởi tạo ---
 loadSelectData()
