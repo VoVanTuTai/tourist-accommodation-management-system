@@ -31,7 +31,7 @@
                                 <label for="Email" class="form-label">Email (Tài khoản):</label>
                             </div>
                             <div class="col-12">
-                                <input type="text" class="form-control" name="Email" id="Email" value="<%= f.Email || '' %>" />
+                                <input type="text" class="form-control" name="Email" id="Email" value="<%= f.Email || '' %>" placeholder="E.g: example@gmail.com"/>
                                 <span class="text-danger d-block text-error-email">
                                     <% if (errors) { %>
                                         <%= errors.Email %>
@@ -202,7 +202,7 @@
                         <label for="ConfirmPassword" class="form-label">Confirm Password</label>
                     </div>
                     <div class="col-9">
-                        <input type="password" class="form-control" name="ConfirmPassword" id="ConfirmPassword" autocomplete="off" />
+                        <input type="password" class="form-control" name="ConfirmPassword" id="ConfirmPassword" autocomplete="new-password" />
                         <span class="text-danger d-block text-error-ConfirmPassword">
                             <% if (errors) { %>
                                 <%= errors.ConfirmPassword %>
