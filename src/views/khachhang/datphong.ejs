@@ -8,7 +8,7 @@
 
     <div class="row g-4">
       <div class="col-lg-8">
-        <form action="/khachhang/dat-phong/preview" method="POST" class="needs-validation" id="bookingForm">
+        <form action="/khachhang/dat-phong/preview" method="POST" id="bookingForm" novalidate>
           <input type="hidden" name="MaPhong" value="<%= (room && room.MaPhong) ? room.MaPhong : '' %>">
 
           <div class="card shadow-sm border-0 rounded-4 mb-4">
@@ -16,31 +16,21 @@
               <h5 class="fw-bold mb-4 text-primary"><i class="fas fa-calendar-alt me-2"></i>Thời gian lưu trú tạm tính</h5>
               <div class="row g-3">
                 <% 
-                  // Logic tạo ngày chuẩn ngay tại View để đảm bảo không bao giờ trống
                   let now = new Date();
                   let offset = now.getTimezoneOffset() * 60000;
                   let todayStr = (new Date(now - offset)).toISOString().split('T')[0];
-                  
                   let tomorrow = new Date(now.getTime() + (24 * 60 * 60 * 1000) - offset);
                   let tomorrowStr = tomorrow.toISOString().split('T')[0];
-
-                  // Ưu tiên: 1. Dữ liệu khách đã nhập (form) -> 2. Dữ liệu mặc định
                   let valNgayNhan = (typeof form !== 'undefined' && form.NgayNhan) ? form.NgayNhan : todayStr;
                   let valNgayTra = (typeof form !== 'undefined' && form.NgayTra) ? form.NgayTra : tomorrowStr;
                 %>
                 <div class="col-md-6">
                   <label class="form-label small fw-bold">Ngày nhận phòng</label>
-                  <input type="date" name="NgayNhan" id="NgayNhan" 
-                         value="<%= valNgayNhan %>" 
-                         min="<%= todayStr %>"
-                         class="form-control form-control-lg border-2" required>
+                  <input type="date" name="NgayNhan" id="NgayNhan" value="<%= valNgayNhan %>" min="<%= todayStr %>" class="form-control form-control-lg border-2" required>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label small fw-bold">Ngày trả phòng</label>
-                  <input type="date" name="NgayTra" id="NgayTra" 
-                         value="<%= valNgayTra %>" 
-                         min="<%= tomorrowStr %>"
-                         class="form-control form-control-lg border-2" required>
+                  <input type="date" name="NgayTra" id="NgayTra" value="<%= valNgayTra %>" min="<%= tomorrowStr %>" class="form-control form-control-lg border-2" required>
                 </div>
               </div>
             </div>
@@ -51,18 +41,23 @@
               <h5 class="fw-bold mb-4 text-primary"><i class="fas fa-user-edit me-2"></i>Thông tin người đặt</h5>
               <div class="row g-3">
                 <div class="col-md-12 mb-3">
-                  <label class="form-label">Họ và tên người đặt</label>
-                  <input type="text" name="Dat_HoTen" id="Dat_HoTen" class="form-control" 
-                         value="<%= (user && user.HoTen) ? user.HoTen : '' %>" required>
+                  <label class="form-label fw-bold">Họ và tên người đặt</label>
+                  <input type="text" name="Dat_HoTen" id="Dat_HoTen" class="form-control border-2" 
+                         value="<%= (user && user.HoTen) ? user.HoTen : '' %>" required placeholder="Nhập đầy đủ họ và tên">
+                  <div class="invalid-feedback" id="err_Dat_HoTen">Vui lòng nhập họ tên.</div>
                 </div>
                 <div class="col-md-6 mb-3">
-                  <label class="form-label">Số điện thoại</label>
-                  <input type="tel" name="Dat_SDT" id="Dat_SDT" class="form-control" 
-                         value="<%= (user && user.SoDienThoai) ? user.SoDienThoai : '' %>" required>
+                  <label class="form-label fw-bold">Số điện thoại</label>
+                  <input type="tel" name="Dat_SDT" id="Dat_SDT" class="form-control border-2" 
+                         value="<%= (user && user.SoDienThoai) ? user.SoDienThoai : '' %>" required 
+                         placeholder="VD: 0369123456">
+                  <div class="invalid-feedback" id="err_Dat_SDT">SĐT phải có 10 số và bắt đầu bằng số 0.</div>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label small fw-bold">Số CCCD/CMND</label>
-                  <input type="text" name="Dat_CCCD" id="Dat_CCCD" class="form-control border-2" required>
+                  <label class="form-label fw-bold">Số CCCD/CMND</label>
+                  <input type="text" name="Dat_CCCD" id="Dat_CCCD" class="form-control border-2" required 
+                         placeholder="Nhập 9 hoặc 12 chữ số">
+                  <div class="invalid-feedback" id="err_Dat_CCCD">CCCD phải gồm 9 hoặc 12 chữ số.</div>
                 </div>
               </div>
               <div class="form-check mt-4 p-3 bg-light rounded-3">
@@ -76,20 +71,26 @@
             <div class="card-body p-4">
               <h5 class="fw-bold mb-4 text-primary"><i class="fas fa-user-check me-2"></i>Thông tin người nhận phòng</h5>
               <div class="row g-3">
-                <div class="col-md-12">
-                  <input type="text" name="Nhan_HoTen" class="form-control border-2" placeholder="Họ và tên người nhận" required>
+                <div class="col-md-12 mb-3">
+                  <label class="form-label fw-bold small">Họ và tên người nhận</label>
+                  <input type="text" name="Nhan_HoTen" id="Nhan_HoTen" class="form-control border-2" placeholder="Họ tên người thực tế sẽ ở" required>
+                  <div class="invalid-feedback">Vui lòng nhập tên người nhận.</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label fw-bold small">SĐT người nhận</label>
+                  <input type="tel" name="Nhan_SDT" id="Nhan_SDT" class="form-control border-2" placeholder="VD: 0905123456" required>
+                  <div class="invalid-feedback" id="err_Nhan_SDT">SĐT người nhận không đúng định dạng.</div>
                 </div>
                 <div class="col-md-6">
-                  <input type="tel" name="Nhan_SDT" class="form-control border-2" placeholder="Số điện thoại người nhận" required>
-                </div>
-                <div class="col-md-6">
-                  <input type="text" name="Nhan_CCCD" class="form-control border-2" placeholder="CCCD người nhận" required>
+                  <label class="form-label fw-bold small">CCCD người nhận</label>
+                  <input type="text" name="Nhan_CCCD" id="Nhan_CCCD" class="form-control border-2" placeholder="Nhập 9 hoặc 12 số" required>
+                  <div class="invalid-feedback" id="err_Nhan_CCCD">CCCD người nhận không đúng định dạng.</div>
                 </div>
               </div>
             </div>
           </div>
 
-          <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill py-3 fw-bold shadow">
+          <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill py-3 fw-bold shadow" id="btnSubmit">
             TIẾP TỤC XÁC NHẬN <i class="fas fa-arrow-right ms-2"></i>
           </button>
         </form>
@@ -105,25 +106,18 @@
                 displayImage = cleanPath.split(',')[0] || 'unnamed.jpg';
               }
             %>
-            <img src="/images/<%= displayImage %>" class="card-img-top" 
-                 style="height: 250px; object-fit: cover; background-color: #eee;" 
-                 onerror="this.src='/images/unnamed.jpg'">
-            
+            <img src="/images/<%= displayImage %>" class="card-img-top" style="height: 250px; object-fit: cover;" onerror="this.src='/images/unnamed.jpg'">
             <div class="card-body p-4">
-              <span class="badge bg-info text-dark mb-2">Phòng chất lượng cao</span>
               <h4 class="fw-bold mb-1"><%= room?.TenPhong || 'Thông tin phòng' %></h4>
-              
               <hr class="my-3 opacity-10">
-              
               <div class="d-flex justify-content-between mb-2">
                 <span class="text-muted">Giá mỗi đêm:</span>
                 <span class="fw-bold text-primary"><%= room?.Gia ? room.Gia.toLocaleString('vi-VN') : 0 %> VND</span>
               </div>
               <div class="d-flex justify-content-between mb-2">
-                <span class="text-muted">Số đêm lưu trú:</span>
+                <span class="text-muted">Số đêm:</span>
                 <span class="fw-bold" id="nightCount">0 đêm</span>
               </div>
-              
               <div class="bg-light p-3 rounded-3 mt-4 border border-primary border-opacity-10">
                 <div class="d-flex justify-content-between align-items-center">
                   <span class="fw-bold">Tạm tính:</span>
@@ -138,31 +132,79 @@
   </div>
 </div>
 
+<style>
+  /* Style để hiển thị lỗi ngay lập tức khi dùng class is-invalid */
+  .invalid-feedback { display: none; width: 100%; margin-top: 0.25rem; font-size: 0.875em; color: #dc3545; }
+  .is-invalid ~ .invalid-feedback { display: block; }
+</style>
+
 <script>
   document.addEventListener("DOMContentLoaded", function() {
+    const bookingForm = document.getElementById('bookingForm');
+    const giaPhong = parseInt("<%= room?.Gia %>") || 0;
+
+    // Định nghĩa các điều kiện kiểm tra (Regex)
+    const validateRules = {
+      "Dat_SDT": /^0[0-9]{9}$/,
+      "Nhan_SDT": /^0[0-9]{9}$/,
+      "Dat_CCCD": /^[0-9]{9}$|^[0-9]{12}$/,
+      "Nhan_CCCD": /^[0-9]{9}$|^[0-9]{12}$/,
+      "Dat_HoTen": /.+/,
+      "Nhan_HoTen": /.+/
+    };
+
+    // Hàm kiểm tra lỗi ngay lập tức (Real-time)
+    function checkInput(input) {
+      const rule = validateRules[input.id] || validateRules[input.name];
+      if (rule) {
+        if (!rule.test(input.value)) {
+          input.classList.add("is-invalid");
+          input.classList.remove("is-valid");
+          return false;
+        } else {
+          input.classList.remove("is-invalid");
+          input.classList.add("is-valid");
+          return true;
+        }
+      }
+      return true;
+    }
+
+    // Gán sự kiện gõ phím cho tất cả input
+    const allInputs = bookingForm.querySelectorAll('input[type="text"], input[type="tel"]');
+    allInputs.forEach(input => {
+      input.addEventListener('input', function() {
+        checkInput(this);
+      });
+    });
+
+    // Chặn gửi form nếu còn ô nào bị đỏ
+    bookingForm.addEventListener('submit', function(e) {
+      let isAllValid = true;
+      allInputs.forEach(input => {
+        if (!checkInput(input)) isAllValid = false;
+      });
+
+      if (!isAllValid) {
+        e.preventDefault();
+        alert("Vui lòng nhập đúng định dạng các trường thông tin màu đỏ!");
+      }
+    });
+
+    // --- CÁC LOGIC CŨ CỦA BẠN (TÍNH TIỀN, COPY DATA) ---
     const ngayNhanInput = document.getElementById('NgayNhan');
     const ngayTraInput = document.getElementById('NgayTra');
-    const tempTotal = document.getElementById('tempTotal');
-    const nightCount = document.getElementById('nightCount');
-    
-    const giaPhong = parseInt("<%= room?.Gia %>") || 0;
 
     function calculateTotal() {
       const start = new Date(ngayNhanInput.value);
       const end = new Date(ngayTraInput.value);
-      
       if (ngayNhanInput.value && ngayTraInput.value && end > start) {
-        const diffTime = Math.abs(end - start);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        nightCount.innerText = diffDays + " đêm";
-        tempTotal.innerText = (diffDays * giaPhong).toLocaleString('vi-VN') + " VND";
-      } else {
-        nightCount.innerText = "0 đêm";
-        tempTotal.innerText = "0 VND";
+        const diffDays = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24));
+        document.getElementById('nightCount').innerText = diffDays + " đêm";
+        document.getElementById('tempTotal').innerText = (diffDays * giaPhong).toLocaleString('vi-VN') + " VND";
       }
     }
 
-    // Tự động cập nhật ngày trả khi ngày nhận thay đổi
     ngayNhanInput.addEventListener('change', function() {
       const newDate = new Date(this.value);
       newDate.setDate(newDate.getDate() + 1);
@@ -170,18 +212,20 @@
       ngayTraInput.min = newDate.toISOString().split('T')[0];
       calculateTotal();
     });
-
     ngayTraInput.addEventListener('change', calculateTotal);
 
-    // Xử lý Checkbox "Tôi là người nhận"
     document.getElementById("samePerson").addEventListener("change", function() {
-      const isChecked = this.checked;
-      document.getElementsByName("Nhan_HoTen")[0].value = isChecked ? document.getElementById("Dat_HoTen").value : "";
-      document.getElementsByName("Nhan_SDT")[0].value = isChecked ? document.getElementById("Dat_SDT").value : "";
-      document.getElementsByName("Nhan_CCCD")[0].value = isChecked ? document.getElementById("Dat_CCCD").value : "";
+      if (this.checked) {
+        document.getElementById("Nhan_HoTen").value = document.getElementById("Dat_HoTen").value;
+        document.getElementById("Nhan_SDT").value = document.getElementById("Dat_SDT").value;
+        document.getElementById("Nhan_CCCD").value = document.getElementById("Dat_CCCD").value;
+        // Kiểm tra lại validation sau khi copy
+        checkInput(document.getElementById("Nhan_HoTen"));
+        checkInput(document.getElementById("Nhan_SDT"));
+        checkInput(document.getElementById("Nhan_CCCD"));
+      }
     });
 
-    // Chạy tính toán lần đầu ngay khi load trang
     calculateTotal();
   });
 </script>
