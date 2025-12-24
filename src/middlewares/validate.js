@@ -58,10 +58,17 @@ function isValidDate(dateString) {
   }
 }
 
+function isValidBankAccountNumber(accountNumber) {
+  if (typeof accountNumber !== 'string') return false;
+  const regex = /^[0-9]{8,15}$/;
+  return regex.test(accountNumber.trim());
+}
+
 module.exports = {
   isValidFullname,
   isValidEmail,
   isValidVietnamPhone,
   isValidPassword,
   isValidDate,
+  isValidBankAccountNumber
 };
