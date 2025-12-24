@@ -5,6 +5,21 @@
   <title>Quản lý nhà cung cấp</title>
   <link rel="stylesheet" href="/css/qlNCC.css">
 <style></style>
+<style>
+  button[type="submit"] {
+  color: rgb(20, 31, 230);
+  border: none;
+ 
+  
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button[type="submit"]:hover {
+  background: #e6d70d; /* Đậm hơn khi di chuột */
+  transform: scale(1.05); /* Phóng to nhẹ */
+}
+</style>
 
   <script>
     // ✅ Xác nhận trước khi thực hiện thao tác
@@ -31,19 +46,23 @@
 </head>
 
 <body>
+  <div class="nav-grey">...</div>
+  <div style="height: 30px;"></div> 
   <header>
-    <h1 class="page-title">Quản lý nhà cung cấp</h1>
+    Quản lý nhà cung cấp
   </header>
 
   <main>
     <form method="GET" action="/admin/providers/filter" class="filter-form">
       <label><b>Trạng thái:</b></label>
       <select name="TrangThai">
-        <option value="ChoDuyet">Chờ duyệt</option>
         <option value="HoatDong">Đang hoạt động</option>
+        <option value="ChoDuyet">Chờ duyệt</option>
         <option value="Khoa">Đã khóa</option>
       </select>
-      <button type="submit">Lọc</button>
+      <button type="submit">
+  <span>🔍</span> Lọc dữ liệu
+</button>
     </form>
 
     <% if (successMessage) { %>
