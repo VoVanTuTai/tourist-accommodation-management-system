@@ -56,7 +56,7 @@ const uploadDanhGia = multer({
     }
   }
 });
-const upload = multer({ storage });
+
 router.get("/don-dat-phong/:maDon/danhgia", ensureKhachHang, danhGiaController.renderDanhGia);
 router.post("/don-dat-phong/:maDon/danhgia", ensureKhachHang, upload.array("HinhAnh", 3), danhGiaController.handleDanhGia );
 const quanlytaikhoanContronller = require('../controllers/quanlythongtinController');
