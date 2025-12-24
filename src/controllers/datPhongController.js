@@ -1,7 +1,16 @@
 const DatPhong = require("../models/datphong");
+const KhachHang = require("../models/khachhang");
+const db = require("../../config/db");
 
+// Hàm bổ trợ lấy ngày định dạng YYYY-MM-DD
 function todayISO() {
     return new Date().toISOString().slice(0, 10);
+}
+
+function tomorrowISO() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().slice(0, 10);
 }
 
 // ======= Hiển thị form đặt phòng =======
@@ -11,28 +20,35 @@ exports.renderForm = async (req, res) => {
         const room = await DatPhong.getRoomById(maPhong);
         const user = req.session.user || null;
 
-        if (!room) {
-            return res.render("khachhang/datphong", { 
-                error: "Không tìm thấy phòng", room: null, form: {}, user: user 
-            });
-        }
+        // Lấy ngày hiện tại theo giờ Việt Nam (ISO string lấy múi giờ UTC nên có thể bị lệch ngày nếu đặt muộn)
+        const now = new Date();
+        const offset = now.getTimezoneOffset() * 60000;
+        const localISOTime = (new Date(now - offset)).toISOString().slice(0, 10);
+        
+        // Ngày mai
+        const tomorrow = new Date(now.getTime() + (24 * 60 * 60 * 1000) - offset);
+        const nextDayISO = tomorrow.toISOString().slice(0, 10);
 
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
+        // Đảm bảo object form luôn có dữ liệu ngày chuẩn
+        const formData = {
+            NgayNhan: localISOTime, // Ví dụ: 2023-10-27
+            NgayTra: nextDayISO,    // Ví dụ: 2023-10-28
+            MaPhong: maPhong
+        };
 
         res.render("khachhang/datphong", {
             error: null,
             room: room,
             user: user,
-            form: {
-                NgayNhan: todayISO(),
-                NgayTra: tomorrow.toISOString().slice(0, 10),
-            },
+            form: formData // Gửi formData này xuống EJS
         });
     } catch (e) {
         console.error("Lỗi renderForm:", e);
         res.render("khachhang/datphong", {
-            error: "Lỗi hệ thống", room: null, user: req.session.user || null, form: {},
+            error: "Lỗi hệ thống", 
+            room: null, 
+            user: req.session.user || null, 
+            form: { NgayNhan: new Date().toISOString().slice(0, 10) }, 
         });
     }
 };
@@ -46,7 +62,10 @@ exports.previewConfirm = async (req, res) => {
 
         if (!room) {
             return res.render("khachhang/datphong", { 
-                error: "Không tìm thấy phòng", room: null, form: b, user: user
+                error: "Không tìm thấy phòng", 
+                room: null, 
+                form: b, 
+                user: user
             });
         }
 
@@ -60,7 +79,12 @@ exports.previewConfirm = async (req, res) => {
             user: user,
         });
     } catch (e) {
-        res.render("khachhang/datphong", { error: "Lỗi preview", room: null, form: req.body, user: req.session.user });
+        res.render("khachhang/datphong", { 
+            error: "Lỗi preview", 
+            room: null, 
+            form: req.body, 
+            user: req.session.user 
+        });
     }
 };
 
@@ -71,26 +95,38 @@ exports.confirmBooking = async (req, res) => {
         const user = req.session.user; 
         
         if (!preview) return res.redirect("/phong");
+        if (!user) return res.redirect("/khachhang/dangnhap");
+
+        const kh = await KhachHang.findByMaTK(user.MaTaiKhoan);
+        if (!kh) {
+            throw new Error("Tài khoản chưa có thông tin Khách Hàng.");
+        }
 
         const payload = {
-            // Sửa MaTaiKhoan để khớp với session của bạn (ID 19)
-            MaKhachHang: user ? user.MaTaiKhoan : null, 
-            TenNguoiNhan: preview.Nhan_HoTen,
-            SDTNguoiNhan: preview.Nhan_SDT,
+            MaKhachHang: kh.MaKhachHang,
+            TenNguoiNhan: preview.Nhan_HoTen || user.HoTen,
+            SDTNguoiNhan: preview.Nhan_SDT || user.SoDienThoai,
             NgayNhan: preview.NgayNhan,
             NgayTra: preview.NgayTra,
-            TrangThai: 'Chưa thanh toán',
+            TrangThai: '0', 
             TongTien: preview.TongTien
         };
 
         const newOrderId = await DatPhong.createOrder(payload); 
+
+        await db.execute(
+            "INSERT INTO chitietdondatphong (MaDon, MaPhong, Gia) VALUES (?, ?, ?)",
+            [newOrderId, preview.MaPhong, payload.TongTien]
+        );
+
         delete req.session.previewOrder;
 
         return res.render("khachhang/hoanthanh", { 
             maDon: newOrderId,              
             trangThai: payload.TrangThai, 
-            tongTien: payload.TongTien, 
-            user: user
+            tongTien: payload.TongTien,
+            tenKhach: payload.TenNguoiNhan, // Tên người nhận phòng thực tế
+            user: user 
         });
 
     } catch (e) {
@@ -99,7 +135,7 @@ exports.confirmBooking = async (req, res) => {
             error: "Lỗi lưu đơn: " + e.message, 
             room: null, 
             user: req.session.user || null,
-            form: req.session.previewOrder || {} 
+            form: req.session.previewOrder || { NgayNhan: todayISO(), NgayTra: tomorrowISO() } 
         });
     }
 };
