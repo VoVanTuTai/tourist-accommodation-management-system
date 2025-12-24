@@ -3,12 +3,24 @@ const KhachHang = require("../models/KhachHang")
 const TaiKhoan = require("../models/taikhoan")
 
 /** ------------------ VALIDATION UTILS ------------------ **/
-function isValidEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+function isValidName(name) {
+    // 1. Trim khoảng trắng thừa ở 2 đầu
+    const cleanName = name.trim();
+    
+    // 2. Regex: Chỉ chữ cái và khoảng trắng đơn giữa các từ
+    // Chặn trường hợp có 2 khoảng trắng liên tiếp
+    const regex = /^[\p{L}]+(\s[\p{L}]+)*$/u;
+    
+    return regex.test(cleanName);
 }
 
+function isValidEmail(email) {
+    return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.com$/.test(email);
+}
+
+
 function isValidPhone(phone) {
-    return /^0\d{9}$/.test(phone)
+    return /^(0)(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-5]|9[0-9])[0-9]{7}$/.test(phone);
 }
 
 function isValidPassword(password) {
@@ -51,6 +63,11 @@ exports.register = async (req, res) => {
             })
 
         // 2️⃣ Kiểm tra định dạng
+        if (!isValidName(HoTen))
+            return res.render("khachhang/dangky", {
+                error: "Họ tên không hợp lệ!",
+                old,
+            })
         if (!isValidEmail(Email))
             return res.render("khachhang/dangky", {
                 error: "Email không đúng định dạng!",

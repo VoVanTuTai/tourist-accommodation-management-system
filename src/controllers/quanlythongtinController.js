@@ -23,7 +23,16 @@ module.exports.getTaiKhoanView = async function (req, res) {
         })
     }
 }
-
+function isValidName(name) {
+    // 1. Trim khoảng trắng thừa ở 2 đầu
+    const cleanName = name.trim();
+    
+    // 2. Regex: Chỉ chữ cái và khoảng trắng đơn giữa các từ
+    // Chặn trường hợp có 2 khoảng trắng liên tiếp
+    const regex = /^[\p{L}]+(\s[\p{L}]+)*$/u;
+    
+    return regex.test(cleanName);
+}
 module.exports.postCapNhatTaiKhoan = async function (req, res) {
     try {
         const maTK =
@@ -38,6 +47,7 @@ module.exports.postCapNhatTaiKhoan = async function (req, res) {
         gioiTinh = gioiTinh ? gioiTinh.trim() : ""
 
         // ===== VALIDATE HỌ TÊN =====
+        
         if (hoTen === "") {
             return res.render("khachhang/thongtintaikhoan", {
                 profile: await KhachHang.findByMaTK(maTK),
@@ -46,13 +56,30 @@ module.exports.postCapNhatTaiKhoan = async function (req, res) {
             })
         }
 
-        if (!/^[A-Za-zÀ-ỹ\s]+$/.test(hoTen)) {
+        if (!isValidName(hoTen)) {
             return res.render("khachhang/thongtintaikhoan", {
                 profile: await KhachHang.findByMaTK(maTK),
                 message: null,
                 error: "Họ tên chỉ chứa chữ và khoảng trắng",
             })
         }
+        if (sdt === "") {
+            return res.render("khachhang/thongtintaikhoan", {
+                profile: await KhachHang.findByMaTK(maTK),
+                message: null,
+                error: "Số điện thoại không được để trống",
+            })
+        }
+        
+
+        if (!/^(0)(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-5]|9[0-9])[0-9]{7}$/.test(sdt)) {
+            return res.render("khachhang/thongtintaikhoan", {
+                profile: await KhachHang.findByMaTK(maTK),
+                message: null,
+                error: "Số điện thoại không hợp lệ !",
+            })
+        }
+
 
         
         // cập nhật bảng KhachHang

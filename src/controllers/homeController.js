@@ -4,6 +4,7 @@ exports.getHomePage = async (req, res) => {
     try {
       const topRooms = await Phong.getTopBookedRooms();
       res.render('home', { 
+        query: req.query || {},
         layout: 'layout',
         title: 'Trang chủ',
         topRooms,
