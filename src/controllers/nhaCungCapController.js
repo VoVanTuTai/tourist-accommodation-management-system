@@ -10,7 +10,8 @@ const {
     isValidEmail,
     isValidVietnamPhone,
     isValidPassword,
-    isValidDate
+    isValidDate,
+    isValidBankAccountNumber
 } = require("../middlewares/validate")
 const fs = require("fs")
 const path = require("path")
@@ -113,16 +114,16 @@ exports.registerNhaCungCap = async (req, res) => {
             Tinh,
             Xa,
             DiaChiChiTiet
-        } = req.body
+        } = req.body || {};
         const errors = {}
 
         if (!isValidFullname(TenNCC)) {
             errors.TenNCC =
-                "Tên nhà cung cấp không hợp lệ. Ít nhất 5 ký tự, không toàn số, không ký tự đặc biệt."
+                "Tên nhà cung cấp không hợp lệ. Tên đầy đủ phải có ít nhất hai phần, mỗi phần ít nhất 2 ký tự, bắt đầu bằng một chữ cái in hoa và được ngăn cách bằng một dấu cách (space), không toàn số."
         }
         if (!isValidEmail(Email)) {
             errors.Email =
-                "Email không hợp lệ. Phải có ký tự @ và kết thúc với .com"
+                "Email không hợp lệ. Email phải bao gồm tên người dùng, ký tự @ tên miền và kết thúc với .com"
         }
         if (!isValidVietnamPhone(Phone)) {
             errors.Phone =
@@ -150,15 +151,19 @@ exports.registerNhaCungCap = async (req, res) => {
         if (!LoaiHinh || LoaiHinh.trim() === "") {
             errors.LoaiHinh = "Vui lòng chọn loại hình nhà cung cấp."
         }
-        if (ThongTinThanhToan.length < 5 || ThongTinThanhToan.length > 15) {
+        if (!ThongTinThanhToan || !isValidBankAccountNumber(ThongTinThanhToan)) {
             errors.ThongTinThanhToan =
-                "Thông tin thanh toán không hợp lệ. Ít nhất 5 chữ số và tối đa 15."
+                "Thông tin thanh toán không hợp lệ. Ít nhất 8 chữ số và tối đa 15."
         }
         // Nếu có file upload, lấy tên file, còn không thì dùng giá trị rỗng
-        const giayPhepKD = req.file ? req.file.originalname : ""
-
-        if (!giayPhepKD) {
-            errors.GiayPhepKD = "Vui lòng cung cấp giấy phép kinh doanh."
+        let giayPhepKD = "";
+        if (req.fileValidationError) {
+          errors.GiayPhepKD = req.fileValidationError
+        } else {
+          giayPhepKD = req.file ? req.file.filename : "";
+          if (!giayPhepKD) {
+              errors.GiayPhepKD = "Vui lòng cung cấp giấy phép kinh doanh."
+          }
         }
 
         if (Object.keys(errors).length > 0) {

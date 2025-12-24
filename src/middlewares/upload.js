@@ -23,7 +23,9 @@ const uploadImage = multer({
         if (allowed.test(ext) && allowed.test(mime)) {
         cb(null, true);
         } else {
-        cb(new Error('Chỉ chấp nhận file hình ảnh (jpg, png, gif)!'));
+          req.fileValidationError = 'Chỉ chấp nhận file hình ảnh (jpg, png, gif)!';
+          cb(null, false);
+        // cb(new Error('Chỉ chấp nhận file hình ảnh (jpg, png, gif)!'));
         }
     }
 });
