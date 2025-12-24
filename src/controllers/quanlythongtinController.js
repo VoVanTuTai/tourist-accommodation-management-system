@@ -30,8 +30,31 @@ module.exports.postCapNhatTaiKhoan = async function (req, res) {
             req.session.MaTaiKhoan ||
             (req.session.user && req.session.user.MaTaiKhoan)
 
-        const { hoTen, sdt, gioiTinh, matKhauMoi } = req.body
+        let { hoTen, sdt, gioiTinh, matKhauMoi } = req.body
 
+        // ===== TRIM =====
+        hoTen = hoTen ? hoTen.trim() : ""
+        sdt = sdt ? sdt.trim() : ""
+        gioiTinh = gioiTinh ? gioiTinh.trim() : ""
+
+        // ===== VALIDATE HỌ TÊN =====
+        if (hoTen === "") {
+            return res.render("khachhang/thongtintaikhoan", {
+                profile: await KhachHang.findByMaTK(maTK),
+                message: null,
+                error: "Họ tên không được để trống",
+            })
+        }
+
+        if (!/^[A-Za-zÀ-ỹ\s]+$/.test(hoTen)) {
+            return res.render("khachhang/thongtintaikhoan", {
+                profile: await KhachHang.findByMaTK(maTK),
+                message: null,
+                error: "Họ tên chỉ chứa chữ và khoảng trắng",
+            })
+        }
+
+        
         // cập nhật bảng KhachHang
         await KhachHang.updateByMaTK(maTK, {
             HoTen: hoTen.trim(),
@@ -41,10 +64,36 @@ module.exports.postCapNhatTaiKhoan = async function (req, res) {
 
         // nếu có mật khẩu mới
         if (matKhauMoi && matKhauMoi.trim() !== "") {
-            const salt = await bcrypt.genSalt(10)
-            const hash = await bcrypt.hash(matKhauMoi.trim(), salt)
-            await TaiKhoan.updatePasswordByMaTK(maTK, hash)
-        }
+    const mk = matKhauMoi.trim()
+
+    if (mk.length < 8) {
+        return res.render("khachhang/thongtintaikhoan", {
+            profile: await KhachHang.findByMaTK(maTK),
+            message: null,
+            error: "Mật khẩu phải có ít nhất 8 ký tự.",
+        })
+    }
+
+    if (!/[A-Z]/.test(mk) || !/[a-z]/.test(mk) || !/\d/.test(mk) || !/[!@#$%^&*]/.test(mk)) {
+        return res.render("khachhang/thongtintaikhoan", {
+            profile: await KhachHang.findByMaTK(maTK),
+            message: null,
+            error: "Mật khẩu phải gồm chữ hoa, chữ thường, số và ký tự đặc biệt.",
+        })
+    }
+
+    if (/\s/.test(mk)) {
+        return res.render("khachhang/thongtintaikhoan", {
+            profile: await KhachHang.findByMaTK(maTK),
+            message: null,
+            error: "Mật khẩu không được chứa khoảng trắng.",
+        })
+    }
+
+    const salt = await bcrypt.genSalt(10)
+    const hash = await bcrypt.hash(mk, salt)
+    await TaiKhoan.updatePasswordByMaTK(maTK, hash)
+}
 
         const profile = await KhachHang.findByMaTK(maTK)
 
