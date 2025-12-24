@@ -34,7 +34,7 @@
         <% if (!daDanhGia || editMode) { %>
 
           <!-- 📝 FORM ĐÁNH GIÁ -->
-          <form method="POST" enctype="multipart/form-data" class="mx-auto review-form">
+          <form id="reviewForm" method="POST" enctype="multipart/form-data" class="mx-auto review-form">
 
             <!-- 🔸 Chọn phòng -->
             <div class="mb-3">
@@ -461,5 +461,47 @@ textarea.form-control:focus {
           });
       });
   });
-  </script>
+
+    document.getElementById('reviewForm').addEventListener('submit', function(event) {
+        // 1. Lấy giá trị số sao và nội dung
+        const soSao = document.getElementById('SoSao').value;
+        const noiDung = document.querySelector('textarea[name="NoiDung"]').value.trim();
+
+        // 2. Kiểm tra số sao (phải lớn hơn 0)
+        if (!soSao || parseInt(soSao) <= 0) {
+            event.preventDefault(); // Ngăn form gửi đi
+            alert('Vui lòng chọn số sao đánh giá!');
+            return false;
+        }
+
+        // 3. Kiểm tra nội dung (không để trống hoặc chỉ toàn khoảng trắng)
+        if (noiDung === "") {
+            event.preventDefault();
+            alert('Vui lòng nhập nội dung đánh giá!');
+            return false;
+        }
+        
+        // Nếu mọi thứ ổn, form sẽ tự động được gửi
+    });
+
+    // Tiện ích: Script để click vào sao thì đổi màu và gán giá trị (nếu bạn chưa có)
+    document.querySelectorAll('#rating .star').forEach(star => {
+        star.addEventListener('click', function() {
+            const value = this.getAttribute('data-value');
+            document.getElementById('SoSao').value = value;
+            
+            // Cập nhật giao diện sao
+            document.querySelectorAll('#rating .star').forEach(s => {
+                if (parseInt(s.getAttribute('data-value')) <= value) {
+                    s.classList.remove('text-secondary');
+                    s.classList.add('text-warning');
+                } else {
+                    s.classList.remove('text-warning');
+                    s.classList.add('text-secondary');
+                }
+            });
+        });
+    });
+
+</script>
   
