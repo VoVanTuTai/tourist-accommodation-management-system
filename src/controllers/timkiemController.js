@@ -20,16 +20,19 @@ exports.timKiemPhong = async (req, res) => {
           "/js/home/timkiem.js"
         ],
         css: [
-            "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css",
-            "/css/home.css"
+          "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css",
+          "/css/home.css"
         ]
       });
     }
 
+    // =============================
+    // QUERY GỐC
+    // =============================
     let query = `
-      SELECT 
-        p.MaPhong, p.TenPhong, p.MaLoai, p.Gia, p.HinhAnh, p.SucChua, 
-        p.TinhTrang, p.DanhGia, 
+      SELECT DISTINCT
+        p.MaPhong, p.TenPhong, p.MaLoai, p.Gia, p.HinhAnh, p.SucChua,
+        p.TinhTrang, p.DanhGia,
         lp.TenLoai, Xa.TenXa, t.TenTinh
       FROM Phong p
       JOIN LoaiPhong lp ON p.MaLoai = lp.MaLoai
@@ -38,44 +41,55 @@ exports.timKiemPhong = async (req, res) => {
       JOIN Tinh t ON Xa.MaTinh = t.MaTinh
       WHERE p.TinhTrang = 1
     `;
+
     const params = [];
 
-    if (maLoai && maLoai !== '') {
+    // =============================
+    // FILTER CƠ BẢN
+    // =============================
+    if (maLoai) {
       query += ` AND p.MaLoai = ?`;
       params.push(maLoai);
     }
-    if (maTinh && maTinh !== '') {
+
+    if (maTinh) {
       query += ` AND t.MaTinh = ?`;
       params.push(maTinh);
     }
-    if (maXa && maXa !== '') {
+
+    if (maXa) {
       query += ` AND Xa.MaXa = ?`;
       params.push(maXa);
     }
-    if (giaMin || giaMax) {
-      query += ` AND p.Gia BETWEEN ? AND ?`;
-      params.push(giaMin, giaMax);
+
+    query += ` AND p.Gia BETWEEN ? AND ?`;
+    params.push(giaMin, giaMax);
+
+    // =============================
+    // FILTER CHECKIN / CHECKOUT
+    // (chỉ áp dụng khi có đủ 2 giá trị)
+    // =============================
+    if (checkin && checkout) {
+      query += `
+        AND p.MaPhong NOT IN (
+          SELECT DISTINCT ctdp.MaPhong
+          FROM ChiTietDonDatPhong ctdp
+          JOIN DonDatPhong ddp ON ctdp.MaDon = ddp.MaDon
+          WHERE ddp.TrangThai <> 2
+            AND NOT (
+              ddp.NgayTra <= ? OR ddp.NgayNhan >= ?
+            )
+        )
+      `;
+      params.push(checkin, checkout);
     }
 
     query += ` ORDER BY p.Gia ASC`;
 
+    // =============================
+    // EXECUTE
+    // =============================
     const [rows] = await db.execute(query, params);
-
-    if (rows.length === 0) {
-      return res.render('khachhang/danhsachphong', {
-        phongList: [],
-        message: 'Không tìm thấy phòng phù hợp.',
-        query: req.query,
-        js: [
-          "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js",
-          "/js/home/timkiem.js"
-        ],
-        css: [
-            "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css",
-            "/css/home.css"
-        ]
-      });
-    }
 
     rows.forEach(p => {
       p.DanhGia = Number(p.DanhGia) || 0;
@@ -83,15 +97,15 @@ exports.timKiemPhong = async (req, res) => {
 
     res.render('khachhang/danhsachphong', {
       phongList: rows,
-      message: null,
+      message: rows.length === 0 ? 'Không tìm thấy phòng phù hợp.' : null,
       query: req.query,
       js: [
         "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js",
         "/js/home/timkiem.js"
       ],
       css: [
-          "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css",
-          "/css/home.css"
+        "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css",
+        "/css/home.css"
       ]
     });
 
@@ -106,8 +120,8 @@ exports.timKiemPhong = async (req, res) => {
         "/js/home/timkiem.js"
       ],
       css: [
-          "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css",
-          "/css/home.css"
+        "https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css",
+        "/css/home.css"
       ]
     });
   }

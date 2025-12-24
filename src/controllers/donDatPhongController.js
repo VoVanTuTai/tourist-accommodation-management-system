@@ -7,42 +7,51 @@ const KhachHang = require("../models/KhachHang");
 // =====================================================
 exports.danhSachDonDatPhong = async (req, res) => {
   try {
-    // ✅ Kiểm tra đăng nhập
+    // 1. Kiểm tra đăng nhập
     if (!req.session.user) return res.redirect("/khachhang/dangnhap");
+    
+    const idTaiKhoan = req.session.user.MaTaiKhoan;
+    console.log("🔍 Đang kiểm tra đơn cho MaTaiKhoan:", idTaiKhoan);
 
-    // 🔍 Lấy mã khách hàng từ bảng tài khoản
-    const [rows] = await db.execute(
+    // 2. Lấy MaKhachHang chuẩn từ DB dựa trên tài khoản đang đăng nhập
+    const [khRows] = await db.execute(
       "SELECT MaKhachHang FROM khachhang WHERE MaTaiKhoan = ?",
-      [req.session.user.MaTaiKhoan]
+      [idTaiKhoan]
     );
-    if (!rows.length) return res.redirect("/khachhang/dangnhap");
 
-    const maKhachHang = rows[0].MaKhachHang;
+    if (khRows.length === 0) {
+      console.error("❌ Tài khoản này chưa có thông tin trong bảng khách hàng");
+      return res.render("khachhang/danhsachdondatphong", {
+        donDatPhongList: [],
+        trangThai: req.query.trangthai || "",
+        user: req.session.user
+      });
+    }
+
+    const maKhachHangThuc = khRows[0].MaKhachHang;
     const trangThai = req.query.trangthai || "";
+    
+    console.log("🔍 MaKhachHang tìm thấy trong DB:", maKhachHangThuc);
 
-    // 🧾 Lấy danh sách đơn
-    const donDatPhongList = await DonDatPhong.getAllByUser(maKhachHang, trangThai);
+    // 3. Lấy danh sách đơn bằng MaKhachHang THẬT
+    const donDatPhongList = await DonDatPhong.getAllByUser(maKhachHangThuc, trangThai);
+    
+    console.log(`🔍 Kết quả: Tìm thấy ${donDatPhongList.length} đơn cho khách hàng #${maKhachHangThuc}`);
 
-    // 🗓️ Format ngày hiển thị
-    const formatted = donDatPhongList.map(d => ({
-      ...d,
-      NgayDat: d.NgayDat ? new Date(d.NgayDat) : null,
-      NgayNhan: d.NgayNhan ? new Date(d.NgayNhan) : null,
-      NgayTra: d.NgayTra ? new Date(d.NgayTra) : null,
-    }));
-
+    // 4. Trả về giao diện (Giữ nguyên phần render của bạn)
     res.render("khachhang/danhsachdondatphong", {
-      donDatPhongList: formatted,
+      donDatPhongList: donDatPhongList,
       trangThai,
+      user: req.session.user,
       js: ["/js/khachhang/danhsachdondatphong"],
       css: ["/css/danhsachdondatphong.css"],
     });
+
   } catch (err) {
-    console.error("❌ Lỗi khi tải danh sách đơn:", err);
-    res.status(500).send("Lỗi khi tải danh sách đơn đặt phòng!");
+    console.error("❌ Lỗi nghiêm trọng:", err);
+    res.status(500).send("Lỗi server!");
   }
 };
-
 // =====================================================
 // 📋 CHI TIẾT ĐƠN ĐẶT PHÒNG
 // =====================================================
@@ -51,45 +60,33 @@ exports.danhSachDonDatPhong = async (req, res) => {
 exports.chiTietDonDatPhong = async (req, res) => {
   try {
     const maDon = req.params.id;
-
-    // 🔹 Lấy thông tin đơn và phòng chính (1 đơn có thể gắn 1 phòng)
     const don = await DonDatPhong.getDonVaPhong(maDon);
+
+    // Nếu không tìm thấy đơn, chuyển hướng về danh sách và báo lỗi
     if (!don) {
-      return res.render("khachhang/chitietdondatphong", {
-        error: "Không tìm thấy đơn đặt phòng.",
-        don: null,
-        order: null,
-      });
+      req.flash("error", "Không tìm thấy thông tin đơn đặt phòng này.");
+      return res.redirect("/khachhang/don-dat-phong");
     }
 
-    // 🔹 Lấy thêm thông tin thanh toán / nhà cung cấp / địa chỉ (bạn đã có sẵn hàm này)
     const order = await DonDatPhong.getThongTinThanhToan(maDon);
-
-    // 🔹 Lấy đánh giá nếu có
     let danhGia = null;
-    try {
-      danhGia = await DanhGia.getByUserAndPhong(don.MaKhachHang, don.MaPhong);
-    } catch (err) {
-      console.warn("⚠️ Không lấy được đánh giá:", err.message);
+    if (don.MaPhong) {
+        danhGia = await DanhGia.getByUserAndPhong(don.MaKhachHang, don.MaPhong);
     }
 
-    // 🔹 Render view với đầy đủ dữ liệu
     res.render("khachhang/chitietdondatphong", {
-      error: null,
-      don,
-      order, // ✅ thêm biến order để EJS dùng cho thanh toán VNPay
+      don, // Lúc này chắc chắn 'don' không còn null
+      order,
       daDanhGia: !!danhGia,
       danhGia: danhGia || null,
       js: ["/js/khachhang/chitietdondatphong"],
       css: ["/css/chitietdondatphong.css"],
     });
-
   } catch (err) {
-    console.error("❌ Lỗi khi lấy chi tiết đơn:", err);
-    res.status(500).send("Lỗi khi tải chi tiết đơn đặt phòng.");
+    console.error("❌ Lỗi chi tiết đơn:", err);
+    res.status(500).send("Lỗi server");
   }
 };
-
 
 
 // =====================================================
