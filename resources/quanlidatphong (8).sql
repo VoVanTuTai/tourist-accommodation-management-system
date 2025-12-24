@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th12 06, 2025 lúc 07:18 AM
+-- Thời gian đã tạo: Th12 24, 2025 lúc 01:53 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.0.30
 
@@ -58,11 +58,31 @@ CREATE TABLE `chitietdondatphong` (
 --
 
 INSERT INTO `chitietdondatphong` (`MaCTDon`, `MaDon`, `MaPhong`, `Gia`) VALUES
-(16, 11, 27, 1200000),
-(17, 12, 28, 1800000),
-(18, 13, 29, 950000),
-(19, 14, 33, 1350000),
-(20, 15, 32, 2100000);
+(25, 48, 1, 100000),
+(26, 49, 2, 1500000),
+(27, 50, 3, 1000000),
+(28, 51, 4, 500000),
+(29, 52, 5, 700000),
+(30, 53, 7, 700000),
+(31, 54, 8, 1600000),
+(32, 55, 9, 2200000),
+(33, 58, 10, 100000),
+(34, 59, 14, 2222222),
+(35, 60, 19, 2000000),
+(36, 61, 27, 500000),
+(37, 62, 28, 100000),
+(38, 63, 29, 1500000),
+(39, 64, 30, 900000),
+(40, 65, 31, 100000),
+(41, 66, 33, 1800000),
+(56, 67, 2, 700000),
+(57, 68, 3, 700000),
+(58, 69, 28, 1500000),
+(59, 70, 32, 2200000),
+(60, 71, 29, 700000),
+(61, 72, 5, 900000),
+(62, 56, 19, 1200000),
+(63, 57, 31, 1500000);
 
 -- --------------------------------------------------------
 
@@ -74,6 +94,7 @@ CREATE TABLE `danhgia` (
   `MaDanhGia` int(11) NOT NULL,
   `MaKhachHang` int(11) DEFAULT NULL,
   `MaPhong` int(11) DEFAULT NULL,
+  `MaDon` int(11) DEFAULT NULL,
   `NgayDang` date DEFAULT NULL,
   `SoSao` tinyint(4) DEFAULT NULL,
   `NoiDung` text DEFAULT NULL,
@@ -84,30 +105,49 @@ CREATE TABLE `danhgia` (
 -- Đang đổ dữ liệu cho bảng `danhgia`
 --
 
-INSERT INTO `danhgia` (`MaDanhGia`, `MaKhachHang`, `MaPhong`, `NgayDang`, `SoSao`, `NoiDung`, `HinhAnh`) VALUES
-(1, 1, 1, '2025-10-06', 5, 'Phòng sạch sẽ, nhân viên thân thiện.', NULL),
-(2, 2, 2, '2025-10-07', 4, 'Ổn so với tầm giá.', NULL),
-(3, 3, 3, '2025-10-08', 5, 'Rất tiện nghi và yên tĩnh.', 'rv3.jpg'),
-(4, 4, 4, '2025-10-09', 4, 'Phù hợp gia đình.', NULL),
-(5, 5, 5, '2025-10-10', 3, 'Giá rẻ nhưng hơi ồn.', NULL),
-(6, 6, 6, '2025-10-11', 5, 'View biển cực đẹp.', 'rv6.jpg'),
-(7, 7, 7, '2025-10-12', 5, 'Dịch vụ tuyệt vời.', NULL),
-(8, 8, 8, '2025-10-13', 4, 'Suite rộng rãi, sang trọng.', 'rv8.jpg'),
-(9, 9, 9, '2025-10-14', 4, 'Bungalow ấm cúng.', NULL),
-(10, 10, 10, '2025-10-15', 5, 'Penthouse đỉnh cao!', 'rv10.jpg'),
-(11, 8, 1, '2025-10-08', 1, 'CŨng tạm', NULL),
-(12, 12, 3, '2025-10-22', 5, 'Phòng đẹp quá ', NULL),
-(13, 12, 5, '2025-10-30', 4, 'Giá rẻ nhưng hơi ồn.', NULL),
-(14, 12, 6, '2025-10-30', 3, 'đẹp', NULL),
-(15, 12, 2, '2025-10-30', 3, 'đẹp', NULL),
-(16, 8, 1, '2025-10-31', 2, 'nhu cut', NULL),
-(17, 12, 29, '2025-11-19', 5, 'Đẹp\r\n              \r\n              \r\n              \r\n              \r\n              \r\n              \r\n              ', '[\"1763533516269_Screenshot 2025-02-11 003133.png\",\"1763533516270_Screenshot 2025-02-12 232308.png\",\"1763533516416_Screenshot 2025-02-16 125847.png\"]');
+INSERT INTO `danhgia` (`MaDanhGia`, `MaKhachHang`, `MaPhong`, `MaDon`, `NgayDang`, `SoSao`, `NoiDung`, `HinhAnh`) VALUES
+(1, 1, 1, 48, '2025-10-06', 5, 'Phòng sạch sẽ, nhân viên thân thiện.', NULL),
+(2, 2, 2, 49, '2025-10-07', 4, 'Ổn so với tầm giá.', NULL),
+(4, 4, 4, 50, '2025-10-09', 4, 'Phù hợp gia đình.', NULL),
+(5, 5, 5, 51, '2025-10-10', 3, 'Giá rẻ nhưng hơi ồn.', NULL),
+(6, 6, 6, 52, '2025-10-11', 5, 'View biển cực đẹp.', 'rv6.jpg'),
+(7, 7, 7, 55, '2025-10-12', 5, 'Dịch vụ tuyệt vời.', NULL);
+
+-- --------------------------------------------------------
 
 --
--- Bẫy `danhgia`
+-- Cấu trúc bảng cho bảng `danhgia_cu`
+--
+
+CREATE TABLE `danhgia_cu` (
+  `MaDanhGia` int(11) NOT NULL,
+  `MaKhachHang` int(11) DEFAULT NULL,
+  `MaPhong` int(11) DEFAULT NULL,
+  `MaDon` int(11) DEFAULT NULL,
+  `NgayDang` date DEFAULT NULL,
+  `SoSao` tinyint(4) DEFAULT NULL,
+  `NoiDung` text DEFAULT NULL,
+  `HinhAnh` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `danhgia_cu`
+--
+
+INSERT INTO `danhgia_cu` (`MaDanhGia`, `MaKhachHang`, `MaPhong`, `MaDon`, `NgayDang`, `SoSao`, `NoiDung`, `HinhAnh`) VALUES
+(1, 1, 1, 48, '2025-10-06', 5, 'Phòng sạch sẽ, nhân viên thân thiện.', NULL),
+(2, 2, 2, 49, '2025-10-07', 4, 'Ổn so với tầm giá.', NULL),
+(3, 3, 3, 0, '2025-10-08', 5, 'Rất tiện nghi và yên tĩnh.', 'rv3.jpg'),
+(4, 4, 4, 50, '2025-10-09', 4, 'Phù hợp gia đình.', NULL),
+(5, 5, 5, 51, '2025-10-10', 3, 'Giá rẻ nhưng hơi ồn.', NULL),
+(6, 6, 6, 52, '2025-10-11', 5, 'View biển cực đẹp.', 'rv6.jpg'),
+(7, 7, 7, 55, '2025-10-12', 5, 'Dịch vụ tuyệt vời.', NULL);
+
+--
+-- Bẫy `danhgia_cu`
 --
 DELIMITER $$
-CREATE TRIGGER `tg_danhgia_delete` AFTER DELETE ON `danhgia` FOR EACH ROW UPDATE phong
+CREATE TRIGGER `tg_danhgia_delete` AFTER DELETE ON `danhgia_cu` FOR EACH ROW UPDATE phong
 SET DanhGia = (
   SELECT IFNULL(AVG(SoSao), 0) FROM danhgia WHERE MaPhong = OLD.MaPhong
 )
@@ -115,7 +155,7 @@ WHERE MaPhong = OLD.MaPhong
 $$
 DELIMITER ;
 DELIMITER $$
-CREATE TRIGGER `tg_danhgia_insert` AFTER INSERT ON `danhgia` FOR EACH ROW UPDATE phong
+CREATE TRIGGER `tg_danhgia_insert` AFTER INSERT ON `danhgia_cu` FOR EACH ROW UPDATE phong
 SET DanhGia = (
   SELECT AVG(SoSao) FROM danhgia WHERE MaPhong = NEW.MaPhong
 )
@@ -123,7 +163,7 @@ WHERE MaPhong = NEW.MaPhong
 $$
 DELIMITER ;
 DELIMITER $$
-CREATE TRIGGER `tg_danhgia_update` AFTER UPDATE ON `danhgia` FOR EACH ROW UPDATE phong
+CREATE TRIGGER `tg_danhgia_update` AFTER UPDATE ON `danhgia_cu` FOR EACH ROW UPDATE phong
 SET DanhGia = (
   SELECT AVG(SoSao) FROM danhgia WHERE MaPhong = NEW.MaPhong
 )
@@ -207,11 +247,42 @@ CREATE TABLE `dondatphong` (
 --
 
 INSERT INTO `dondatphong` (`MaDon`, `MaKhachHang`, `TenNguoiNhan`, `SDTNguoiNhan`, `NgayDat`, `NgayNhan`, `NgayTra`, `TrangThai`, `TongTien`, `LiDoHuy`) VALUES
-(11, 12, 'Nguyễn Văn A', '0912345611', '2025-10-10', '2025-10-15', '2025-10-17', 0, 1200000, 'Tìm được nơi khác tốt hơn'),
-(12, 12, 'Nguyễn Văn B', '0123452290', '2025-09-25', '2025-09-28', '2025-09-30', 1, 1800000, NULL),
-(13, 12, 'Võ Văn Tú Tài', '0341213412', '2025-09-10', '2025-09-12', '2025-09-14', 2, 950000, NULL),
-(14, 12, 'Nguyễn Văn C', '0345435333', '2025-08-20', '2025-08-22', '2025-08-24', 2, 1350000, NULL),
-(15, 12, 'Võ Văn Tú Tài', '0456347755', '2025-10-18', '2025-10-20', '2025-10-22', 3, 2100000, 'Thay đổi kế hoạch');
+(48, 1, 'Nguyễn Văn A', '0901000001', '2025-12-15', '2025-12-16 00:00:00', '2025-12-18 00:00:00', 1, 100000, NULL),
+(49, 1, 'Nguyễn Văn A', '0901000001', '2025-11-08', '2025-11-10 00:00:00', '2025-11-12 00:00:00', 0, 1500000, NULL),
+(50, 1, 'Nguyễn Văn A', '0901000001', '2025-12-24', '2025-01-25 00:00:00', '2025-01-25 00:00:00', 2, 1000000, NULL),
+(51, 17, 'Nguyễn Văn A', '0901000001', '2025-12-07', '2025-12-09 00:00:00', '2025-12-10 00:00:00', 1, 500000, NULL),
+(52, 2, 'Trần Thị B', '0901000002', '2025-11-22', '2025-11-22 00:00:00', '2025-11-23 00:00:00', 2, 700000, 'Khách hủy'),
+(53, 2, 'Trần Thị B', '0901000002', '2025-12-14', '2025-01-17 00:00:00', '2025-01-18 00:00:00', 0, 700000, NULL),
+(54, 7, 'Trần Thị B', '0901000002', '2025-10-26', '2026-10-28 00:00:00', '2026-10-29 00:00:00', 2, 1600000, 'Khách hủy'),
+(55, 2, 'Trần Thị B', '0901000002', '2025-11-30', '2025-11-30 00:00:00', '2025-11-30 00:00:00', 3, 2200000, NULL),
+(56, 3, 'Lê Văn C', '0901000003', '2025-11-14', '2025-11-15 00:00:00', '2025-11-16 00:00:00', 1, 1200000, NULL),
+(57, 3, 'Lê Văn C', '0901000003', '2025-11-27', '2025-11-28 00:00:00', '2025-11-30 00:00:00', 0, 1500000, NULL),
+(58, 3, 'Lê Văn C', '0901000003', '2025-12-09', '2025-12-29 00:00:00', '2025-12-31 00:00:00', 0, 100000, NULL),
+(59, 3, 'Lê Văn C', '0901000003', '2025-12-09', '2025-12-10 00:00:00', '2025-12-12 00:00:00', 1, 2222222, NULL),
+(60, 4, 'Phạm Thị D', '0901000004', '2025-11-05', '2025-11-06 00:00:00', '2025-11-07 00:00:00', 2, 2000000, NULL),
+(61, 4, 'Phạm Thị D', '0901000004', '2025-12-23', '2025-12-28 00:00:00', '2025-12-29 00:00:00', 2, 500000, NULL),
+(62, 17, 'Phạm Thị D', '0901000004', '2025-11-07', '2025-11-08 00:00:00', '2025-11-09 00:00:00', 0, 100000, 'Khách hủy'),
+(63, 4, 'Phạm Thị D', '0901000004', '2025-11-19', '2025-12-31 00:00:00', '2026-01-11 00:00:00', 3, 1500000, NULL),
+(64, 5, 'Hoàng Văn E', '0901000005', '2025-10-30', '2026-01-22 00:00:00', '2025-12-31 00:00:00', 2, 900000, NULL),
+(65, 16, 'Hoàng Văn E', '0901000005', '2025-11-11', '2026-01-05 00:00:00', '2026-01-21 00:00:00', 2, 100000, 'Khách hủy'),
+(66, 5, 'Hoàng Văn E', '0901000005', '2025-11-15', '2025-12-26 00:00:00', '2026-01-06 00:00:00', 3, 1800000, NULL),
+(67, 5, 'Hoàng Văn E', '0901000005', '2025-12-09', '2025-12-30 00:00:00', '2026-01-04 00:00:00', 0, 700000, NULL),
+(68, 6, 'Đỗ Thị F', '0901000006', '2025-11-22', '2026-01-06 00:00:00', '2026-01-17 00:00:00', 1, 700000, NULL),
+(69, 16, 'Đỗ Thị F', '0901000006', '2025-12-20', '2025-12-29 00:00:00', '2026-01-16 00:00:00', 1, 1500000, NULL),
+(70, 6, 'Đỗ Thị F', '0901000006', '2025-10-31', '2026-01-17 00:00:00', '2026-01-07 00:00:00', 0, 2200000, 'Khách hủy'),
+(71, 6, 'Đỗ Thị F', '0901000006', '2025-10-28', '2025-12-25 00:00:00', '2026-01-10 00:00:00', 0, 700000, NULL),
+(72, 7, 'Vũ Văn G', '0901000007', '2025-12-24', '2026-01-09 00:00:00', '2026-01-19 00:00:00', 1, 900000, 'Khách hủy'),
+(73, 7, 'Vũ Văn G', '0901000007', '2025-10-27', '2025-12-24 00:00:00', '2026-01-01 00:00:00', 3, 400000, NULL),
+(74, 7, 'Vũ Văn G', '0901000007', '2025-11-17', '2026-01-01 00:00:00', '2026-01-15 00:00:00', 1, 1230000, 'Khách hủy'),
+(75, 7, 'Vũ Văn G', '0901000007', '2025-11-16', '2026-01-13 00:00:00', '2026-01-12 00:00:00', 1, 100000, NULL),
+(76, 16, 'Tú Tài', '0318410003', '2025-12-02', '2026-01-16 00:00:00', '2026-01-19 00:00:00', 1, 1600000, NULL),
+(77, 16, 'Tú Tài', '0318410003', '2025-12-13', '2026-01-18 00:00:00', '2026-01-18 00:00:00', 0, 2200000, NULL),
+(78, 16, 'Tú Tài', '0318410003', '2025-12-15', '2026-01-04 00:00:00', '2026-01-07 00:00:00', 1, 100000, NULL),
+(79, 16, 'Tú Tài', '0318410003', '2025-11-14', '2026-01-11 00:00:00', '2026-01-01 00:00:00', 1, 1600000, NULL),
+(80, 17, 'Tuyền', '0123456789', '2025-12-07', '2025-12-24 00:00:00', '2026-01-04 00:00:00', 0, 400000, NULL),
+(81, 17, 'Tuyền', '0123456789', '2025-12-21', '2025-12-30 00:00:00', '2026-01-25 00:00:00', 0, 1800000, 'Khách hủy'),
+(82, 17, 'Tuyền', '0123456789', '2025-11-04', '2026-01-05 00:00:00', '2026-01-12 00:00:00', 0, 1000000, NULL),
+(83, 17, 'Tuyền', '0123456789', '2025-12-06', '2026-01-10 00:00:00', '2026-01-24 00:00:00', 0, 1200000, NULL);
 
 -- --------------------------------------------------------
 
@@ -237,18 +308,10 @@ INSERT INTO `khachhang` (`MaKhachHang`, `MaTaiKhoan`, `HoTen`, `Email`, `SoDienT
 (1, 3, 'Nguyễn Văn A', 'kh1@example.com', '0901000001', '1995-01-15', 'Nam'),
 (2, 13, 'Trần Thị B', 'kh2@example.com', '0901000002', '1996-02-20', 'Nữ'),
 (3, 6, 'Lê Văn C', 'kh3@example.com', '0901000003', '1994-03-10', 'Nam'),
-(4, NULL, 'Phạm Thị D', 'kh4@example.com', '0901000004', '1993-04-22', 'Nữ'),
-(5, NULL, 'Hoàng Văn E', 'kh5@example.com', '0901000005', '1992-05-05', 'Nam'),
-(6, NULL, 'Đỗ Thị F', 'kh6@example.com', '0901000006', '1997-06-18', 'Nữ'),
-(7, NULL, 'Vũ Văn G', 'kh7@example.com', '0901000007', '1991-07-30', 'Nam'),
-(8, NULL, 'Bùi Thị H', 'kh8@example.com', '0901000008', '1998-08-12', 'Nữ'),
-(9, NULL, 'Phan Văn I', 'kh9@example.com', '0901000009', '1990-09-25', 'Nam'),
-(10, NULL, 'Đặng Thị K', 'kh10@example.com', '0901000010', '1999-10-08', 'Nữ'),
-(11, NULL, 'Tuyền', 'abc123@gmail.com', '0123456780', '2025-10-01', 'Nam'),
-(12, 12, 'Tú Tài', 'tutai@gmail.com', '0909090909', '1111-01-01', 'Khác'),
-(13, NULL, 'Tuyn', 'cc@gmail.com', '0123456789', '2025-10-01', 'Nam'),
-(14, NULL, 'ngườ mới', 'nguoimoi@gmail.com', '0123481901', '1111-11-11', 'Nam'),
-(15, 14, 'trungtran', 'trantrung1@gmail.com', '0386861386', '2025-09-30', 'Nam'),
+(4, 4, 'Phạm Thị D', 'kh4@example.com', '0901000004', '1993-04-22', 'Nữ'),
+(5, 5, 'Hoàng Văn E', 'kh5@example.com', '0901000005', '1992-05-05', 'Nam'),
+(6, 7, 'Đỗ Thị F', 'kh6@example.com', '0901000006', '1997-06-18', 'Nữ'),
+(7, 8, 'Vũ Văn G', 'kh7@example.com', '0901000007', '1991-07-30', 'Nam'),
 (16, 15, 'Tú Tài', 'tutai2@gmail.com', '0318410003', '1111-11-11', 'Nam'),
 (17, 18, 'Tuyền', 'cobatuoc@gmail.com', '0123456789', '2025-10-16', 'Nữ');
 
@@ -304,16 +367,10 @@ CREATE TABLE `nhacungcap` (
 
 INSERT INTO `nhacungcap` (`MaNCC`, `MaTaiKhoan`, `TenNCC`, `ThongTinThanhToan`, `LoaiHinh`, `GiayPhepKD`, `TrangThai`, `MaDiaChi`, `LoaiNganHang`) VALUES
 (1, 12, 'Khách sạn Hoàng Gia', '0123456789', 'Khách sạn', 'GP01', 'Đang hoạt động', 1, 'Vietcombank'),
-(2, 2, 'Resort Biển Xanh', 'Techcombank - 0234567890', 'Resort', 'GP02', 'Đã khóa', 2, NULL),
-(3, 3, 'Hotel Central', 'ACB - 0345678901', 'Khách sạn', 'GP03', 'Đã khóa', 4, NULL),
-(4, 4, 'Homestay Hòa Bình', 'MB Bank - 0456789012', 'Homestay', 'GP04', 'Đang hoạt động', 3, NULL),
-(5, 5, 'Villa Đại Dương', 'Agribank - 0567890123', 'Villa', 'GP05', 'Đang hoạt động', 5, NULL),
-(6, 6, 'Hotel Dĩ An', 'BIDV - 0678901234', 'Khách sạn', 'GP06', 'Đã khóa', 6, NULL),
-(7, 7, 'Resort Nha Trang Bay', 'VPBank - 0789012345', 'Resort', 'GP07', 'Chờ Duyệt', 7, NULL),
-(8, 8, 'Sunrise Hotel', 'VietinBank - 0890123456', 'Khách sạn', 'GP08', 'Chờ Duyệt', 8, NULL),
+(2, 11, 'Resort Biển Xanh', 'Techcombank - 0234567890', 'Resort', 'GP02', 'Đã khóa', 2, NULL),
 (9, 9, 'Highland Retreat', 'Sacombank - 0901234567', 'Resort', 'GP09', 'Đang hoạt động', 9, NULL),
 (10, 10, 'Lâm Đồng Villa', 'ACB - 0912345678', 'Villa', 'GP10', 'Đang hoạt động', 10, NULL),
-(11, 17, 'Nguyen Van Tuan', '123456789', 'NhaNghi', '3000_secure_1.png', 'Chờ Duyệt', 23, 'VCB');
+(11, 17, 'hotel promax', '123456789', 'NhaNghi', '3000_secure_1.png', 'Chờ Duyệt', 23, 'VCB');
 
 -- --------------------------------------------------------
 
@@ -336,14 +393,11 @@ CREATE TABLE `phanhoi` (
 INSERT INTO `phanhoi` (`MaPh`, `NoiDung`, `NgayPh`, `MaDanhGia`, `MaNhaCungCap`) VALUES
 ('PH001', 'Cảm ơn bạn đã đánh giá!', '2025-10-06', 1, 1),
 ('PH002', 'Rất vui được phục vụ bạn.', '2025-10-07', 2, 2),
-('PH003', 'Cảm ơn góp ý, chúng tôi sẽ cải thiện.', '2025-10-08', 3, 3),
-('PH004', 'Hân hạnh đón tiếp gia đình bạn.', '2025-10-09', 4, 4),
-('PH005', 'Xin lỗi về sự bất tiện, chúng tôi sẽ xử lý.', '2025-10-10', 5, 5),
-('PH006', 'Cảm ơn bạn đã yêu thích view biển.', '2025-10-11', 6, 6),
-('PH007', 'Rất cảm kích phản hồi tích cực.', '2025-10-12', 7, 7),
-('PH008', 'Cảm ơn, mong được gặp lại bạn.', '2025-10-13', 8, 8),
-('PH009ưefee', 'Trân trọng phản hồi của bạn.', '2025-10-14', 9, 9),
-('PH010', 'Xin cảm ơn và hẹn gặp lại.', '2025-10-15', 17, 1);
+('PH003', 'Cảm ơn góp ý, chúng tôi sẽ cải thiện.', '2025-10-08', 3, NULL),
+('PH004', 'Hân hạnh đón tiếp gia đình bạn.', '2025-10-09', 4, NULL),
+('PH005', 'Xin lỗi về sự bất tiện, chúng tôi sẽ xử lý.', '2025-10-10', 5, NULL),
+('PH006', 'Cảm ơn bạn đã yêu thích view biển.', '2025-10-11', 6, NULL),
+('PH007', 'Rất cảm kích phản hồi tích cực.', '2025-10-12', 7, NULL);
 
 -- --------------------------------------------------------
 
@@ -370,27 +424,27 @@ CREATE TABLE `phong` (
 --
 
 INSERT INTO `phong` (`MaPhong`, `TenPhong`, `MaLoai`, `Gia`, `SucChua`, `TinhTrang`, `HinhAnh`, `MoTa`, `MaDiaChi`, `DanhGia`, `MaNhaCungCap`) VALUES
-(1, 'Phòng 2 người', 7, 100000, 2, 2, '[\"1762662549635-868056217.png\",\"1762662549644-880707914.png\"]', 'mô tả mới sửa', 1, 2.66667, 1),
-(2, 'phòng xịn', 2, 700000, 2, 1, 'unnamed.jpg', NULL, 2, 3.5, 2),
-(3, 'phòng xịn', 3, 1200000, 2, 1, 'unnamed.jpg', NULL, 3, 5, 3),
-(4, 'phòng xịn', 4, 900000, 4, 1, 'unnamed.jpg', NULL, 4, 5, 4),
-(5, 'phòng xịn', 5, 400000, 6, 1, 'unnamed.jpg', NULL, 5, 3.5, 5),
-(6, 'phòng xịn', 6, 1500000, 2, 1, 'unnamed.jpg', NULL, 6, 4, 6),
-(7, 'phòng xịn', 7, 1800000, 2, 1, 'unnamed.jpg', NULL, 7, 5, 7),
-(8, 'phòng xịn', 8, 1600000, 2, 1, 'unnamed.jpg', NULL, 8, 5, 8),
-(9, 'phòng xịn', 9, 2000000, 3, 1, 'unnamed.jpg', NULL, 9, 5, 9),
-(10, 'phòng xịn', 10, 2200000, 2, 1, 'unnamed.jpg', NULL, 10, 5, 10),
-(13, 'Phòng Deluxe Twin', 5, 800000, 2, 1, 'unnamed.jpg', NULL, 11, 5, 5),
-(14, 'Phòng Suite Hạng Sang', 5, 1200000, 3, 1, 'unnamed.jpg', NULL, 12, 5, 5),
-(19, 'Phòng mới 2', 6, 22222222, 2, 2, '[\"1762593059784-695741525.png\",\"1762593059786-655338892.png\"]', NULL, 20, 5, 1),
-(22, 'Phòng mớ nhất', 7, 100000, 2, 2, '[\"1762314712108-530438905-3000_secure_1.png\"]', 'Mô tả cho phòng', 25, 5, 1),
-(27, 'jqsdnwiqdww', 5, 1000000, 3, 0, '[\"1762479573167-889384706.png\",\"1762479573172-437286917.png\",\"1762479573177-552756191.png\"]', 'ưqoknxqoxwoqoqxnnoq', 30, 5, 1),
-(28, 'phòng xịn 123122', 3, 100000, 1, 1, '[\"1762590796874-440909202.png\",\"1762590796878-711896067.png\",\"1762590796879-453484738.png\"]', 'scdfsaf', 31, 5, 1),
-(29, 'phòng xịn 123122', 3, 100000, 1, 1, '[\"1762590883729-180072179.png\",\"1762590883729-275960578.png\",\"1762590883731-870233502.png\"]', 'scdfsaf', 32, 5, 1),
-(30, 'phòng xịn 123122', 3, 100000, 1, 1, '[\"1762590966086-33294388.png\",\"1762590966087-284334018.png\",\"1762590966090-711810108.png\",\"1762590966093-699439204.png\",\"1762590966101-680327853.png\"]', 'scdfsaf', 33, 5, 1),
-(31, 'phòng xịn 123122', 3, 100000, 1, 1, '[\"1762591459198-654937712.png\"]', 'scdfsaf', 34, 5, 1),
-(32, 'phòng xịn 123122', 3, 100000, 1, 1, '[\"1762591619890-536775411.png\"]', 'scdfsaf', 35, 5, 1),
-(33, 'phòng xịn 123122', 3, 100000, 1, 1, '[\"1762591987206-428571613.png\"]', 'scdfsaf', 36, 5, 1);
+(1, 'Phòng 2 người', 7, 100000, 2, 2, '[\"images (1).jpg\",\"images (10).jpg\"]', 'mô tả mới sửa', 1, 5, 1),
+(2, 'phòng xịn', 2, 700000, 2, 1, '[\"images (11).jpg\"]', NULL, 2, 4, 2),
+(3, 'phòng xịn', 3, 1200000, 2, 1, '[\"images (12).jpg\"]', NULL, 3, 5, 9),
+(4, 'phòng xịn', 4, 900000, 4, 1, '[\"images (13).jpg\"]', NULL, 4, 4, 10),
+(5, 'phòng xịn', 5, 400000, 6, 1, '[\"images (14).jpg\"]', NULL, 5, 3, 11),
+(6, 'phòng xịn', 6, 1500000, 2, 1, '[\"images (15).jpg\"]', NULL, 6, 5, 1),
+(7, 'phòng xịn', 7, 1800000, 2, 1, '[\"images (16).jpg\"]', NULL, 7, 5, 2),
+(8, 'phòng xịn', 8, 1600000, 2, 1, '[\"images (17).jpg\"]', NULL, 8, 5, 10),
+(9, 'phòng xịn', 9, 2000000, 3, 1, '[\"images (18).jpg\"]', NULL, 9, 5, 9),
+(10, 'phòng xịn', 10, 2200000, 2, 1, '[\"images (19).jpg\"]', NULL, 10, 5, 10),
+(13, 'Phòng Deluxe Twin', 5, 800000, 2, 1, '[\"images (20).jpg\"]', NULL, 11, 5, 11),
+(14, 'Phòng Suite Hạng Sang', 5, 1200000, 3, 1, '[\"images (2).jpg\"]', NULL, 12, 5, 1),
+(19, 'Phòng mới 2', 6, 2222222, 2, 2, '[\"images (21).jpg\",\"images (22).jpg\"]', NULL, 20, 5, 2),
+(22, 'Phòng mớ nhất', 7, 700000, 0, 2, '[\"images (22).jpg\"]', 'Mô tả cho phòng', 25, 5, 9),
+(27, 'jqsdnwiqdww', 5, 1000000, 3, 0, '[\"images (23).jpg\",\"images (4).jpg\",\"images (7).jpg\"]', 'ưqoknxqoxwoqoqxnnoq', 30, 5, 11),
+(28, 'phòng xịn 123122', 3, 500000, 1, 1, '[\"images (23).jpg\",\"images (21).jpg\",\"images (25).jpg\"]', 'scdfsaf', 31, 5, 1),
+(29, 'phòng xịn 123122', 3, 100000, 1, 1, '[\"images (16).jpg\",\"images (3).jpg\",\"images (5).jpg\"]', 'scdfsaf', 32, 5, 2),
+(30, 'phòng xịn 123122', 3, 100000, 1, 1, '[\"images (9).jpg\",\"images (8).jpg\",\"images (4).jpg\",\"images (26).jpg\",\"images (6).jpg\"]', 'scdfsaf', 33, 5, 9),
+(31, 'phòng xịn 123122', 3, 1230000, 1, 1, '[\"images (26).jpg\"]', 'scdfsaf', 34, 5, 10),
+(32, 'phòng xịn 123122', 3, 100000, 1, 1, '[\"images (28).jpg\"]', 'scdfsaf', 35, 5, 11),
+(33, 'phòng xịn 123122', 3, 1500000, 1, 1, '[\"images (2).jpg\"]', 'scdfsaf', 36, 5, 1);
 
 -- --------------------------------------------------------
 
@@ -409,9 +463,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`session_id`, `expires`, `data`) VALUES
-('03Uw00lwUwWGhVYFNcHyexAaEEmD5CJi', 1765006859, '{\"cookie\":{\"originalMaxAge\":7200000,\"expires\":\"2025-12-06T07:40:59.498Z\",\"httpOnly\":true,\"path\":\"/\"},\"flash\":{}}'),
-('Fk1NfcZEI9Xe4Unl_XNbsKKNOOMqk54f', 1765012592, '{\"cookie\":{\"originalMaxAge\":false,\"expires\":false,\"httpOnly\":true,\"path\":\"/\"},\"flash\":{},\"user\":{\"MaTaiKhoan\":12,\"TaiKhoan\":\"tutai@gmail.com\",\"PhanQuyen\":\"NhaCungCap\",\"TrangThai\":\"HoatDong\",\"MaNCC\":1,\"TenNCC\":\"Khách sạn Hoàng Gia\"}}'),
-('Zsm_BbVBhbW8BaqZxPA-p_0xcUYQKjgG', 1765088186, '{\"cookie\":{\"originalMaxAge\":false,\"expires\":false,\"httpOnly\":true,\"path\":\"/\"},\"flash\":{},\"user\":{\"MaTaiKhoan\":12,\"TaiKhoan\":\"tutai@gmail.com\",\"PhanQuyen\":\"NhaCungCap\",\"TrangThai\":\"HoatDong\",\"MaNCC\":1,\"TenNCC\":\"Khách sạn Hoàng Gia\"}}');
+('GrBoanhcJJst6zpiUqhw0E2Es9DZLpG7', 1766666078, '{\"cookie\":{\"originalMaxAge\":false,\"expires\":false,\"httpOnly\":true,\"path\":\"/\"},\"flash\":{},\"user\":{\"MaTaiKhoan\":19,\"TaiKhoan\":\"admin@gmail.com\",\"PhanQuyen\":\"Admin\",\"TrangThai\":\"HoatDong\",\"HoTen\":\"\",\"SoDienThoai\":\"\"}}');
 
 -- --------------------------------------------------------
 
@@ -433,23 +485,22 @@ CREATE TABLE `taikhoan` (
 --
 
 INSERT INTO `taikhoan` (`MaTaiKhoan`, `TaiKhoan`, `MatKhau`, `NgayLap`, `PhanQuyen`, `TrangThai`) VALUES
-(1, 'admin1@gmail.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:02:19', 'Admin', 'HoatDong'),
-(2, 'admin2@gmail.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:02:19', 'Admin', 'HoatDong'),
 (3, 'kh1@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong'),
 (4, 'kh2@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong'),
 (5, 'kh3@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong'),
 (6, 'kh4@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong'),
 (7, 'kh5@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong'),
 (8, 'kh6@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'KhachHang', 'HoatDong'),
-(9, 'kh7@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'NhaCungCap', 'HoatDong'),
-(10, 'kh8@example.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'NhaCungCap', 'HoatDong'),
-(11, 'abc123@gmail.com', '$2b$10$.j/ciBEvJN2lBN97REPI8uVvX.ZSmFakHE6rf/uAa5OtvARZZySty', '2025-10-21 05:52:30', 'KhachHang', 'HoatDong'),
+(9, 'tvt@gmail.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'NhaCungCap', 'HoatDong'),
+(10, 'acc@gmail.com', '$2a$10$9f8dWq7gDEzE/fakehashedpwdexample', '2025-10-20 10:46:27', 'NhaCungCap', 'HoatDong'),
+(11, 'abc123@gmail.com', '$2b$10$.j/ciBEvJN2lBN97REPI8uVvX.ZSmFakHE6rf/uAa5OtvARZZySty', '2025-10-21 05:52:30', 'NhaCungCap', 'HoatDong'),
 (12, 'tutai@gmail.com', '$2b$10$Z2t9fzKHiZQZoUTsUPJY2uVo4xrCo06UWmCiwKHDuRC4zzV0IrRpm', '2025-10-22 00:00:04', 'NhaCungCap', 'HoatDong'),
 (13, 'cc@gmail.com', '$2b$10$dFZzbNEdicLY.l42EMe/nO6XbZXDo2Bx9aYgxNQU8bYktAb..WEdu', '2025-10-23 09:35:32', 'KhachHang', 'Khoa'),
 (14, 'trantrung1@gmail.com', '$2b$10$H6GBAUdMEDuBYwTmJpEXeeqVcOmCIDBk.nVnbtroneyFA6q74OAWi', '2025-10-30 08:11:17', 'Admin', 'HoatDong'),
 (15, 'tutai2@gmail.com', '$2b$10$MbMsJQsA3xn.TP3.JbrWj.FKMynAW5W9rbESdjdWn7vEMFRlyIF22', '2025-10-30 08:40:24', 'KhachHang', 'HoatDong'),
 (17, 'tuanvan@gmail.com', '$2b$10$wxbN7dnxX/uRK4q4XS2JxeJ42Z9EAbjy8179DxwRxA8GoILGFg.4C', '2025-10-30 08:45:04', 'NhaCungCap', 'ChoDuyet'),
-(18, 'cobatuoc@gmail.com', '$2b$10$DNOXpTT8BbygAAsaV5tiWe2of3dQwo6kqMqMp0q.oWLSvtZQhqcgS', '2025-10-30 08:56:13', 'KhachHang', 'Khoa');
+(18, 'cobatuoc@gmail.com', '$2b$10$DNOXpTT8BbygAAsaV5tiWe2of3dQwo6kqMqMp0q.oWLSvtZQhqcgS', '2025-10-30 08:56:13', 'KhachHang', 'Khoa'),
+(19, 'admin@gmail.com', '$2b$10$dt3KJ8/EM.zXG7Gh2DdeAeav9T1cBLZabTCJ7utRB1pApLlEgyULe', '2025-12-24 08:17:44', 'Admin', 'HoatDong');
 
 -- --------------------------------------------------------
 
@@ -469,7 +520,25 @@ CREATE TABLE `thanhtoan` (
 --
 
 INSERT INTO `thanhtoan` (`MaThanhToan`, `MaDon`, `NgayTT`, `SoTien`) VALUES
-(20, 13, '2025-11-16', 950000);
+(21, 48, '2025-12-18', 100000),
+(22, 49, '2025-11-12', 1500000),
+(23, 50, '2025-01-25', 1000000),
+(24, 51, '2025-12-10', 500000),
+(25, 53, '2025-01-18', 700000),
+(26, 55, '2025-11-30', 2200000),
+(27, 56, '2025-11-16', 1200000),
+(28, 57, '2025-11-30', 1500000),
+(29, 58, '2025-12-31', 100000),
+(30, 59, '2025-12-12', 2222222),
+(31, 60, '2025-11-07', 2000000),
+(32, 61, '2025-12-29', 500000),
+(33, 63, '2026-01-11', 1500000),
+(34, 64, '2025-12-31', 900000),
+(35, 66, '2026-01-06', 1800000),
+(36, 67, '2026-01-04', 700000),
+(37, 68, '2026-01-17', 700000),
+(38, 69, '2026-01-16', 1500000),
+(39, 71, '2026-01-10', 700000);
 
 -- --------------------------------------------------------
 
@@ -501,6 +570,61 @@ INSERT INTO `tinh` (`MaTinh`, `TenTinh`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Cấu trúc đóng vai cho view `view_ncc_doanhthu`
+-- (See below for the actual view)
+--
+CREATE TABLE `view_ncc_doanhthu` (
+`MaNCC` int(11)
+,`NAM` int(4)
+,`THANG` int(2)
+,`DOANHTHU` double
+);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc đóng vai cho view `view_ncc_dondatphong`
+-- (See below for the actual view)
+--
+CREATE TABLE `view_ncc_dondatphong` (
+`MaNCC` int(11)
+,`TRANGTHAI` tinyint(4)
+,`SOLUONG` bigint(21)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc đóng vai cho view `view_ncc_phong`
+-- (See below for the actual view)
+--
+CREATE TABLE `view_ncc_phong` (
+`MaNCC` int(11)
+,`LOAIPHONG` int(11)
+,`TINHTRANG` tinyint(4)
+,`SOLUONG` bigint(21)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc đóng vai cho view `v_danhgia_hople`
+-- (See below for the actual view)
+--
+CREATE TABLE `v_danhgia_hople` (
+`MaDanhGia` int(11)
+,`MaKhachHang` int(11)
+,`MaPhong` int(11)
+,`MaDon` int(11)
+,`NgayDang` date
+,`SoSao` tinyint(4)
+,`NoiDung` text
+,`HinhAnh` varchar(255)
+);
+
+-- --------------------------------------------------------
+
+--
 -- Cấu trúc bảng cho bảng `xa`
 --
 
@@ -526,6 +650,42 @@ INSERT INTO `xa` (`MaXa`, `TenXa`, `MaTinh`) VALUES
 ('X09', 'Phường Tân Lập', 'T09'),
 ('X10', 'Phường 9', 'T10');
 
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc cho view `view_ncc_doanhthu`
+--
+DROP TABLE IF EXISTS `view_ncc_doanhthu`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `view_ncc_doanhthu`  AS SELECT `n`.`MaNCC` AS `MaNCC`, year(`d`.`NgayDat`) AS `NAM`, month(`d`.`NgayDat`) AS `THANG`, sum(`d`.`TongTien`) AS `DOANHTHU` FROM (((`dondatphong` `d` left join `chitietdondatphong` `c` on(`d`.`MaDon` = `c`.`MaDon`)) left join `phong` `p` on(`c`.`MaPhong` = `p`.`MaPhong`)) left join `nhacungcap` `n` on(`p`.`MaNhaCungCap` = `n`.`MaNCC`)) WHERE `d`.`TrangThai` = 2 GROUP BY `n`.`MaNCC`, year(`d`.`NgayDat`), month(`d`.`NgayDat`) ;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc cho view `view_ncc_dondatphong`
+--
+DROP TABLE IF EXISTS `view_ncc_dondatphong`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `view_ncc_dondatphong`  AS SELECT `n`.`MaNCC` AS `MaNCC`, `d`.`TrangThai` AS `TRANGTHAI`, count(`d`.`MaDon`) AS `SOLUONG` FROM (((`dondatphong` `d` left join `chitietdondatphong` `c` on(`d`.`MaDon` = `c`.`MaDon`)) left join `phong` `p` on(`c`.`MaPhong` = `p`.`MaPhong`)) left join `nhacungcap` `n` on(`p`.`MaNhaCungCap` = `n`.`MaNCC`)) GROUP BY `n`.`MaNCC`, `d`.`TrangThai` ;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc cho view `view_ncc_phong`
+--
+DROP TABLE IF EXISTS `view_ncc_phong`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `view_ncc_phong`  AS SELECT `n`.`MaNCC` AS `MaNCC`, `p`.`MaLoai` AS `LOAIPHONG`, `p`.`TinhTrang` AS `TINHTRANG`, count(`p`.`MaPhong`) AS `SOLUONG` FROM (`phong` `p` left join `nhacungcap` `n` on(`p`.`MaNhaCungCap` = `n`.`MaNCC`)) GROUP BY `n`.`MaNCC`, `p`.`MaLoai`, `p`.`TinhTrang` ;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc cho view `v_danhgia_hople`
+--
+DROP TABLE IF EXISTS `v_danhgia_hople`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_danhgia_hople`  AS SELECT `dg`.`MaDanhGia` AS `MaDanhGia`, `dg`.`MaKhachHang` AS `MaKhachHang`, `dg`.`MaPhong` AS `MaPhong`, `dg`.`MaDon` AS `MaDon`, `dg`.`NgayDang` AS `NgayDang`, `dg`.`SoSao` AS `SoSao`, `dg`.`NoiDung` AS `NoiDung`, `dg`.`HinhAnh` AS `HinhAnh` FROM (`danhgia` `dg` join `dondatphong` `d` on(`dg`.`MaDon` = `d`.`MaDon`)) ;
+
 --
 -- Chỉ mục cho các bảng đã đổ
 --
@@ -549,6 +709,15 @@ ALTER TABLE `chitietdondatphong`
 -- Chỉ mục cho bảng `danhgia`
 --
 ALTER TABLE `danhgia`
+  ADD PRIMARY KEY (`MaDanhGia`),
+  ADD KEY `fk_dg_kh` (`MaKhachHang`),
+  ADD KEY `fk_dg_phong` (`MaPhong`),
+  ADD KEY `fk_danhgia_dondatphong_moi` (`MaDon`);
+
+--
+-- Chỉ mục cho bảng `danhgia_cu`
+--
+ALTER TABLE `danhgia_cu`
   ADD PRIMARY KEY (`MaDanhGia`),
   ADD KEY `fk_dg_kh` (`MaKhachHang`),
   ADD KEY `fk_dg_phong` (`MaPhong`);
@@ -653,12 +822,18 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT cho bảng `chitietdondatphong`
 --
 ALTER TABLE `chitietdondatphong`
-  MODIFY `MaCTDon` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `MaCTDon` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 
 --
 -- AUTO_INCREMENT cho bảng `danhgia`
 --
 ALTER TABLE `danhgia`
+  MODIFY `MaDanhGia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT cho bảng `danhgia_cu`
+--
+ALTER TABLE `danhgia_cu`
   MODIFY `MaDanhGia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
@@ -671,13 +846,13 @@ ALTER TABLE `diachi`
 -- AUTO_INCREMENT cho bảng `dondatphong`
 --
 ALTER TABLE `dondatphong`
-  MODIFY `MaDon` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `MaDon` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=111;
 
 --
 -- AUTO_INCREMENT cho bảng `khachhang`
 --
 ALTER TABLE `khachhang`
-  MODIFY `MaKhachHang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `MaKhachHang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT cho bảng `loaiphong`
@@ -701,13 +876,13 @@ ALTER TABLE `phong`
 -- AUTO_INCREMENT cho bảng `taikhoan`
 --
 ALTER TABLE `taikhoan`
-  MODIFY `MaTaiKhoan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `MaTaiKhoan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT cho bảng `thanhtoan`
 --
 ALTER TABLE `thanhtoan`
-  MODIFY `MaThanhToan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `MaThanhToan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
@@ -730,6 +905,13 @@ ALTER TABLE `chitietdondatphong`
 -- Các ràng buộc cho bảng `danhgia`
 --
 ALTER TABLE `danhgia`
+  ADD CONSTRAINT `fk_danhgia_dondatphong` FOREIGN KEY (`MaDon`) REFERENCES `dondatphong` (`MaDon`),
+  ADD CONSTRAINT `fk_danhgia_dondatphong_moi` FOREIGN KEY (`MaDon`) REFERENCES `dondatphong` (`MaDon`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `danhgia_cu`
+--
+ALTER TABLE `danhgia_cu`
   ADD CONSTRAINT `fk_dg_kh` FOREIGN KEY (`MaKhachHang`) REFERENCES `khachhang` (`MaKhachHang`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_dg_phong` FOREIGN KEY (`MaPhong`) REFERENCES `phong` (`MaPhong`) ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -738,6 +920,12 @@ ALTER TABLE `danhgia`
 --
 ALTER TABLE `diachi`
   ADD CONSTRAINT `fk_diachi_xa` FOREIGN KEY (`MaXa`) REFERENCES `xa` (`MaXa`) ON UPDATE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `dondatphong`
+--
+ALTER TABLE `dondatphong`
+  ADD CONSTRAINT `fk_dondatphong_khachhang` FOREIGN KEY (`MaKhachHang`) REFERENCES `khachhang` (`MaKhachHang`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `khachhang`
@@ -756,7 +944,7 @@ ALTER TABLE `nhacungcap`
 -- Các ràng buộc cho bảng `phanhoi`
 --
 ALTER TABLE `phanhoi`
-  ADD CONSTRAINT `fk_phanhoi_danhgia` FOREIGN KEY (`MaDanhGia`) REFERENCES `danhgia` (`MaDanhGia`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_phanhoi_danhgia` FOREIGN KEY (`MaDanhGia`) REFERENCES `danhgia_cu` (`MaDanhGia`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_phanhoi_ncc` FOREIGN KEY (`MaNhaCungCap`) REFERENCES `nhacungcap` (`MaNCC`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
@@ -782,41 +970,3 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
-
---
--- Tạo VIEW nhà cung cấp và 
---
-CREATE VIEW VIEW_NCC_PHONG (MaNCC, LOAIPHONG, TINHTRANG, SOLUONG) AS 
-SELECT n.MaNCC, p.MaLoai AS LOAIPHONG, p.TINHTRANG, COUNT(p.MAPHONG) AS SOLUONG
-FROM phong p 
-LEFT JOIN nhacungcap n ON p.MaNhaCungCap = n.MaNCC 
-GROUP BY n.MaNCC, p.MaLoai, p.TINHTRANG;
-
--- DROP VIEW NCC_PHONG;
-
---
--- Tạo VIEW doanh thu nhà cung cấp
---
-CREATE VIEW VIEW_NCC_DOANHTHU (MaNCC, NAM, THANG, DOANHTHU) AS 
-SELECT N.MANCC, YEAR(D.NgayDat) AS NAM, MONTH(D.NgayDat) AS THANG, SUM(D.TongTien) AS DoanhThu FROM DONDATPHONG D 
-LEFT JOIN CHITIETDONDATPHONG C ON D.MADON = C.MADON
-LEFT JOIN PHONG P ON C.MAPHONG = P.MAPHONG
-LEFT JOIN NHACUNGCAP N ON P.MANHACUNGCAP = N.MANCC
-WHERE D.TRANGTHAI = 2
-GROUP BY N.MANCC, YEAR(D.NgayDat), MONTH(D.NgayDat);
-
--- DROP VIEW VIEW_NCC_DOANHTHU;
-
---
--- Tạo VIEW don dat phong
---
-CREATE VIEW VIEW_NCC_DONDATPHONG (MaNCC, TRANGTHAI, SOLUONG) AS 
-SELECT N.MANCC, D.TRANGTHAI, COUNT(D.MADON) AS SOLUONG FROM DONDATPHONG D 
-LEFT JOIN CHITIETDONDATPHONG C ON D.MADON = C.MADON
-LEFT JOIN PHONG P ON C.MAPHONG = P.MAPHONG
-LEFT JOIN NHACUNGCAP N ON P.MANHACUNGCAP = N.MANCC
-GROUP BY N.MANCC, D.TRANGTHAI;
-
--- DROP VIEW VIEW_NCC_DONDATPHONG;
--- SELECT TRANGTHAI, SOLUONG FROM VIEW_NCC_DONDATPHONG
