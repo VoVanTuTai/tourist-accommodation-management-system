@@ -15,32 +15,32 @@ exports.getRoomById = async (maPhong) => {
   return rows[0];
 };
 
-// ===== Tạo đơn đặt phòng =====
+// ===== Tạo đơn đặt phòng (SỬA ĐỂ CHỐNG LỖI UNDEFINED) =====
 exports.createOrder = async (payload) => {
-  // SQL khớp 100% với bảng dondatphong (ảnh bcf1c2.jpg)
   const sql = `
     INSERT INTO dondatphong 
     (MaKhachHang, TenNguoiNhan, SDTNguoiNhan, NgayDat, NgayNhan, NgayTra, TrangThai, TongTien) 
     VALUES (?, ?, ?, NOW(), ?, ?, ?, ?)
   `;
 
+  // ÉP KIỂU TẤT CẢ VỀ NULL NẾU LÀ UNDEFINED
   const params = [
-    payload.MaKhachHang,      // ID từ session (19)
-    payload.TenNguoiNhan, 
-    payload.SDTNguoiNhan, 
-    payload.NgayNhan, 
-    payload.NgayTra, 
-    payload.TrangThai, 
-    payload.TongTien
+    payload.MaKhachHang !== undefined ? payload.MaKhachHang : null,
+    payload.TenNguoiNhan !== undefined ? payload.TenNguoiNhan : null,
+    payload.SDTNguoiNhan !== undefined ? payload.SDTNguoiNhan : null,
+    payload.NgayNhan !== undefined ? payload.NgayNhan : null,
+    payload.NgayTra !== undefined ? payload.NgayTra : null,
+    payload.TrangThai !== undefined ? payload.TrangThai : 'Đã đặt',
+    payload.TongTien !== undefined ? payload.TongTien : 0
   ];
 
-  console.log("🟢 Dữ liệu chuẩn bị lưu xuống MySQL:", params);
+  console.log("🟢 Dữ liệu chuẩn bị lưu xuống MySQL (đã xử lý null):", params);
 
   try {
     const [result] = await db.execute(sql, params);
     return result.insertId;
   } catch (err) {
-    console.error("❌ Lỗi MySQL chi tiết:", err.sqlMessage);
+    console.error("❌ Lỗi MySQL chi tiết:", err.sqlMessage || err.message);
     throw err;
   }
 };

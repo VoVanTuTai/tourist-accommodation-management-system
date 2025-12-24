@@ -13,19 +13,33 @@
 
           <div class="card shadow-sm border-0 rounded-4 mb-4">
             <div class="card-body p-4">
-              <h5 class="fw-bold mb-4 text-primary"><i class="fas fa-calendar-alt me-2"></i>Thời gian lưu trú</h5>
+              <h5 class="fw-bold mb-4 text-primary"><i class="fas fa-calendar-alt me-2"></i>Thời gian lưu trú tạm tính</h5>
               <div class="row g-3">
+                <% 
+                  // Logic tạo ngày chuẩn ngay tại View để đảm bảo không bao giờ trống
+                  let now = new Date();
+                  let offset = now.getTimezoneOffset() * 60000;
+                  let todayStr = (new Date(now - offset)).toISOString().split('T')[0];
+                  
+                  let tomorrow = new Date(now.getTime() + (24 * 60 * 60 * 1000) - offset);
+                  let tomorrowStr = tomorrow.toISOString().split('T')[0];
+
+                  // Ưu tiên: 1. Dữ liệu khách đã nhập (form) -> 2. Dữ liệu mặc định
+                  let valNgayNhan = (typeof form !== 'undefined' && form.NgayNhan) ? form.NgayNhan : todayStr;
+                  let valNgayTra = (typeof form !== 'undefined' && form.NgayTra) ? form.NgayTra : tomorrowStr;
+                %>
                 <div class="col-md-6">
                   <label class="form-label small fw-bold">Ngày nhận phòng</label>
                   <input type="date" name="NgayNhan" id="NgayNhan" 
-                         value="<%= (typeof form !== 'undefined' && form.NgayNhan) ? form.NgayNhan : new Date().toISOString().split('T')[0] %>" 
-                         min="<%= new Date().toISOString().split('T')[0] %>"
+                         value="<%= valNgayNhan %>" 
+                         min="<%= todayStr %>"
                          class="form-control form-control-lg border-2" required>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label small fw-bold">Ngày trả phòng</label>
                   <input type="date" name="NgayTra" id="NgayTra" 
-                         value="<%= (typeof form !== 'undefined' && form.NgayTra) ? form.NgayTra : '' %>" 
+                         value="<%= valNgayTra %>" 
+                         min="<%= tomorrowStr %>"
                          class="form-control form-control-lg border-2" required>
                 </div>
               </div>
@@ -87,7 +101,6 @@
             <% 
               let displayImage = 'unnamed.jpg'; 
               if (room && room.HinhAnh) {
-                // Xử lý chuỗi HinhAnh bị lỗi format trong DB của bạn
                 let cleanPath = room.HinhAnh.replace(/[\[\]\"\\ ]/g, ''); 
                 displayImage = cleanPath.split(',')[0] || 'unnamed.jpg';
               }
@@ -99,7 +112,6 @@
             <div class="card-body p-4">
               <span class="badge bg-info text-dark mb-2">Phòng chất lượng cao</span>
               <h4 class="fw-bold mb-1"><%= room?.TenPhong || 'Thông tin phòng' %></h4>
-              <p class="text-muted small mb-3"><i class="fas fa-map-marker-alt me-1"></i> Đà Nẵng</p>
               
               <hr class="my-3 opacity-10">
               
@@ -133,18 +145,15 @@
     const tempTotal = document.getElementById('tempTotal');
     const nightCount = document.getElementById('nightCount');
     
-    // Lấy giá phòng sạch
-    const rawGia = "<%= room?.Gia %>";
-    const giaPhong = parseInt(rawGia.replace(/\D/g, '')) || 0;
+    const giaPhong = parseInt("<%= room?.Gia %>") || 0;
 
     function calculateTotal() {
-      if (!ngayNhanInput.value || !ngayTraInput.value) return;
-
       const start = new Date(ngayNhanInput.value);
       const end = new Date(ngayTraInput.value);
       
-      if (end > start) {
-        const diffDays = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24));
+      if (ngayNhanInput.value && ngayTraInput.value && end > start) {
+        const diffTime = Math.abs(end - start);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         nightCount.innerText = diffDays + " đêm";
         tempTotal.innerText = (diffDays * giaPhong).toLocaleString('vi-VN') + " VND";
       } else {
@@ -153,24 +162,26 @@
       }
     }
 
-    ngayNhanInput.addEventListener('change', calculateTotal);
-    ngayTraInput.addEventListener('change', calculateTotal);
-
-    document.getElementById("samePerson").addEventListener("change", function() {
-      const isChecked = this.checked;
-      const fields = {
-        'Nhan_HoTen': document.getElementById("Dat_HoTen").value,
-        'Nhan_SDT': document.getElementById("Dat_SDT").value,
-        'Nhan_CCCD': document.getElementById("Dat_CCCD").value
-      };
-      
-      for (let key in fields) {
-        const input = document.querySelector(`input[name="${key}"]`);
-        if (input) input.value = isChecked ? fields[key] : "";
-      }
-      document.getElementById("receiverSection").style.opacity = isChecked ? "0.7" : "1";
+    // Tự động cập nhật ngày trả khi ngày nhận thay đổi
+    ngayNhanInput.addEventListener('change', function() {
+      const newDate = new Date(this.value);
+      newDate.setDate(newDate.getDate() + 1);
+      ngayTraInput.value = newDate.toISOString().split('T')[0];
+      ngayTraInput.min = newDate.toISOString().split('T')[0];
+      calculateTotal();
     });
 
+    ngayTraInput.addEventListener('change', calculateTotal);
+
+    // Xử lý Checkbox "Tôi là người nhận"
+    document.getElementById("samePerson").addEventListener("change", function() {
+      const isChecked = this.checked;
+      document.getElementsByName("Nhan_HoTen")[0].value = isChecked ? document.getElementById("Dat_HoTen").value : "";
+      document.getElementsByName("Nhan_SDT")[0].value = isChecked ? document.getElementById("Dat_SDT").value : "";
+      document.getElementsByName("Nhan_CCCD")[0].value = isChecked ? document.getElementById("Dat_CCCD").value : "";
+    });
+
+    // Chạy tính toán lần đầu ngay khi load trang
     calculateTotal();
   });
 </script>

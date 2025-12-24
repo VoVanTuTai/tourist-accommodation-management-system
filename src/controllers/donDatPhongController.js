@@ -10,57 +10,45 @@ exports.danhSachDonDatPhong = async (req, res) => {
     // 1. Kiểm tra đăng nhập
     if (!req.session.user) return res.redirect("/khachhang/dangnhap");
     
-    console.log("🔍 --- BẮT ĐẦU KIỂM TRA ---");
     const idTaiKhoan = req.session.user.MaTaiKhoan;
-    console.log("🔍 ID tài khoản đang dùng (MaTaiKhoan):", idTaiKhoan);
+    console.log("🔍 Đang kiểm tra đơn cho MaTaiKhoan:", idTaiKhoan);
 
-    // 2. Lấy mã khách hàng
-    const [rows] = await db.execute(
+    // 2. Lấy MaKhachHang chuẩn từ DB dựa trên tài khoản đang đăng nhập
+    const [khRows] = await db.execute(
       "SELECT MaKhachHang FROM khachhang WHERE MaTaiKhoan = ?",
       [idTaiKhoan]
     );
 
-    // MẶC ĐỊNH lấy maKhachHang từ DB, nếu DB trả về 18 mà bạn biết đơn hàng là 19, 
-    // chúng ta sẽ thêm logic kiểm tra ở đây.
-    // ✅ ĐOẠN SỬA LỖI LỆCH ID (18 vs 19)
-    let maKhachHang;
-    if (rows.length > 0) {
-        maKhachHang = rows[0].MaKhachHang;
+    if (khRows.length === 0) {
+      console.error("❌ Tài khoản này chưa có thông tin trong bảng khách hàng");
+      return res.render("khachhang/danhsachdondatphong", {
+        donDatPhongList: [],
+        trangThai: req.query.trangthai || "",
+        user: req.session.user
+      });
     }
 
-    // 💡 GIẢI PHÁP: Nếu hệ thống lấy ra ID là 18, nhưng bạn biết đơn hàng của mình là 19,
-    // hoặc nếu không tìm thấy mã khách hàng, chúng ta ép nó dùng MaTaiKhoan (19).
-    if (!maKhachHang || maKhachHang == 18) {
-        console.log("⚠️ Phát hiện lệch ID! Đang ép dùng MaKhachHang từ Session (19)");
-        maKhachHang = idTaiKhoan; 
-    }
+    const maKhachHangThuc = khRows[0].MaKhachHang;
     const trangThai = req.query.trangthai || "";
-    console.log("🔍 Mã khách hàng thực tế dùng để TRUY VẤN:", maKhachHang);
-
-    // 3. Lấy danh sách đơn từ Model
-    const donDatPhongList = await DonDatPhong.getAllByUser(maKhachHang, trangThai);
     
-    console.log("🔍 Số lượng đơn hàng tìm thấy:", donDatPhongList.length);
+    console.log("🔍 MaKhachHang tìm thấy trong DB:", maKhachHangThuc);
 
-    // 4. Format ngày hiển thị
-    const formatted = donDatPhongList.map(d => ({
-      ...d,
-      NgayDat: d.NgayDat ? new Date(d.NgayDat) : null,
-      NgayNhan: d.NgayNhan ? new Date(d.NgayNhan) : null,
-      NgayTra: d.NgayTra ? new Date(d.NgayTra) : null,
-    }));
+    // 3. Lấy danh sách đơn bằng MaKhachHang THẬT
+    const donDatPhongList = await DonDatPhong.getAllByUser(maKhachHangThuc, trangThai);
+    
+    console.log(`🔍 Kết quả: Tìm thấy ${donDatPhongList.length} đơn cho khách hàng #${maKhachHangThuc}`);
 
-    // 5. Trả về giao diện
+    // 4. Trả về giao diện (Giữ nguyên phần render của bạn)
     res.render("khachhang/danhsachdondatphong", {
-      donDatPhongList: formatted,
+      donDatPhongList: donDatPhongList,
       trangThai,
-      user: req.session.user, // Thêm user để hiển thị tên nếu cần
+      user: req.session.user,
       js: ["/js/khachhang/danhsachdondatphong"],
       css: ["/css/danhsachdondatphong.css"],
     });
 
   } catch (err) {
-    console.error("❌ Lỗi khi tải danh sách đơn:", err);
+    console.error("❌ Lỗi nghiêm trọng:", err);
     res.status(500).send("Lỗi server!");
   }
 };
