@@ -50,11 +50,11 @@ app.use("/images/danhgia", express.static(path.join(__dirname, "src/public/image
    ✅ CẤU HÌNH MYSQL + SESSION
 ===================================================== */
 const dbConfig = {
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "quanlidatphong",
-};
+   host: process.env.DB_HOST,
+   user: process.env.DB_USER,
+   password: process.env.DB_PASSWORD,
+   database: process.env.DB_NAME,
+ };
 
 const sessionStore = new MySQLStore(dbConfig);
 

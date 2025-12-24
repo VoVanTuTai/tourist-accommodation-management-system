@@ -1,7 +1,7 @@
 DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=
-DB_NAME=quanlidatphong
+DB_USER=admincoder
+DB_PASSWORD=123456
+DB_NAME=quanlidatphong1
 DB_PORT=3306
 PORT=3000
 EMAIL_USER=tranvantrung809@gmail.com
@@ -11,4 +11,4 @@ VNP_TMNCODE=BKZJ9WG4
 VNP_HASHSECRET=ZQX0FRG7QQY6O859F798SHPYG3LE3VNB
 VNP_URL=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
 VNP_RETURNURL=http://localhost:3000/vnpay/return
-VNP_IPNURL=http://localhost:3000/vnpay/ipn
+VNP_IPNURL=http://127.0.0.1:3000/vnpay/ipn

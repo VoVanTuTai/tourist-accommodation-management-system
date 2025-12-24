@@ -1,25 +1,28 @@
-// ✅ Dùng mysql2/promise (hỗ trợ async/await)
+// ✅ 1. Phải nạp dotenv đầu tiên
+require('dotenv').config(); 
+
 const mysql = require('mysql2/promise');
 
-// ✅ Tạo pool kết nối (an toàn, không cần connect thủ công)
+// ✅ 2. Tạo pool kết nối
 const db = mysql.createPool({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "quanlidatphong",
+  host: process.env.DB_HOST, // Thêm giá trị dự phòng
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
 });
 
-// ✅ Kiểm tra kết nối (tùy chọn, để log khi khởi động)
+// ✅ 3. Kiểm tra kết nối
 (async () => {
   try {
     const connection = await db.getConnection();
     console.log("✅ Đã kết nối MySQL thành công!");
-    connection.release(); // Trả lại pool
+    connection.release(); 
   } catch (err) {
-    console.error("❌ Kết nối MySQL thất bại:", err);
+    console.error("❌ Kết nối MySQL thất bại. Vui lòng kiểm tra file .env hoặc MySQL service.");
+    console.error("Chi tiết lỗi:", err.message);
   }
 })();
 
