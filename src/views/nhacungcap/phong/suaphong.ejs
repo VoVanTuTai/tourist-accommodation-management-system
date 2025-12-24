@@ -372,7 +372,8 @@
         <% } %>
 
         <label for="HinhAnhMoi">Tải lên hình ảnh mới:</label>
-        <input type="file" id="HinhAnhMoi" name="HinhAnh" accept="image/*" multiple>
+        <input type="file" id="HinhAnhMoi" name="HinhAnh" accept="image/png, image/jpeg, image/webp" multiple>
+<p id="error-msg" style="color: red; display: none;">Vui lòng chỉ chọn các định dạng file ảnh (jpg, png, webp)!</p>
         <div id="previewContainer" class="d-flex flex-wrap gap-2 mt-3"></div>
         <small class="error-message" style="color:red"></small>
 
@@ -385,7 +386,7 @@
   </main>
 
   <script>
-  // 🔹 Lọc xã theo tỉnh
+  // 1. 🔹 Lọc xã theo tỉnh
   function filterXa() {
     const maTinh = document.getElementById('MaTinh').value;
     const xaSelect = document.getElementById('MaXa');
@@ -393,38 +394,77 @@
     xaSelect.value = '';
     options.forEach(opt => {
       const tinh = opt.getAttribute('data-tinh');
-      opt.style.display = tinh === maTinh ? 'block' : 'none';
+      if (opt.value === "") { // Giữ lại option "Chọn xã"
+        opt.style.display = 'block';
+      } else {
+        opt.style.display = tinh === maTinh ? 'block' : 'none';
+      }
     });
   }
 
-  // 🔹 Preview ảnh mới
-  const input = document.getElementById("HinhAnhMoi");
+  // 2. 🔹 Xử lý Hình ảnh (Preview + Validation)
+  const inputHinh = document.getElementById("HinhAnhMoi");
   const previewContainer = document.getElementById("previewContainer");
 
-  input.addEventListener("change", () => {
-    previewContainer.innerHTML = "";
-    Array.from(input.files).forEach(file => {
-      const reader = new FileReader();
-      reader.onload = e => {
-        const img = document.createElement("img");
-        img.src = e.target.result;
-        img.width = 150;
-        img.className = "rounded border shadow-sm";
-        previewContainer.appendChild(img);
-      };
-      reader.readAsDataURL(file);
+  inputHinh.addEventListener("change", function() {
+    previewContainer.innerHTML = ""; // Xóa preview cũ
+    const files = Array.from(this.files);
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const maxSize = 2 * 1024 * 1024; // 2MB
+    let hasError = false;
+
+    files.forEach(file => {
+      // Kiểm tra định dạng
+      if (!allowedTypes.includes(file.type)) {
+        alert(`❌ File "${file.name}" không phải định dạng ảnh hợp lệ!`);
+        hasError = true;
+      } 
+      // Kiểm tra dung lượng
+      else if (file.size > maxSize) {
+        alert(`❌ File "${file.name}" quá lớn (tối đa 2MB)!`);
+        hasError = true;
+      } 
+      // Nếu hợp lệ thì tạo Preview
+      else {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const img = document.createElement("img");
+          img.src = e.target.result;
+          img.width = 150;
+          img.className = "rounded border shadow-sm m-1";
+          previewContainer.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      }
     });
+
+    if (hasError) {
+      this.value = ""; // Xóa file nếu có lỗi
+      previewContainer.innerHTML = "";
+    }
   });
 
-    // 🔹 Validation client-side
-    document.getElementById("editRoomForm").addEventListener("submit", function(e) {
+  // 3. 🔹 Hàm thông báo lỗi chung
+  function setError(id, message, firstInvalidFieldRef) {
+    const el = document.getElementById(id);
+    // Tìm thẻ small hoặc span có class error-message ngay sau input
+    const errorEl = el.parentElement.querySelector(".error-message");
+    if (errorEl) errorEl.innerText = message;
+    return firstInvalidFieldRef || el; // Trả về field lỗi đầu tiên để focus
+  }
+
+  // 4. 🔹 Validation khi Submit Form
+  document.getElementById("editRoomForm").addEventListener("submit", function(e) {
     let isValid = true;
-    let firstInvalidField = null; // ✅ Lưu input đầu tiên bị lỗi
+    let firstInvalidField = null;
 
     const errorSummary = document.getElementById("error-summary");
     errorSummary.innerHTML = "";
+    
+    // Xóa tất cả thông báo lỗi cũ
     document.querySelectorAll(".error-message").forEach(el => el.innerText = "");
 
+    // Lấy giá trị
     const tenPhong = document.getElementById("TenPhong").value.trim();
     const maLoai = document.getElementById("MaLoai").value;
     const gia = parseFloat(document.getElementById("Gia").value);
@@ -434,42 +474,53 @@
     const maXa = document.getElementById("MaXa").value;
     const diaChi = document.getElementById("ChiTietDiaChi").value.trim();
 
-    function setError(id, message) {
-      const input = document.getElementById(id);
-      const errorEl = input.nextElementSibling; // small.error-message
-      if (errorEl) errorEl.innerText = message;
-
-      // ✅ Lưu input đầu tiên bị lỗi
-      if (!firstInvalidField) firstInvalidField = input;
+    // ======= KIỂM TRA DỮ LIỆU =======
+    if (tenPhong.length < 3) { 
+      firstInvalidField = setError("TenPhong", "Tên phòng phải có ít nhất 3 ký tự.", firstInvalidField); 
+      isValid = false; 
+    }
+    if (!maLoai) { 
+      firstInvalidField = setError("MaLoai", "Vui lòng chọn loại phòng.", firstInvalidField); 
+      isValid = false; 
+    }
+    if (isNaN(gia) || gia < 100000) { 
+      firstInvalidField = setError("Gia", "Giá phòng phải >= 100.000 VND.", firstInvalidField); 
+      isValid = false; 
+    }
+    if (isNaN(sucChua) || sucChua < 1) { 
+      firstInvalidField = setError("SucChua", "Sức chứa phải >= 1.", firstInvalidField); 
+      isValid = false; 
+    }
+    if (moTa.length < 10) { 
+      firstInvalidField = setError("MoTa", "Mô tả cần ít nhất 10 ký tự.", firstInvalidField); 
+      isValid = false; 
+    }
+    if (!maTinh) { 
+      firstInvalidField = setError("MaTinh", "Vui lòng chọn tỉnh.", firstInvalidField); 
+      isValid = false; 
+    }
+    if (!maXa) { 
+      firstInvalidField = setError("MaXa", "Vui lòng chọn xã.", firstInvalidField); 
+      isValid = false; 
+    }
+    if (diaChi.length < 5) { 
+      firstInvalidField = setError("ChiTietDiaChi", "Địa chỉ cụ thể phải ít nhất 5 ký tự.", firstInvalidField); 
+      isValid = false; 
     }
 
-    // ======= KIỂM TRA DỮ LIỆU =======
-    if (tenPhong.length < 3) { setError("TenPhong", "Tên phòng phải có ít nhất 3 ký tự."); isValid = false; }
-    if (!maLoai) { setError("MaLoai", "Vui lòng chọn loại phòng."); isValid = false; }
-    if (isNaN(gia) || gia < 100000) { setError("Gia", "Giá phòng phải >= 100.000 VND."); isValid = false; }
-    if (isNaN(sucChua) || sucChua < 1) { setError("SucChua", "Sức chứa phải >= 1."); isValid = false; }
-    if (moTa.length < 10) { setError("MoTa", "Mô tả cần ít nhất 10 ký tự."); isValid = false; }
-    if (!maTinh) { setError("MaTinh", "Vui lòng chọn tỉnh."); isValid = false; }
-    if (!maXa) { setError("MaXa", "Vui lòng chọn xã."); isValid = false; }
-    if (diaChi.length < 5) { setError("ChiTietDiaChi", "Địa chỉ phải có ít nhất 5 ký tự."); isValid = false; }
+    // LƯU Ý: Ở trang SỬA PHÒNG, hình ảnh thường không bắt buộc (nếu không chọn thì giữ ảnh cũ)
+    // Nên tôi không thêm kiểm tra trống cho HinhAnhMoi ở đây.
 
     // ======= NẾU LỖI =======
     if (!isValid) {
       e.preventDefault();
-      errorSummary.innerHTML = "⚠️ Vui lòng kiểm tra lại các trường bị lỗi.";
-      errorSummary.scrollIntoView({ behavior: "smooth", block: "center" }); // cuộn lên phần báo lỗi
+      errorSummary.innerHTML = "⚠️ Vui lòng kiểm tra lại các trường thông tin bên dưới.";
+      
       if (firstInvalidField) {
-        firstInvalidField.focus(); // ✅ focus vào input lỗi đầu tiên
+        firstInvalidField.focus();
         firstInvalidField.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     }
   });
-
-
-  function setError(id, msg) {
-    const el = document.getElementById(id);
-    const err = el.nextElementSibling;
-    if (err && err.classList.contains("error-message")) err.innerText = msg;
-  }
 </script>
 </body>

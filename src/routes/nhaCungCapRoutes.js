@@ -5,6 +5,7 @@ const phongController = require("../controllers/phongController");
 const nhaCungCapController = require("../controllers/nhaCungCapController");
 const donDatPhongController = require("../controllers/donDatPhongController");
 const path = require("path");
+const { ensureNhaCungCap } = require("../middlewares/authMiddleware");
 
 
 const uploadImage = require("../middlewares/upload");
@@ -41,25 +42,25 @@ router.get("/dangnhap", nhaCungCapController.renderDangNhapNhaCungCap);
 router.post("/dangnhap", nhaCungCapController.loginNhaCungCap);
 
 //Danh sách phòng
-router.get("/phong", phongController.renderDanhSachPhongCuaNhaCungCap);
+router.get("/phong", ensureNhaCungCap, phongController.renderDanhSachPhongCuaNhaCungCap);
 //Thêm phòng
-router.get("/phong/them", phongController.renderThemPhong);
-router.post("/phong/them", uploadImage.array("HinhAnh", 5), phongController.handleThemPhong);
+router.get("/phong/them", ensureNhaCungCap, phongController.renderThemPhong);
+router.post("/phong/them", ensureNhaCungCap, uploadImage.array("HinhAnh", 5), phongController.handleThemPhong);
 //Sửa phòng
-router.get("/phong/suaphong/:id", phongController.renderSuaPhong);
-router.post("/phong/suaphong/:id", uploadImage.array("HinhAnh", 5), phongController.handleSuaPhong);
+router.get("/phong/suaphong/:id",ensureNhaCungCap, phongController.renderSuaPhong);
+router.post("/phong/suaphong/:id",ensureNhaCungCap, uploadImage.array("HinhAnh", 5), phongController.handleSuaPhong);
 //Cập nhật trạng thái
-router.get("/phong/trangthai/:id", phongController.renderUpdateStatus);
-router.post("/phong/trangthai/:id", phongController.handleUpdateStatus);
+router.get("/phong/trangthai/:id",ensureNhaCungCap, phongController.renderUpdateStatus);
+router.post("/phong/trangthai/:id",ensureNhaCungCap, phongController.handleUpdateStatus);
 //Xem chi tiết phòng (dành cho NCC)
 router.get("/phong/chitiet/:id", phongController.renderChiTietPhong);
 
 // 1. Danh sách đơn đặt phòng của NCC
-router.get("/don-dat-phong", donDatPhongController.renderDanhSachDonDatPhongNCC); 
+router.get("/don-dat-phong",ensureNhaCungCap, donDatPhongController.renderDanhSachDonDatPhongNCC); 
 
 // 2. Xem chi tiết đơn đặt phòng của NCC
-router.get("/don-dat-phong/chitiet/:id", donDatPhongController.renderChiTietDonDatPhongNCC); 
+router.get("/don-dat-phong/chitiet/:id",ensureNhaCungCap, donDatPhongController.renderChiTietDonDatPhongNCC); 
 
 // 3. Xử lý Cập nhật trạng thái đơn đặt phòng (POST)
-router.post("/don-dat-phong/capnhat-trangthai/:id", donDatPhongController.handleCapNhatTrangThaiDonDatPhongNCC);
+router.post("/don-dat-phong/capnhat-trangthai/:id",ensureNhaCungCap, donDatPhongController.handleCapNhatTrangThaiDonDatPhongNCC);
 module.exports = router;

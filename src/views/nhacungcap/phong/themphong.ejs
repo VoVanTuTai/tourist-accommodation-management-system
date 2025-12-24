@@ -313,6 +313,7 @@
         <small class="error-message" style="color:red"></small>
 
         <!-- 🔹 Hình ảnh -->
+        
         <div class="section-title">Hình ảnh</div>
 
         <label for="HinhAnh">Tải lên hình ảnh:</label>
@@ -329,85 +330,125 @@
     </div>
   </main>
   <script>
-    // Ẩn / hiện xã theo tỉnh
+    // 1. Ẩn / hiện xã theo tỉnh
     function filterXa() {
-      const maTinh = document.getElementById('MaTinh').value;
-      const xaSelect = document.getElementById('MaXa');
-      const options = xaSelect.querySelectorAll('option');
-      xaSelect.value = '';
-      options.forEach(option => {
-        if (!option.value) return;
-        const optionTinh = option.getAttribute('data-tinh');
-        option.style.display = (optionTinh === maTinh) ? 'block' : 'none';
-      });
+        const maTinh = document.getElementById('MaTinh').value;
+        const xaSelect = document.getElementById('MaXa');
+        const options = xaSelect.querySelectorAll('option');
+        xaSelect.value = '';
+        options.forEach(option => {
+            if (!option.value) return;
+            const optionTinh = option.getAttribute('data-tinh');
+            option.style.display = (optionTinh === maTinh) ? 'block' : 'none';
+        });
     }
-    // 🔹 Preview ảnh mới
-    const input = document.getElementById("HinhAnh");
+
+    // 2. Preview và Kiểm tra file hình ảnh
+    const inputHinh = document.getElementById("HinhAnh");
     const previewContainer = document.getElementById("previewContainer");
 
-    input.addEventListener("change", () => {
-      previewContainer.innerHTML = "";
-      Array.from(input.files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = e => {
-          const img = document.createElement("img");
-          img.src = e.target.result;
-          img.width = 150;
-          img.className = "rounded border shadow-sm";
-          previewContainer.appendChild(img);
-        };
-        reader.readAsDataURL(file);
-      });
+    inputHinh.addEventListener("change", function() {
+        previewContainer.innerHTML = ""; // Xóa preview cũ
+        const files = Array.from(this.files);
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+        const maxSize = 20 * 1024 * 1024; // Giới hạn 2MB mỗi file
+        let hasError = false;
+
+        files.forEach(file => {
+            // Kiểm tra định dạng file
+            if (!allowedTypes.includes(file.type)) {
+                alert(`❌ File "${file.name}" không phải là ảnh (chỉ nhận jpg, png, webp).`);
+                hasError = true;
+            } 
+            // Kiểm tra dung lượng file
+            else if (file.size > maxSize) {
+                alert(`❌ File "${file.name}" quá lớn (vượt quá 20MB).`);
+                hasError = true;
+            } 
+            // Nếu hợp lệ thì tiến hành preview
+            else {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = document.createElement("img");
+                    img.src = e.target.result;
+                    img.width = 150;
+                    img.style.margin = "5px";
+                    img.className = "rounded border shadow-sm";
+                    previewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Nếu có bất kỳ file nào lỗi, reset input để bắt chọn lại cho sạch dữ liệu
+        if (hasError) {
+            this.value = "";
+            previewContainer.innerHTML = "";
+        }
     });
-    // Kiểm tra form trước khi submit
-    // 🔹 Validation client-side
+
+    // 3. Validation client-side khi Submit Form
     document.getElementById("formThemPhong").addEventListener("submit", function(e) {
-    let isValid = true;
-    let firstInvalidField = null; // ✅ Lưu input đầu tiên bị lỗi
+        let isValid = true;
+        let firstInvalidField = null;
 
-    const errorSummary = document.getElementById("error-summary");
-    errorSummary.innerHTML = "";
-    document.querySelectorAll(".error-message").forEach(el => el.innerText = "");
+        const errorSummary = document.getElementById("error-summary");
+        errorSummary.innerHTML = "";
+        document.querySelectorAll(".error-message").forEach(el => el.innerText = "");
 
-    const tenPhong = document.getElementById("TenPhong").value.trim();
-    const maLoai = document.getElementById("MaLoai").value;
-    const gia = parseFloat(document.getElementById("Gia").value);
-    const sucChua = parseInt(document.getElementById("SucChua").value);
-    const moTa = document.getElementById("MoTa").value.trim();
-    const maTinh = document.getElementById("MaTinh").value;
-    const maXa = document.getElementById("MaXa").value;
-    const diaChi = document.getElementById("ChiTietDiaChi").value.trim();
+        // Lấy giá trị các trường
+        const tenPhong = document.getElementById("TenPhong").value.trim();
+        const maLoai = document.getElementById("MaLoai").value;
+        const gia = parseFloat(document.getElementById("Gia").value);
+        const sucChua = parseInt(document.getElementById("SucChua").value);
+        const moTa = document.getElementById("MoTa").value.trim();
+        const maTinh = document.getElementById("MaTinh").value;
+        const maXa = document.getElementById("MaXa").value;
+        const diaChi = document.getElementById("ChiTietDiaChi").value.trim();
+        const hinhAnhFiles = document.getElementById("HinhAnh").files;
 
-    function setError(id, message) {
-      const input = document.getElementById(id);
-      const errorEl = input.nextElementSibling; // small.error-message
-      if (errorEl) errorEl.innerText = message;
+        // Hàm gán lỗi
+        function setError(id, message) {
+            const inputField = document.getElementById(id);
+            // Tìm thẻ báo lỗi (giả định là thẻ ngay sau input hoặc có class error-message)
+            const errorEl = inputField.parentElement.querySelector(".error-message"); 
+            if (errorEl) errorEl.innerText = message;
 
-      // ✅ Lưu input đầu tiên bị lỗi
-      if (!firstInvalidField) firstInvalidField = input;
-    }
+            if (!firstInvalidField) firstInvalidField = inputField;
+        }
 
-    // ======= KIỂM TRA DỮ LIỆU =======
-    if (tenPhong.length < 3) { setError("TenPhong", "Tên phòng phải có ít nhất 3 ký tự."); isValid = false; }
-    if (!maLoai) { setError("MaLoai", "Vui lòng chọn loại phòng."); isValid = false; }
-    if (isNaN(gia) || gia < 100000) { setError("Gia", "Giá phòng phải >= 100.000 VND."); isValid = false; }
-    if (isNaN(sucChua) || sucChua < 1) { setError("SucChua", "Sức chứa phải >= 1."); isValid = false; }
-    if (moTa.length < 10) { setError("MoTa", "Mô tả cần ít nhất 10 ký tự."); isValid = false; }
-    if (!maTinh) { setError("MaTinh", "Vui lòng chọn tỉnh."); isValid = false; }
-    if (!maXa) { setError("MaXa", "Vui lòng chọn xã."); isValid = false; }
-    if (diaChi.length < 5) { setError("ChiTietDiaChi", "Địa chỉ phải có ít nhất 5 ký tự."); isValid = false; }
+        // ======= KIỂM TRA DỮ LIỆU =======
+        if (tenPhong.length < 3) { setError("TenPhong", "Tên phòng phải có ít nhất 3 ký tự."); isValid = false; }
+        if (!maLoai) { setError("MaLoai", "Vui lòng chọn loại phòng."); isValid = false; }
+        if (isNaN(gia) || gia < 100000) { setError("Gia", "Giá phòng phải >= 100.000 VND."); isValid = false; }
+        if (isNaN(sucChua) || sucChua < 1) { setError("SucChua", "Sức chứa phải >= 1."); isValid = false; }
+        if (moTa.length < 10) { setError("MoTa", "Mô tả cần ít nhất 10 ký tự."); isValid = false; }
+        if (!maTinh) { setError("MaTinh", "Vui lòng chọn tỉnh."); isValid = false; }
+        if (!maXa) { setError("MaXa", "Vui lòng chọn xã."); isValid = false; }
+        if (diaChi.length < 5) { setError("ChiTietDiaChi", "Địa chỉ phải có ít nhất 5 ký tự."); isValid = false; }
+        
+        // Kiểm tra hình ảnh (bắt buộc chọn ít nhất 1 ảnh)
+        if (hinhAnhFiles.length === 0) {
+            setError("HinhAnh", "Vui lòng chọn ít nhất 1 hình ảnh.");
+            isValid = false;
+        } else if (hinhAnhFiles.length > 10) { // Giới hạn số lượng file nếu cần
+            setError("HinhAnh", "Chỉ được tải lên tối đa 10 ảnh.");
+            isValid = false;
+        }
 
-    // ======= NẾU LỖI =======
-    if (!isValid) {
-      e.preventDefault();
-      errorSummary.innerHTML = "⚠️ Vui lòng kiểm tra lại các trường bị lỗi.";
-      errorSummary.scrollIntoView({ behavior: "smooth", block: "center" }); // cuộn lên phần báo lỗi
-      if (firstInvalidField) {
-        firstInvalidField.focus(); // ✅ focus vào input lỗi đầu tiên
-        firstInvalidField.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
-    }
-  });
-  </script>
+        // ======= XỬ LÝ KHI CÓ LỖI =======
+        if (!isValid) {
+            e.preventDefault(); // Ngăn gửi form
+            errorSummary.innerHTML = "⚠️ Vui lòng kiểm tra lại các trường bị lỗi.";
+            
+            if (firstInvalidField) {
+                firstInvalidField.focus();
+                firstInvalidField.scrollIntoView({ behavior: "smooth", block: "center" });
+            } else {
+                errorSummary.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+        }
+    });
+</script>
 </body>
 

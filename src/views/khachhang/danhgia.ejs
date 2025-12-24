@@ -75,7 +75,7 @@
             <div class="mb-3">
                 <label class="form-label fw-bold">Hình ảnh (tùy chọn)</label>
 
-                <input type="file" name="HinhAnh" accept="image/*" class="form-control" multiple>
+                <input type="file" name="HinhAnh" id="HinhAnhInput" accept="image/*" class="form-control" multiple>
 
                 <% if (danhGia?.HinhAnh && danhGia.HinhAnh.length > 0) { %>
 
@@ -445,63 +445,118 @@ textarea.form-control:focus {
 
 </style>
 <script>
-  document.querySelectorAll(".rating-stars .star").forEach(star => {
-      star.addEventListener("click", function () {
-          let val = this.getAttribute("data-value");
-          document.getElementById("SoSao").value = val;
-  
-          document.querySelectorAll(".rating-stars .star").forEach((s, i) => {
-              if (i < val) {
-                  s.classList.add("text-warning");
-                  s.classList.remove("text-secondary");
-              } else {
-                  s.classList.add("text-secondary");
-                  s.classList.remove("text-warning");
-              }
-          });
-      });
-  });
-
-    document.getElementById('reviewForm').addEventListener('submit', function(event) {
-        // 1. Lấy giá trị số sao và nội dung
-        const soSao = document.getElementById('SoSao').value;
-        const noiDung = document.querySelector('textarea[name="NoiDung"]').value.trim();
-
-        // 2. Kiểm tra số sao (phải lớn hơn 0)
-        if (!soSao || parseInt(soSao) <= 0) {
-            event.preventDefault(); // Ngăn form gửi đi
-            alert('Vui lòng chọn số sao đánh giá!');
-            return false;
-        }
-
-        // 3. Kiểm tra nội dung (không để trống hoặc chỉ toàn khoảng trắng)
-        if (noiDung === "") {
-            event.preventDefault();
-            alert('Vui lòng nhập nội dung đánh giá!');
-            return false;
-        }
-        
-        // Nếu mọi thứ ổn, form sẽ tự động được gửi
-    });
-
-    // Tiện ích: Script để click vào sao thì đổi màu và gán giá trị (nếu bạn chưa có)
-    document.querySelectorAll('#rating .star').forEach(star => {
-        star.addEventListener('click', function() {
-            const value = this.getAttribute('data-value');
-            document.getElementById('SoSao').value = value;
-            
-            // Cập nhật giao diện sao
-            document.querySelectorAll('#rating .star').forEach(s => {
-                if (parseInt(s.getAttribute('data-value')) <= value) {
-                    s.classList.remove('text-secondary');
-                    s.classList.add('text-warning');
-                } else {
-                    s.classList.remove('text-warning');
-                    s.classList.add('text-secondary');
+    document.addEventListener("DOMContentLoaded", function () {
+        const inputHinh = document.getElementById("HinhAnhInput");
+        const previewContainer = document.getElementById("newPreviewContainer");
+        const soSaoInput = document.getElementById("SoSao");
+        const reviewForm = document.getElementById('reviewForm');
+    
+        // --- 1. BÁO LỖI NGAY KHI CHỌN FILE (SỬ DỤNG ALERT) ---
+        if (inputHinh) {
+            inputHinh.addEventListener("change", function () {
+                const files = Array.from(this.files);
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+                const maxSize = 5 * 1024 * 1024; // 5MB
+                
+                previewContainer.innerHTML = ""; // Xóa preview cũ
+    
+                for (let file of files) {
+                    // Kiểm tra định dạng - BÁO ALERT NGAY
+                    if (!allowedTypes.includes(file.type)) {
+                        alert(`❌ SAI ĐỊNH DẠNG: File "${file.name}" không phải là ảnh!\n(Chỉ nhận JPG, PNG, WEBP)`);
+                        this.value = ""; // Xóa trắng input ngay lập tức
+                        previewContainer.innerHTML = "";
+                        return; 
+                    }
+    
+                    // Kiểm tra dung lượng - BÁO ALERT NGAY
+                    if (file.size > maxSize) {
+                        alert(`❌ ẢNH QUÁ LỚN: File "${file.name}" vượt quá 5MB!\nVui lòng chọn ảnh nhẹ hơn.`);
+                        this.value = ""; // Xóa trắng input ngay lập tức
+                        previewContainer.innerHTML = "";
+                        return;
+                    }
                 }
+    
+                // Nếu tất cả hợp lệ mới chạy Preview
+                files.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = e => {
+                        const wrapper = document.createElement("div");
+                        wrapper.className = "position-relative m-1 d-inline-block";
+                        wrapper.innerHTML = `
+                            <img src="${e.target.result}" style="width: 100px; height: 100px; object-fit: cover;" class="rounded border shadow-sm">
+                            <span class="badge bg-success position-absolute top-0 start-0 m-1" style="font-size: 10px;">Mới</span>
+                        `;
+                        previewContainer.appendChild(wrapper);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            });
+        }
+    
+        // --- 2. LOGIC CHỌN SAO (Cập nhật class an toàn) ---
+        const stars = document.querySelectorAll(".rating-stars .star, #rating .star");
+        stars.forEach(star => {
+            star.addEventListener("click", function () {
+                const val = parseInt(this.getAttribute("data-value"));
+                soSaoInput.value = val;
+                
+                stars.forEach(s => {
+                    const sVal = parseInt(s.getAttribute("data-value"));
+                    if (sVal <= val) {
+                        s.classList.add("text-warning");
+                        s.classList.remove("text-secondary");
+                    } else {
+                        s.classList.add("text-secondary");
+                        s.classList.remove("text-warning");
+                    }
+                });
+    
+                // Xóa dòng thông báo lỗi đỏ của sao khi đã chọn
+                const errSao = soSaoInput.parentElement.querySelector(".error-message");
+                if (errSao) errSao.innerText = "";
             });
         });
+    
+        // --- 3. KIỂM TRA KHI NHẤN GỬI (Báo chữ đỏ và Alert tổng) ---
+        if (reviewForm) {
+            reviewForm.addEventListener('submit', function (e) {
+                let isValid = true;
+                
+                // Xóa các nội dung lỗi cũ
+                document.querySelectorAll(".error-message").forEach(el => el.innerText = "");
+    
+                const soSao = parseInt(soSaoInput.value);
+                // Lấy textarea theo ID hoặc Name (đảm bảo ID này tồn tại trong HTML của bạn)
+                const txtArea = document.getElementById("NoiDungText") || document.querySelector('textarea[name="NoiDung"]');
+                const noiDung = txtArea ? txtArea.value.trim() : "";
+    
+                // Kiểm tra số sao
+                if (!soSao || soSao <= 0) {
+                    const errSao = soSaoInput.parentElement.querySelector(".error-message");
+                    if (errSao) errSao.innerText = "⚠️ Vui lòng chọn số sao đánh giá!";
+                    isValid = false;
+                }
+    
+                // Kiểm tra nội dung
+                if (noiDung === "") {
+                    const errTxt = txtArea.parentElement.querySelector(".error-message");
+                    if (errTxt) errTxt.innerText = "⚠️ Vui lòng nhập nội dung đánh giá!";
+                    isValid = false;
+                }
+    
+                if (!isValid) {
+                    e.preventDefault(); // Dừng gửi form
+                    alert("⚠️ Vui lòng hoàn thành các thông tin còn thiếu!");
+                    
+                    // Cuộn đến trường lỗi đầu tiên
+                    const firstError = document.querySelector(".error-message:not(:empty)");
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }
+                }
+            });
+        }
     });
-
-</script>
-  
+    </script>
