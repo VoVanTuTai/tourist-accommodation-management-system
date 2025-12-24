@@ -44,18 +44,18 @@
                   <label class="form-label fw-bold">Họ và tên người đặt</label>
                   <input type="text" name="Dat_HoTen" id="Dat_HoTen" class="form-control border-2" 
                          value="<%= (user && user.HoTen) ? user.HoTen : '' %>" required placeholder="Nhập đầy đủ họ và tên">
-                  <div class="invalid-feedback" id="err_Dat_HoTen">Vui lòng nhập họ tên tiếng Việt hợp lệ.</div>
+                  <div class="invalid-feedback">Họ tên chỉ chứa chữ cái Tiếng Việt và ít nhất 2 từ.</div>
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label fw-bold">Số điện thoại</label>
                   <input type="tel" name="Dat_SDT" id="Dat_SDT" class="form-control border-2" 
                          value="<%= (user && user.SoDienThoai) ? user.SoDienThoai : '' %>" required placeholder="VD: 0369123456">
-                  <div class="invalid-feedback" id="err_Dat_SDT">SĐT phải có 10 số và bắt đầu bằng số 0.</div>
+                  <div class="invalid-feedback">SĐT phải có 10 số và bắt đầu bằng số 0.</div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label fw-bold">Số CCCD/CMND</label>
                   <input type="text" name="Dat_CCCD" id="Dat_CCCD" class="form-control border-2" required placeholder="Nhập 9 hoặc 12 chữ số">
-                  <div class="invalid-feedback" id="err_Dat_CCCD">CCCD phải gồm 9 hoặc 12 chữ số.</div>
+                  <div class="invalid-feedback">CCCD phải gồm 9 hoặc 12 chữ số.</div>
                 </div>
               </div>
               <div class="form-check mt-4 p-3 bg-light rounded-3">
@@ -71,8 +71,8 @@
               <div class="row g-3">
                 <div class="col-md-12 mb-3">
                   <label class="form-label fw-bold small">Họ và tên người nhận</label>
-                  <input type="text" name="Nhan_HoTen" id="Nhan_HoTen" class="form-control border-2" placeholder="Bắt buộc, viết hoa chữ cái đầu" required>
-                  <div class="invalid-feedback">Họ tên chỉ chứa chữ cái tiếng Việt, không chứa số hoặc ký tự đặc biệt.</div>
+                  <input type="text" name="Nhan_HoTen" id="Nhan_HoTen" class="form-control border-2" placeholder="Ví dụ: Hứa Minh Khương" required>
+                  <div class="invalid-feedback">Họ tên chỉ chứa chữ cái Tiếng Việt.</div>
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label fw-bold small">SĐT người nhận</label>
@@ -82,7 +82,7 @@
                 <div class="col-md-6">
                   <label class="form-label fw-bold small">CCCD người nhận</label>
                   <input type="text" name="Nhan_CCCD" id="Nhan_CCCD" class="form-control border-2" placeholder="Nhập 9 hoặc 12 số" required>
-                  <div class="invalid-feedback">CCCD người nhận không hợp lệ (9 hoặc 12 chữ số).</div>
+                  <div class="invalid-feedback">CCCD người nhận không hợp lệ.</div>
                 </div>
               </div>
             </div>
@@ -99,12 +99,21 @@
           <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
             <% 
               let displayImage = 'unnamed.jpg'; 
-              if (room && room.HinhAnh) {
-                let cleanPath = room.HinhAnh.replace(/[\[\]\"\\ ]/g, ''); 
-                displayImage = cleanPath.split(',')[0] || 'unnamed.jpg';
-              }
+              try {
+                if (room && room.HinhAnh) {
+                  // Xử lý dữ liệu HinhAnh từ DB (JSON array)
+                  let rawImg = room.HinhAnh;
+                  if (typeof rawImg === 'string' && rawImg.startsWith('[')) {
+                    let imgArray = JSON.parse(rawImg);
+                    displayImage = imgArray[0];
+                  } else {
+                    displayImage = rawImg.replace(/[\[\]\"\\ ]/g, '').split(',')[0];
+                  }
+                }
+              } catch (e) { displayImage = 'unnamed.jpg'; }
             %>
             <img src="/images/<%= displayImage %>" class="card-img-top" style="height: 250px; object-fit: cover;" onerror="this.src='/images/unnamed.jpg'">
+            
             <div class="card-body p-4">
               <h4 class="fw-bold mb-1"><%= room?.TenPhong || 'Thông tin phòng' %></h4>
               <hr class="my-3 opacity-10">
@@ -131,118 +140,115 @@
 </div>
 
 <style>
-  .invalid-feedback {
-    display: none;
-    width: 100%;
-    margin-top: 0.25rem;
-    font-size: 0.875em;
-    color: #dc3545;
-  }
-  .is-invalid ~ .invalid-feedback {
-    display: block;
-  }
-  .is-invalid {
-    border-color: #dc3545 !important;
-  }
-  .is-valid {
-    border-color: #198754 !important;
-  }
+  .invalid-feedback { display: none; width: 100%; margin-top: 0.25rem; font-size: 0.875em; color: #dc3545; }
+  .is-invalid ~ .invalid-feedback { display: block; }
+  .is-invalid { border-color: #dc3545 !important; }
+  .is-valid { border-color: #198754 !important; }
 </style>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const bookingForm = document.getElementById("bookingForm");
 
-  /* ================= REGEX ================= */
-  const vietnameseNamePattern = /^[A-Za-zÀ-Ỹà-ỹ\s]+$/u;
+  /* ================= GIÁ PHÒNG ================= */
+  const giaPhong = parseInt("<%= room?.Gia %>".replace(/\D/g, '')) || 0;
+
+  const ngayNhanInput = document.getElementById('NgayNhan');
+  const ngayTraInput = document.getElementById('NgayTra');
+  const nightCountText = document.getElementById('nightCount');
+  const tempTotalText = document.getElementById('tempTotal');
+
+  function updatePrice() {
+    const start = new Date(ngayNhanInput.value);
+    const end = new Date(ngayTraInput.value);
+
+    if (ngayNhanInput.value && ngayTraInput.value && end > start) {
+      const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+      nightCountText.innerText = diffDays + " đêm";
+      tempTotalText.innerText =
+        (diffDays * giaPhong).toLocaleString('vi-VN') + " VND";
+    } else {
+      nightCountText.innerText = "0 đêm";
+      tempTotalText.innerText = "0 VND";
+    }
+  }
+
+  ngayNhanInput.addEventListener('change', updatePrice);
+  ngayTraInput.addEventListener('change', updatePrice);
+  updatePrice();
+
+  /* ================= REGEX CHUẨN ================= */
+  // \p{L} = tất cả chữ cái Unicode (bao gồm Tiếng Việt)
+  const namePattern = /^[\p{L}\s]+$/u;
   const phonePattern = /^0\d{9}$/;
   const cccdPattern = /^\d{9}$|^\d{12}$/;
 
-  /* ================= HÀM FORMAT TÊN ================= */
-  function formatProperName(str) {
-    return str
-      .trim()
-      .toLowerCase()
-      .split(/\s+/)
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  }
-
-  /* ================= HÀM VALIDATE CHUNG ================= */
   function validateInput(input) {
     const value = input.value.trim();
     let isValid = true;
 
-    switch (input.id) {
-      case "Dat_HoTen":
-      case "Nhan_HoTen":
-        isValid = vietnameseNamePattern.test(value) && value.split(/\s+/).length >= 2;
-        break;
-
-      case "Dat_SDT":
-      case "Nhan_SDT":
-        isValid = phonePattern.test(value);
-        break;
-
-      case "Dat_CCCD":
-      case "Nhan_CCCD":
-        isValid = cccdPattern.test(value);
-        break;
+    if (input.id === "Dat_HoTen") {
+      // Người đặt: >= 2 từ
+      isValid =
+        namePattern.test(value) &&
+        value.split(/\s+/).filter(w => w !== "").length >= 2;
+    }
+    else if (input.id === "Nhan_HoTen") {
+      // Người nhận: chỉ cần chữ
+      isValid = namePattern.test(value);
+    }
+    else if (input.id.includes("SDT")) {
+      isValid = phonePattern.test(value);
+    }
+    else if (input.id.includes("CCCD")) {
+      isValid = cccdPattern.test(value);
     }
 
-    if (!isValid) {
+    if (!isValid && value !== "") {
       input.classList.add("is-invalid");
       input.classList.remove("is-valid");
-      return false;
+    } else if (isValid && value !== "") {
+      input.classList.remove("is-invalid");
+      input.classList.add("is-valid");
+    } else {
+      input.classList.remove("is-invalid", "is-valid");
     }
 
-    input.classList.remove("is-invalid");
-    input.classList.add("is-valid");
-    return true;
+    return isValid;
   }
 
-  /* ================= BẮT SỰ KIỆN INPUT ================= */
-  const inputs = bookingForm.querySelectorAll("input[type='text'], input[type='tel']");
-  inputs.forEach(input => {
+  const allInputs = bookingForm.querySelectorAll("input[required]");
+  allInputs.forEach(input => {
     input.addEventListener("input", () => validateInput(input));
-
-    // Format tên khi rời khỏi ô nhập
-    if (input.id === "Dat_HoTen" || input.id === "Nhan_HoTen") {
-      input.addEventListener("blur", () => {
-        if (vietnameseNamePattern.test(input.value)) {
-          input.value = formatProperName(input.value);
-          validateInput(input);
-        }
-      });
-    }
+    input.addEventListener("blur", () => validateInput(input));
   });
 
-  /* ================= CHECKBOX: TÔI LÀ NGƯỜI NHẬN ================= */
+  /* ================= CHECKBOX ================= */
   document.getElementById("samePerson").addEventListener("change", function () {
-    if (this.checked) {
-      document.getElementById("Nhan_HoTen").value =
-        formatProperName(document.getElementById("Dat_HoTen").value);
-      document.getElementById("Nhan_SDT").value =
-        document.getElementById("Dat_SDT").value;
-      document.getElementById("Nhan_CCCD").value =
-        document.getElementById("Dat_CCCD").value;
+    const fields = [
+      { from: "Dat_HoTen", to: "Nhan_HoTen" },
+      { from: "Dat_SDT", to: "Nhan_SDT" },
+      { from: "Dat_CCCD", to: "Nhan_CCCD" }
+    ];
 
-      validateInput(document.getElementById("Nhan_HoTen"));
-      validateInput(document.getElementById("Nhan_SDT"));
-      validateInput(document.getElementById("Nhan_CCCD"));
-    }
+    fields.forEach(f => {
+      const fromInput = document.getElementById(f.from);
+      const toInput = document.getElementById(f.to);
+      toInput.value = this.checked ? fromInput.value : "";
+      validateInput(toInput);
+    });
   });
 
-  /* ================= SUBMIT FORM ================= */
+  /* ================= SUBMIT ================= */
   bookingForm.addEventListener("submit", function (e) {
     let valid = true;
-    inputs.forEach(input => {
+    allInputs.forEach(input => {
       if (!validateInput(input)) valid = false;
     });
 
     if (!valid) {
       e.preventDefault();
-      alert("❌ Vui lòng kiểm tra lại các trường bị viền đỏ!");
+      alert("❌ Vui lòng kiểm tra lại các trường thông tin màu đỏ!");
     }
   });
 });
