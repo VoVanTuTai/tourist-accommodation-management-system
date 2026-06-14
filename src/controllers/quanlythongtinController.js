@@ -1,6 +1,6 @@
 // src/controllers/khachhangController.js
 const bcrypt = require("bcryptjs")
-const KhachHang = require("../models/KhachHang")
+const KhachHang = require("../models/khachhang")
 const TaiKhoan = require("../models/taikhoan")
 module.exports.getTaiKhoanView = async function (req, res) {
     try {

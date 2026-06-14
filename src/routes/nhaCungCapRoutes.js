@@ -33,9 +33,9 @@ router.post(
   uploadImage.single("GiayPhepKD"),
   nhaCungCapController.registerNhaCungCap
 );
-router.get("/",nhaCungCapController.renderDashboard)
-router.get("/statsByMonth/:statsByMonth",nhaCungCapController.getChartMonthData)
-router.get("/statsByYear/:statsByYear",nhaCungCapController.getChartYearData)
+router.get("/", ensureNhaCungCap, nhaCungCapController.renderDashboard)
+router.get("/statsByMonth/:statsByMonth", ensureNhaCungCap, nhaCungCapController.getChartMonthData)
+router.get("/statsByYear/:statsByYear", ensureNhaCungCap, nhaCungCapController.getChartYearData)
 
 
 router.get("/dangnhap", nhaCungCapController.renderDangNhapNhaCungCap);
