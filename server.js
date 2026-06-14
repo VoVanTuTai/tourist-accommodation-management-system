@@ -1,8 +1,11 @@
+require("dotenv").config();
+
 const express = require("express");
 const path = require("path");
 const expressLayouts = require("express-ejs-layouts");
 const session = require("express-session");
 const MySQLStore = require("express-mysql-session")(session);
+const db = require("./config/db");
 
 const flash = require("express-flash");
 
@@ -51,6 +54,7 @@ app.use("/images/danhgia", express.static(path.join(__dirname, "src/public/image
 ===================================================== */
 const dbConfig = {
    host: process.env.DB_HOST,
+   port: Number(process.env.DB_PORT) || 3306,
    user: process.env.DB_USER,
    password: process.env.DB_PASSWORD,
    database: process.env.DB_NAME,
@@ -61,7 +65,7 @@ const sessionStore = new MySQLStore(dbConfig);
 app.use(
   session({
     key: "thieunu_session",
-    secret: "thieunu_secret_key",
+    secret: process.env.SESSION_SECRET || "development_only_session_secret",
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
@@ -81,6 +85,15 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   res.locals.session = req.session || {};
   next();
+});
+
+app.get("/health", async (req, res) => {
+  try {
+    await db.query("SELECT 1");
+    res.status(200).json({ status: "ok" });
+  } catch (error) {
+    res.status(503).json({ status: "error", message: "Database unavailable" });
+  }
 });
 // ✅ Thêm đoạn này để truyền session tới tất cả view
 /* =====================================================

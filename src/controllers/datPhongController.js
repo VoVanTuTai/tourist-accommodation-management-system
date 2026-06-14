@@ -1,5 +1,5 @@
 const DatPhong = require("../models/datphong");
-const KhachHang = require("../models/KhachHang");
+const KhachHang = require("../models/khachhang");
 const db = require("../../config/db");
 
 // Hàm bổ trợ lấy ngày định dạng YYYY-MM-DD

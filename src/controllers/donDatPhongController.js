@@ -1,7 +1,7 @@
 const db = require("../../config/db");
 const DonDatPhong = require("../models/DonDatPhong");
 const DanhGia = require("../models/DanhGia");
-const KhachHang = require("../models/KhachHang");
+const KhachHang = require("../models/khachhang");
 // =====================================================
 // 🧾 DANH SÁCH ĐƠN ĐẶT PHÒNG CỦA KHÁCH HÀNG
 // =====================================================
@@ -373,4 +373,3 @@ exports.handleCapNhatTrangThaiDonDatPhongNCC = async (req, res) => {
       res.redirect('/nhacungcap/don-dat-phong/chitiet/' + maDon);
   }
 };
-

@@ -1,6 +1,6 @@
 const DanhGia = require("../models/DanhGia");
 const DonDatPhong = require("../models/DonDatPhong");
-const KhachHang = require("../models/KhachHang");
+const KhachHang = require("../models/khachhang");
 
 // [GET] /khachhang/don-dat-phong/:maDon/danhgia
 // [GET] /khachhang/don-dat-phong/:maDon/danhgia
@@ -137,4 +137,3 @@ exports.handleDanhGia = async (req, res) => {
     res.status(500).send("Lỗi khi gửi đánh giá.");
   }
 };
-

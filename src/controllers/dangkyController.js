@@ -1,5 +1,5 @@
 const bcrypt = require("bcryptjs")
-const KhachHang = require("../models/KhachHang")
+const KhachHang = require("../models/khachhang")
 const TaiKhoan = require("../models/taikhoan")
 
 /** ------------------ VALIDATION UTILS ------------------ **/
