@@ -105,7 +105,70 @@ Admin reviews customers/providers
 | Payment | `/vnpay/create_payment`, `/vnpay/return` |
 | Reports | `/admin/dashboard/export`, `/admin/dashboard/export-excel`, `/admin/reports/commission/export/pdf` |
 
-## Local Development
+## Run With Docker
+
+Docker runs both the Node.js application and the MariaDB database, so XAMPP is
+not required. MariaDB is used because the included database dump was exported
+from MariaDB 10.4 through phpMyAdmin.
+
+### Prerequisites
+
+- Docker Desktop
+- Docker Compose
+
+### Start the project
+
+Create your local environment file:
+
+```bash
+cp .env.example .env
+```
+
+Change the passwords and `SESSION_SECRET` in `.env`, then build and start the
+containers:
+
+```bash
+docker compose up --build -d
+```
+
+Check container status:
+
+```bash
+docker compose ps
+```
+
+Open the application:
+
+```text
+http://localhost:3000
+```
+
+The database dump at `resources/quanlidatphong (8).sql` is imported
+automatically the first time the database volume is created. From the host
+machine, MariaDB is available on `localhost:3307`. The container also enables
+case-insensitive table names to preserve compatibility with SQL written for
+the original Windows/XAMPP environment.
+
+### View logs
+
+```bash
+docker compose logs -f app
+```
+
+### Stop the project
+
+```bash
+docker compose down
+```
+
+To delete the database volume and import the original SQL dump again:
+
+```bash
+docker compose down -v
+docker compose up --build -d
+```
+
+## Run Without Docker
 
 ### Prerequisites
 
@@ -126,9 +189,11 @@ Create a local `.env` file with the database and payment settings required by yo
 ```text
 PORT=3000
 DB_HOST=localhost
+DB_PORT=3306
 DB_USER=your_mysql_user
 DB_PASSWORD=your_mysql_password
 DB_NAME=your_database_name
+SESSION_SECRET=your_session_secret
 ```
 
 VNPay and email settings should be configured according to the payment/email environment being used.
@@ -136,7 +201,7 @@ VNPay and email settings should be configured according to the payment/email env
 ### Start the app
 
 ```bash
-node server.js
+npm start
 ```
 
 Then open:
